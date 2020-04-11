@@ -31,7 +31,7 @@ import java.io.IOException;
  *
  * @author Muhammet Yildiz
  */
-@WebServlet("/")
+@WebServlet("")
 public class RootServlet extends HttpServlet {
   private static final Logger LOGGER = LoggerFactory.getLogger(RootServlet.class);
 

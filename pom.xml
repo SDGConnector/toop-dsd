@@ -19,21 +19,35 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
+  <!--        -->
+  <!-- parent -->
+  <!--        -->
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>parent-pom</artifactId>
     <version>1.11.1</version>
   </parent>
 
+  <!--          -->
+  <!-- artifact -->
+  <!--          -->
   <groupId>eu.toop</groupId>
   <artifactId>data-services-directory</artifactId>
-
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <packaging>war</packaging>
-
   <description>Contains the TOOP DSD Web Application</description>
   <url>https://github.com/toop4eu/data-services-directory</url>
   <inceptionYear>2020</inceptionYear>
+
+
+  <!--                -->
+  <!--   properties   -->
+  <!--                -->
+  <properties>
+    <toop.version>1.0.0-SNAPSHOT</toop.version>
+  </properties>
+
 
   <licenses>
     <license>
@@ -63,7 +77,18 @@
     </developer>
   </developers>
 
+
   <dependencies>
+
+    <!--
+    disabled for now.
+    <dependency>
+      <groupId>eu.toop</groupId>
+      <artifactId>toop-regrep</artifactId>
+      <version>${toop.version}</version>
+    </dependency>
+
+    -->
 
     <!-- the business card api -->
     <dependency>
