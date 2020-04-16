@@ -23,6 +23,10 @@
   <display-name>TOOP DSD</display-name>
   <description>https://github.com/toop4eu/data-services-directory</description>
 
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+
   <session-config>
     <session-timeout>60</session-timeout>
   </session-config>

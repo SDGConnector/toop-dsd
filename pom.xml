@@ -80,15 +80,11 @@
 
   <dependencies>
 
-    <!--
-    disabled for now.
     <dependency>
       <groupId>eu.toop</groupId>
       <artifactId>toop-regrep</artifactId>
       <version>${toop.version}</version>
     </dependency>
-
-    -->
 
     <!-- the business card api -->
     <dependency>
