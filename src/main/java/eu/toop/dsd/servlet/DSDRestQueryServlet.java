@@ -39,8 +39,6 @@ import java.io.IOException;
 @WebServlet("/rest/search")
 public class DSDRestQueryServlet extends HttpServlet {
 
-  public static final String QUERY_DATASET_REQUEST = "urn:toop:dsd:ebxml-regrep:queries:DataSetRequest";
-
   private static final Logger LOGGER = LoggerFactory.getLogger(DSDRestQueryServlet.class);
   public static final String PARAM_NAME_DATA_SET_TYPE = "DataSetType";
   public static final String PARAM_NAME_QUERY_ID = "queryId";
@@ -51,36 +49,21 @@ public class DSDRestQueryServlet extends HttpServlet {
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     LOGGER.debug("DSD query  with " + req.getQueryString());
 
-    //parse the query parameters
-    final String queryId = req.getParameter(PARAM_NAME_QUERY_ID);
-    ValueEnforcer.notEmpty(queryId, PARAM_NAME_QUERY_ID);
-
-    //currently only one type of query is supported
-    switch (queryId) {
-      case QUERY_DATASET_REQUEST: {
-        //the query id is valid. Now check for the mandatory parameter
-        //DataSetType
+    try {
+      //parse the query parameters
+      final String queryId = req.getParameter(PARAM_NAME_QUERY_ID);
+      final String dataSetType = req.getParameter(PARAM_NAME_DATA_SET_TYPE);
 
 
-        final String dataSetType = req.getParameter(PARAM_NAME_DATA_SET_TYPE);
-        ValueEnforcer.notEmpty(dataSetType, PARAM_NAME_DATA_SET_TYPE);
 
-        //the rest is optional. Ignore the unknown parameters
-
-        DSDQueryService.processRequest(queryId, dataSetType,
-            req.getParameter(PARAM_NAME_COUNTRY_CODE),
-            req.getParameter(PARAM_NAME_DATA_PROVIDER_TYPE), resp);
-
-        break;
-      }
-
-      default: {
-        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
-        // TODO create an error processor to respond with
-        //  the specified RegRep error
-        resp.getOutputStream().println("Invalid queryId");
-      }
+    } catch (IllegalArgumentException ex) {
+      //convert this to bad request
+    } catch (Exception ex) {
+      LOGGER.error(ex.getMessage(), ex);
+      //convert this to internal server error
+      resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      final String message = ex.getMessage();
+      resp.getOutputStream().println(message != null ? message : "UNKNOWN ERROR");
     }
   }
 }
