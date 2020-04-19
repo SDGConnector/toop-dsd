@@ -15,27 +15,38 @@
  */
 package eu.toop.dsd.service;
 
-import com.helger.commons.collection.impl.CommonsHashSet;
-import com.helger.commons.collection.impl.ICommonsSet;
-import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.url.ISimpleURL;
-import com.helger.commons.url.SimpleURL;
-import com.helger.httpclient.HttpClientFactory;
 import com.helger.httpclient.HttpClientManager;
 import com.helger.httpclient.response.ResponseHandlerJson;
 import com.helger.json.IJson;
-import com.helger.json.IJsonArray;
 import com.helger.json.IJsonObject;
-import com.helger.peppolid.IDocumentTypeIdentifier;
-import com.helger.peppolid.IParticipantIdentifier;
-import com.helger.peppolid.simple.participant.SimpleParticipantIdentifier;
+import com.helger.pd.businesscard.v1.ObjectFactory;
+import com.helger.pd.businesscard.v3.PD3BusinessCardType;
 import eu.toop.dsd.config.DSDConfig;
 import org.apache.http.client.methods.HttpGet;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
+import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
+/**
+ * This class pulls the data from TOOP Directory and caches it for
+ * further querying. We are not using the regular TOOP dorectory query api
+ * because it only returns partipant IDS.
+ */
 public class ToopDirClient {
-  private static final int MAX_RESULTS_PER_PAGE = 100;
+
+  private static final String TOOP_DIR_EXPORT_SUB_URL = "/export/businesscards";
+
+  private static final Map<Integer, PD3BusinessCardType> businessCards = new LinkedHashMap<>();
+
+  static {
+    //pullDirectory();
+  }
 
   private static IJsonObject _fetchJsonObject(final HttpClientManager aMgr,
                                               final ISimpleURL aURL) throws IOException {
@@ -48,16 +59,17 @@ public class ToopDirClient {
     return null;
   }
 
+/*
 
-  public static ICommonsSet<IParticipantIdentifier> getAllParticipantIDs(final String sCountryCode,
-                                                                         final IDocumentTypeIdentifier aDocumentTypeID) throws IOException {
+  public static ICommonsSet<IParticipantIdentifier> pullDirectory(final String sCountryCode,
+                                                                  final IDocumentTypeIdentifier aDocumentTypeID) {
     final ICommonsSet<IParticipantIdentifier> ret = new CommonsHashSet<>();
 
     final HttpClientFactory aHCFactory = new HttpClientFactory();
 
     try (final HttpClientManager aMgr = new HttpClientManager(aHCFactory)) {
       // Build base URL and fetch x records per HTTP request
-      final SimpleURL aBaseURL = new SimpleURL(DSDConfig.getToopDirUrl() + "/search/1.0/json")
+      final SimpleURL aBaseURL = new SimpleURL(m_sBaseURL + "/search/1.0/json")
           .add("rpc", MAX_RESULTS_PER_PAGE);
 
       if (sCountryCode != null)
@@ -115,8 +127,88 @@ public class ToopDirClient {
           }
         }
       }
+    } catch (final IOException ex) {
+      ex.printStackTrace();
     }
 
     return ret;
+  }
+*/
+
+
+/*
+  public static Map<Integer, PD3BusinessCardType> pullDirectory() {
+
+    if (businessCards.size() == 0) {
+      try {
+        JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
+        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+        final JAXBElement<PD3BusinessCardType> unmarshal = (JAXBElement<PD3BusinessCardType>) jaxbUnmarshaller.unmarshal(new URL(DSDConfig.getToopDirUrl() + TOOP_DIR_EXPORT_SUB_URL));
+        PD3BusinessCardType rootType = unmarshal.getValue();
+
+        final AtomicInteger idEr = new AtomicInteger(0);
+        final AtomicInteger docEr = new AtomicInteger(0);
+        //process the entities
+        rootType.getBusinesscard().forEach(businessCardType -> {
+          final int bcId = idEr.getAndIncrement();
+          final BusinessCardTypeWrapper bcw = new BusinessCardTypeWrapper(bcId, businessCardType);
+          businessCards.put(bcId, bcw);
+
+          businessCardType.getDoctypeid().forEach(idType -> {
+            final int docId = docEr.getAndIncrement();
+
+            final DocTypeWrapper docTypeWrapper = new DocTypeWrapper(docId, idType);
+            bcw.getDocTypes().add(docTypeWrapper);
+
+            docTypeMap.put(docId, docTypeWrapper);
+          });
+        });
+
+      } catch (Exception ex) {
+        throw new IllegalStateException("Sorry Cannot read directory.", ex);
+      }
+    }
+
+    return businessCards;
+  }*/
+
+
+
+  public static void main(String[] args) {
+
+    try {
+      JAXBContext jaxbContext = JAXBContext.newInstance();
+      Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+      final URL url = new URL(DSDConfig.getToopDirUrl() + TOOP_DIR_EXPORT_SUB_URL);
+
+      System.out.println(url);
+
+      final JAXBElement<Object> unmarshal = (JAXBElement<Object>) jaxbUnmarshaller.unmarshal(url);
+      System.out.println(unmarshal);
+
+      //final AtomicInteger idEr = new AtomicInteger(0);
+      //final AtomicInteger docEr = new AtomicInteger(0);
+      ////process the entities
+      //rootType.getBusinesscard().forEach(businessCardType -> {
+      //  final int bcId = idEr.getAndIncrement();
+      //  final BusinessCardTypeWrapper bcw = new BusinessCardTypeWrapper(bcId, businessCardType);
+      //  businessCards.put(bcId, bcw);
+//
+      //  businessCardType.getDoctypeid().forEach(idType -> {
+      //    final int docId = docEr.getAndIncrement();
+//
+      //    final DocTypeWrapper docTypeWrapper = new DocTypeWrapper(docId, idType);
+      //    bcw.getDocTypes().add(docTypeWrapper);
+//
+      //    docTypeMap.put(docId, docTypeWrapper);
+      //  });
+      //});
+
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+
   }
 }

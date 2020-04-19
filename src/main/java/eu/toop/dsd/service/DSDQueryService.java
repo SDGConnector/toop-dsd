@@ -20,14 +20,11 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.impl.ICommonsSet;
 import com.helger.peppolid.IParticipantIdentifier;
 import com.helger.peppolid.simple.doctype.SimpleDocumentTypeIdentifier;
-import eu.toop.dsd.config.DSDConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URLConnection;
 
 
 /**
@@ -65,7 +62,7 @@ public class DSDQueryService {
     switch (queryId) {
       case QUERY_DATASET_REQUEST: {
         SimpleDocumentTypeIdentifier doctypeId = new SimpleDocumentTypeIdentifier("", dataSetType);
-        final ICommonsSet<IParticipantIdentifier> allParticipantIDs = ToopDirClient.getAllParticipantIDs(countryCode, doctypeId);
+        //final ICommonsSet<IParticipantIdentifier> allParticipantIDs = ToopDirClient.pullDirectory(countryCode, doctypeId);
 
         //TODO we have participant IDs. Now convert them to REGREP + BregDcatAPasdfasdlka
 

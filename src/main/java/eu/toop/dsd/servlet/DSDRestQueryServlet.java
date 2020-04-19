@@ -15,8 +15,6 @@
  */
 package eu.toop.dsd.servlet;
 
-import com.helger.commons.ValueEnforcer;
-import eu.toop.dsd.service.DSDQueryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +51,6 @@ public class DSDRestQueryServlet extends HttpServlet {
       //parse the query parameters
       final String queryId = req.getParameter(PARAM_NAME_QUERY_ID);
       final String dataSetType = req.getParameter(PARAM_NAME_DATA_SET_TYPE);
-
 
 
     } catch (IllegalArgumentException ex) {
