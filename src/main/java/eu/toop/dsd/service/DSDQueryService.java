@@ -17,14 +17,12 @@
 package eu.toop.dsd.service;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collection.impl.ICommonsSet;
-import com.helger.peppolid.IParticipantIdentifier;
-import com.helger.peppolid.simple.doctype.SimpleDocumentTypeIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Map;
 
 
 /**
@@ -39,32 +37,45 @@ public class DSDQueryService {
   private static final Logger LOGGER = LoggerFactory.getLogger(DSDQueryService.class);
   public static final String QUERY_DATASET_REQUEST = "urn:toop:dsd:ebxml-regrep:queries:DataSetRequest";
 
+  public static final String PARAM_NAME_DATA_SET_TYPE = "DataSetType";
+  public static final String PARAM_NAME_QUERY_ID = "queryId";
+  private static final String PARAM_NAME_COUNTRY_CODE = "countryCode";
+  private static final String PARAM_NAME_DATA_PROVIDER_TYPE = "dataProviderType";
+
+
   /**
    * Query the underlying database for the provided parameters and
    * respond using the TOOP DSD RegRep response specification.
    *
-   * @param queryId          the queryId provided by the client
-   * @param dataSetType      the type of the dataset requested
-   * @param countryCode      country code
-   * @param dataProviderType the type of the data provider
-   * @param resp             Used for writing the query responses directly. (temporary) this parameter will be abstracted from this layer
+   * @param parameterMap   the map that contains the parameters for the queries
+   * @param responseStream the stream to write the results in case of success.
+   * @throws IllegalArgumentException if the query parameters are invalid
+   * @throws IllegalStateException    if a problem occurs
    */
-  public static void processRequest(String queryId, String dataSetType, String countryCode, String dataProviderType, HttpServletResponse resp) throws IOException {
-    ValueEnforcer.notEmpty(dataSetType, "dataSetType");
+  public static void processRequest(Map<String, String[]> parameterMap, OutputStream responseStream) {
+    ValueEnforcer.notEmpty(parameterMap, "parameterMap");
+
+    String s_QueryId = null;
+
+    //try to get the queryId from the map
+    String[] queryId = parameterMap.get(PARAM_NAME_QUERY_ID);
     ValueEnforcer.notEmpty(queryId, "queryId");
+    if (queryId.length != 1)
+      throw new IllegalStateException("queryId invalid");
 
-    LOGGER.debug("Processing query: [QueryId: " + queryId + ", dataSetType: " + dataSetType +
-        ", countryCode: " + countryCode + ", dataProviderType: " + dataProviderType + "]");
+    s_QueryId = queryId[0];
 
-    LOGGER.warn("Ingoring \"dataProviderType\":" + dataProviderType + " parameter for now");
+    LOGGER.debug("Processing query: [QueryId: " + s_QueryId + "");
 
     //currently only one type of query is supported
-    switch (queryId) {
+    switch (s_QueryId) {
       case QUERY_DATASET_REQUEST: {
-        SimpleDocumentTypeIdentifier doctypeId = new SimpleDocumentTypeIdentifier("", dataSetType);
-        //final ICommonsSet<IParticipantIdentifier> allParticipantIDs = ToopDirClient.pullDirectory(countryCode, doctypeId);
 
-        //TODO we have participant IDs. Now convert them to REGREP + BregDcatAPasdfasdlka
+        try {
+          processDataSetRequest(parameterMap, responseStream);
+        } catch (IOException e) {
+          throw new IllegalStateException(e.getMessage(), e);
+        }
 
         break;
       }
@@ -73,5 +84,48 @@ public class DSDQueryService {
         throw new IllegalArgumentException("Invalid queryId " + queryId);
       }
     }
+  }
+
+  public static void processDataSetRequest(Map<String, String[]> parameterMap, OutputStream responseStream) throws IOException {
+
+    String s_DataSetType;
+    String s_CountryCode = null;
+    String s_DataProviderType = null;
+
+    String[] dataSetType = parameterMap.get(PARAM_NAME_DATA_SET_TYPE);
+    ValueEnforcer.notEmpty(dataSetType, "dataSetType");
+    if (dataSetType.length != 1)
+      throw new IllegalStateException("dataSetType invalid");
+
+    s_DataSetType = dataSetType[0];
+
+    String[] countryCode = parameterMap.get(PARAM_NAME_COUNTRY_CODE);
+    if (countryCode != null) {
+      if (countryCode.length != 1) {
+        throw new IllegalStateException("countryCode invalid");
+      }
+
+      s_CountryCode = countryCode[0];
+    }
+
+    String[] dataProviderType = parameterMap.get(PARAM_NAME_DATA_PROVIDER_TYPE);
+    if (dataProviderType != null) {
+      if (dataProviderType.length != 1) {
+        throw new IllegalStateException("dataProviderType invalid");
+      }
+
+      s_DataProviderType = dataProviderType[0];
+    }
+
+
+    LOGGER.debug("Processing data set request [dataSetType: " + s_DataSetType +
+        ", countryCode: " + s_CountryCode + ", dataProviderType: " + s_DataProviderType + "]");
+
+    LOGGER.warn("Ingoring \"dataProviderType\":" + dataProviderType + " parameter for now");
+
+
+    ToopDirClient.performSearch(s_CountryCode, s_DataSetType);
+
+    //TODO we have participant IDs. Now convert them to REGREP + BregDcatAPasdfasdlka
   }
 }

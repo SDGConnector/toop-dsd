@@ -15,21 +15,32 @@
  */
 package eu.toop.dsd.service;
 
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.ISimpleURL;
+import com.helger.commons.url.SimpleURL;
 import com.helger.httpclient.HttpClientManager;
 import com.helger.httpclient.response.ResponseHandlerJson;
+import com.helger.httpclient.response.ResponseHandlerMicroDom;
 import com.helger.json.IJson;
 import com.helger.json.IJsonObject;
-import com.helger.pd.businesscard.v1.ObjectFactory;
+import com.helger.pd.businesscard.generic.PDBusinessCard;
+import com.helger.pd.businesscard.helper.PDBusinessCardHelper;
 import com.helger.pd.businesscard.v3.PD3BusinessCardType;
+import com.helger.pd.searchapi.PDSearchAPIReader;
+import com.helger.xml.microdom.IMicroDocument;
 import eu.toop.dsd.config.DSDConfig;
 import org.apache.http.client.methods.HttpGet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Node;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -39,6 +50,9 @@ import java.util.Map;
  * because it only returns partipant IDS.
  */
 public class ToopDirClient {
+
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(DSDQueryService.class);
 
   private static final String TOOP_DIR_EXPORT_SUB_URL = "/export/businesscards";
 
@@ -173,39 +187,47 @@ public class ToopDirClient {
     return businessCards;
   }*/
 
+  public static void performSearch(final String sCountryCode,
+                                   final String aDocumentTypeID) throws IOException {
+    ValueEnforcer.notNull(sCountryCode, "sCountryCode");
+
+    final String sBaseURL = DSDConfig.getToopDirUrl();
+    if (StringHelper.hasNoText(sBaseURL))
+      throw new IllegalStateException("The Directory base URL configuration is missing");
+
+    // Invoke TOOP Directory search API
+    try (final HttpClientManager aMgr = new HttpClientManager()) {
+      // Build base URL and fetch all records per HTTP request
+      final SimpleURL aBaseURL = new SimpleURL(sBaseURL + "/search/1.0/xml");
+      // More than 1000 is not allowed
+      aBaseURL.add("rpc", 1_000);
+      // Constant defined in CCTF-103
+      aBaseURL.add("identifierScheme", "DataSubjectIdentifierScheme");
+      // Parameters to this servlet
+      aBaseURL.add("country", sCountryCode);
+//      aBaseURL.add("doctype", aDocumentTypeID);
+
+      if (LOGGER.isInfoEnabled())
+        LOGGER.info("Querying " + aBaseURL.getAsStringWithEncodedParameters());
+
+      final HttpGet aGet = new HttpGet(aBaseURL.getAsURI());
+      final ResponseHandlerMicroDom aRH = new ResponseHandlerMicroDom();
+      final IMicroDocument aDoc = aMgr.execute(aGet, aRH);
+      if (aDoc == null || aDoc.getDocumentElement() == null) {
+        throw new IllegalStateException("Failed to invoke the Directory query '" + aBaseURL.getAsStringWithEncodedParameters() + "'");
+      } else {
+        LOGGER.debug("Adoc: " +
+            aDoc.getDocumentElement().toString());
+        
+      }
+    }
+  }
 
 
   public static void main(String[] args) {
 
     try {
-      JAXBContext jaxbContext = JAXBContext.newInstance();
-      Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-
-      final URL url = new URL(DSDConfig.getToopDirUrl() + TOOP_DIR_EXPORT_SUB_URL);
-
-      System.out.println(url);
-
-      final JAXBElement<Object> unmarshal = (JAXBElement<Object>) jaxbUnmarshaller.unmarshal(url);
-      System.out.println(unmarshal);
-
-      //final AtomicInteger idEr = new AtomicInteger(0);
-      //final AtomicInteger docEr = new AtomicInteger(0);
-      ////process the entities
-      //rootType.getBusinesscard().forEach(businessCardType -> {
-      //  final int bcId = idEr.getAndIncrement();
-      //  final BusinessCardTypeWrapper bcw = new BusinessCardTypeWrapper(bcId, businessCardType);
-      //  businessCards.put(bcId, bcw);
-//
-      //  businessCardType.getDoctypeid().forEach(idType -> {
-      //    final int docId = docEr.getAndIncrement();
-//
-      //    final DocTypeWrapper docTypeWrapper = new DocTypeWrapper(docId, idType);
-      //    bcw.getDocTypes().add(docTypeWrapper);
-//
-      //    docTypeMap.put(docId, docTypeWrapper);
-      //  });
-      //});
-
+      performSearch("GQ", null);
     } catch (Exception ex) {
       ex.printStackTrace();
     }

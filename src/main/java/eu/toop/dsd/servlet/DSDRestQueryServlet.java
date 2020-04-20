@@ -15,6 +15,7 @@
  */
 package eu.toop.dsd.servlet;
 
+import eu.toop.dsd.service.DSDQueryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * The HTTP servlet for the REST query. One servlet could be used
@@ -38,20 +40,15 @@ import java.io.IOException;
 public class DSDRestQueryServlet extends HttpServlet {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DSDRestQueryServlet.class);
-  public static final String PARAM_NAME_DATA_SET_TYPE = "DataSetType";
-  public static final String PARAM_NAME_QUERY_ID = "queryId";
-  private static final String PARAM_NAME_COUNTRY_CODE = "CountryCode";
-  private static final String PARAM_NAME_DATA_PROVIDER_TYPE = "DataProviderType";
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     LOGGER.debug("DSD query  with " + req.getQueryString());
 
     try {
-      //parse the query parameters
-      final String queryId = req.getParameter(PARAM_NAME_QUERY_ID);
-      final String dataSetType = req.getParameter(PARAM_NAME_DATA_SET_TYPE);
 
+      Map<String, String[]> parameterMap = req.getParameterMap();
+      DSDQueryService.processRequest(parameterMap, resp.getOutputStream());
 
     } catch (IllegalArgumentException ex) {
       //convert this to bad request
