@@ -20,6 +20,9 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.pd.searchapi.v1.MatchType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -129,13 +132,11 @@ public class DSDQueryService {
 
     final List<MatchType> matchTypes = ToopDirClient.performSearch(s_CountryCode, s_DataSetType);
 
-    //TODO we have participant IDs. Now convert them to REGREP + BregDcatAPasdfasdlka
+    List<Document> dcatDocuments = BregDCatHelper.convertBusinessCardsToDCat(matchTypes);
 
-    //just print string, lets see the result
+    String sRequestId = "0DCFE9A5-3D4E-493A-BC50-C403EF281318"; //todo: get it from the request
 
-    final StringBuilder all = new StringBuilder();
-
-    matchTypes.forEach(mt -> all.append(mt.toString()).append("\n"));
-    responseStream.write(all.toString().getBytes(StandardCharsets.UTF_8));
+    String resultXml = DSDRegRep.createQueryResponse(sRequestId, dcatDocuments);
+    responseStream.write(resultXml.getBytes(StandardCharsets.UTF_8));
   }
 }

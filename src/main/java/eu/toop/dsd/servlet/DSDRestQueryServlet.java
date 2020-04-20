@@ -46,10 +46,8 @@ public class DSDRestQueryServlet extends HttpServlet {
     LOGGER.debug("DSD query  with " + req.getQueryString());
 
     try {
-
       Map<String, String[]> parameterMap = req.getParameterMap();
       DSDQueryService.processRequest(parameterMap, resp.getOutputStream());
-
     } catch (IllegalArgumentException ex) {
       //convert this to bad request
     } catch (Exception ex) {
