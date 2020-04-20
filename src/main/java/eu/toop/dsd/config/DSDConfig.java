@@ -20,9 +20,6 @@ import com.typesafe.config.ConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 /**
  * The utility class for reading the dsd-config.conf file.
  *

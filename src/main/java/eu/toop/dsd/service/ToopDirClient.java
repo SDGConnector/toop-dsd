@@ -35,14 +35,23 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * This class pulls the data from TOOP Directory and caches it for
- * further querying. We are not using the regular TOOP dorectory query api
- * because it only returns partipant IDS.
+ * This class is the bridge between DSD and TOOP directory.
+ * It queries the TOOP directory and returns the responses as a list of <code>MatchType</code> objects
+ * 
+ * @author @yerlibilgin
  */
 public class ToopDirClient {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DSDQueryService.class);
 
+  /**
+   * Query TOOP-DIR with country code and doctype. Return the result as a list of <code>MatchType</code> objects
+   * 
+   * @param sCountryCode two letter Country Code, not null
+   * @param aDocumentTypeID doc type id, may be null
+   * @return list of <code>MatchType</code> objects
+   * @throws IOException if a communication problem occurs
+   */
   public static List<MatchType> performSearch(final String sCountryCode,
                                               final String aDocumentTypeID) throws IOException {
     ValueEnforcer.notNull(sCountryCode, "sCountryCode");

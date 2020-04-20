@@ -21,8 +21,6 @@ import com.helger.pd.searchapi.v1.MatchType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -36,9 +34,8 @@ import java.util.Map;
  * the incoming queries and generates the required results with
  * respect to the TOOP DSD specifications.
  *
- * @author Muhammet Yildiz
+ * @author @yerlibilgin
  */
-
 public class DSDQueryService {
   private static final Logger LOGGER = LoggerFactory.getLogger(DSDQueryService.class);
   public static final String QUERY_DATASET_REQUEST = "urn:toop:dsd:ebxml-regrep:queries:DataSetRequest";

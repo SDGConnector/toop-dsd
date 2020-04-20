@@ -34,7 +34,7 @@ import java.util.Map;
  * suggests using "/rest/search" for the rest based query, which would
  * be meaningless for handling a Post request that is not REST.
  *
- * @author Muhammet Yildiz
+ * @author @yerlibilgin
  */
 @WebServlet("/rest/search")
 public class DSDRestQueryServlet extends HttpServlet {

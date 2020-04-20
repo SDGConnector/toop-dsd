@@ -1,18 +1,36 @@
+/**
+ * Copyright (C) 2018-2020 toop.eu
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package eu.toop.dsd.service;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.pd.searchapi.v1.MatchType;
-import com.sun.org.apache.xerces.internal.dom.ElementImpl;
-import org.bouncycastle.pqc.crypto.gmss.GMSSStateAwareSigner;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.*;
 
+/**
+ * This class is responsible for converting the TOOP Directory query result into 
+ * the DSD BregDCAT Profile documents.
+ *
+ * @author @yerlibilgin
+ */
 public class BregDCatHelper {
 
   private static final DocumentBuilder DOCUMENT_BUILDER;
@@ -44,6 +62,14 @@ public class BregDCatHelper {
     }
   }
 
+  /**
+   * Converts the BusinessCards that are obtained from the TOOP Directory
+   * as <code>MatchType</code> instances into <code>org.w3c.dom.Document</code> 
+   * objects compatible with the DSD BregDcatAP.
+   * 
+   * @param matchTypes the list of <code>MatchType</code> objects to be converted
+   * @return the list if <code>org.w3c.dom.Document</code> objects
+   */
   public static List<Document> convertBusinessCardsToDCat(List<MatchType> matchTypes) {
     final List<Document> dcatDocs = new ArrayList<>(matchTypes.size());
     matchTypes.forEach(matchType -> {
