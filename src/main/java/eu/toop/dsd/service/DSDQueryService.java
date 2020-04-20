@@ -17,11 +17,14 @@
 package eu.toop.dsd.service;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.pd.searchapi.v1.MatchType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
 
@@ -124,8 +127,15 @@ public class DSDQueryService {
     LOGGER.warn("Ingoring \"dataProviderType\":" + dataProviderType + " parameter for now");
 
 
-    ToopDirClient.performSearch(s_CountryCode, s_DataSetType);
+    final List<MatchType> matchTypes = ToopDirClient.performSearch(s_CountryCode, s_DataSetType);
 
     //TODO we have participant IDs. Now convert them to REGREP + BregDcatAPasdfasdlka
+
+    //just print string, lets see the result
+
+    final StringBuilder all = new StringBuilder();
+
+    matchTypes.forEach(mt -> all.append(mt.toString()).append("\n"));
+    responseStream.write(all.toString().getBytes(StandardCharsets.UTF_8));
   }
 }
