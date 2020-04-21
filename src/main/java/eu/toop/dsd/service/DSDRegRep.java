@@ -15,43 +15,48 @@
  */
 package eu.toop.dsd.service;
 
-import eu.toop.edm.regrep.RegRepHelper;
-import eu.toop.edm.regrep.SlotBuilder;
-import eu.toop.regrep.RegRep4Writer;
-import eu.toop.regrep.query.QueryResponse;
-import org.w3c.dom.Document;
-
 import java.math.BigInteger;
 import java.util.List;
+
+import org.w3c.dom.Document;
+
+import eu.toop.edm.regrep.SlotBuilder;
+import eu.toop.regrep.RegRep4Writer;
+import eu.toop.regrep.RegRepHelper;
+import eu.toop.regrep.query.QueryResponse;
 
 /**
  * A simple RegRep helper that wraps data into RegRep slots.
  *
  * @author @yerlibilgin
  */
-public class DSDRegRep {
+public class DSDRegRep
+{
 
   /**
    * Wrap the given list of <code>org.w3c.dom.Document</code> objects into
-   * RegRep slots of <code>AnyValueType</code> and returns the created 
+   * RegRep slots of <code>AnyValueType</code> and returns the created
    * <code>QueryResponse</code> as a <code>String</code>
-   * 
-   * @param sReqesutID the request identifier, obtained from the QueryRequest
-   * @param dcatDocuments the list of dcat documents to be contained in slots
+   *
+   * @param sReqesutID
+   *        the request identifier, obtained from the QueryRequest
+   * @param dcatDocuments
+   *        the list of dcat documents to be contained in slots
    * @return the QueryResponse as a String
    */
-  public static String createQueryResponse(String sReqesutID, List<Document> dcatDocuments) {
+  public static String createQueryResponse (final String sReqesutID, final List <Document> dcatDocuments)
+  {
 
-    final QueryResponse aQResponse = RegRepHelper.createQueryResponse(sReqesutID);
+    final QueryResponse aQResponse = RegRepHelper.createQueryResponse (sReqesutID);
 
-    dcatDocuments.forEach(dcatDocument -> {
-      aQResponse.addSlot(new SlotBuilder().setName("Dataset").setValue(
-          dcatDocument.getDocumentElement()
-      ).build());
+    dcatDocuments.forEach (dcatDocument -> {
+      aQResponse.addSlot (new SlotBuilder ().setName ("Dataset")
+                                            .setValue (dcatDocument.getDocumentElement ())
+                                            .build ());
     });
 
-    aQResponse.setTotalResultCount(BigInteger.valueOf(dcatDocuments.size()));
-    aQResponse.setStartIndex(BigInteger.ZERO);
-    return RegRep4Writer.queryResponse().setFormattedOutput (true).getAsString(aQResponse);
+    aQResponse.setTotalResultCount (BigInteger.valueOf (dcatDocuments.size ()));
+    aQResponse.setStartIndex (BigInteger.ZERO);
+    return RegRep4Writer.queryResponse ().setFormattedOutput (true).getAsString (aQResponse);
   }
 }
