@@ -40,10 +40,11 @@ public class DSDQueryService {
   private static final Logger LOGGER = LoggerFactory.getLogger(DSDQueryService.class);
   public static final String QUERY_DATASET_REQUEST = "urn:toop:dsd:ebxml-regrep:queries:DataSetRequest";
 
-  public static final String PARAM_NAME_DATA_SET_TYPE = "DataSetType";
+  public static final String PARAM_NAME_DATA_SET_TYPE = "dataSetType";
   public static final String PARAM_NAME_QUERY_ID = "queryId";
   private static final String PARAM_NAME_COUNTRY_CODE = "countryCode";
   private static final String PARAM_NAME_DATA_PROVIDER_TYPE = "dataProviderType";
+  private static final String PARAM_REQUEST_ID = "requestId";
 
 
   /**
@@ -58,7 +59,7 @@ public class DSDQueryService {
   public static void processRequest(Map<String, String[]> parameterMap, OutputStream responseStream) {
     ValueEnforcer.notEmpty(parameterMap, "parameterMap");
 
-    String s_QueryId = null;
+    String s_QueryId;
 
     //try to get the queryId from the map
     String[] queryId = parameterMap.get(PARAM_NAME_QUERY_ID);
@@ -91,9 +92,17 @@ public class DSDQueryService {
 
   public static void processDataSetRequest(Map<String, String[]> parameterMap, OutputStream responseStream) throws IOException {
 
+    String s_RequestId;
     String s_DataSetType;
     String s_CountryCode = null;
     String s_DataProviderType = null;
+
+    String[] requestId = parameterMap.get(PARAM_REQUEST_ID);
+    ValueEnforcer.notEmpty(requestId, "requestId");
+    if (requestId.length != 1)
+      throw new IllegalStateException("requestId invalid");
+
+    s_RequestId = requestId[0];
 
     String[] dataSetType = parameterMap.get(PARAM_NAME_DATA_SET_TYPE);
     ValueEnforcer.notEmpty(dataSetType, "dataSetType");
@@ -107,7 +116,6 @@ public class DSDQueryService {
       if (countryCode.length != 1) {
         throw new IllegalStateException("countryCode invalid");
       }
-
       s_CountryCode = countryCode[0];
     }
 
@@ -126,14 +134,11 @@ public class DSDQueryService {
 
     LOGGER.warn("Ingoring \"dataProviderType\":" + dataProviderType + " parameter for now");
 
-
     final List<MatchType> matchTypes = ToopDirClient.performSearch(s_CountryCode, s_DataSetType);
 
     List<Document> dcatDocuments = BregDCatHelper.convertBusinessCardsToDCat(matchTypes);
 
-    String sRequestId = "0DCFE9A5-3D4E-493A-BC50-C403EF281318"; //todo: get it from the request
-
-    String resultXml = DSDRegRep.createQueryResponse(sRequestId, dcatDocuments);
+    String resultXml = DSDRegRep.createQueryResponse(s_RequestId, dcatDocuments);
     responseStream.write(resultXml.getBytes(StandardCharsets.UTF_8));
   }
 }

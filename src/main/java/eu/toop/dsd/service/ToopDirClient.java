@@ -30,6 +30,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -37,7 +38,7 @@ import java.util.List;
 /**
  * This class is the bridge between DSD and TOOP directory.
  * It queries the TOOP directory and returns the responses as a list of <code>MatchType</code> objects
- * 
+ *
  * @author @yerlibilgin
  */
 public class ToopDirClient {
@@ -46,15 +47,14 @@ public class ToopDirClient {
 
   /**
    * Query TOOP-DIR with country code and doctype. Return the result as a list of <code>MatchType</code> objects
-   * 
-   * @param sCountryCode two letter Country Code, not null
-   * @param aDocumentTypeID doc type id, may be null
+   *
+   * @param sCountryCode    two letter Country Code, @Nullable
+   * @param aDocumentTypeID doc type id, @Nullable
    * @return list of <code>MatchType</code> objects
    * @throws IOException if a communication problem occurs
    */
-  public static List<MatchType> performSearch(final String sCountryCode,
-                                              final String aDocumentTypeID) throws IOException {
-    ValueEnforcer.notNull(sCountryCode, "sCountryCode");
+  public static List<MatchType> performSearch(@Nullable final String sCountryCode,
+                                              @Nullable final String aDocumentTypeID) throws IOException {
 
     final String sBaseURL = DSDConfig.getToopDirUrl();
     if (StringHelper.hasNoText(sBaseURL))
@@ -63,13 +63,17 @@ public class ToopDirClient {
     // Build base URL and fetch all records per HTTP request
     final SimpleURL aBaseURL = new SimpleURL(sBaseURL + "/search/1.0/xml");
     // More than 1000 is not allowed
-    aBaseURL.add("rpc", 1_000);
+    aBaseURL.add("rpc", 100);
     // Constant defined in CCTF-103
     aBaseURL.add("identifierScheme", "DataSubjectIdentifierScheme");
     // Parameters to this servlet
-    aBaseURL.add("country", sCountryCode);
-    if (aDocumentTypeID != null && !aDocumentTypeID.isEmpty())
+    if (sCountryCode != null && !sCountryCode.isEmpty()) {
+      aBaseURL.add("country", sCountryCode);
+    }
+
+    if (aDocumentTypeID != null && !aDocumentTypeID.isEmpty()) {
       aBaseURL.add("doctype", aDocumentTypeID);
+    }
 
     if (LOGGER.isInfoEnabled())
       LOGGER.info("Querying " + aBaseURL.getAsStringWithEncodedParameters());
@@ -100,9 +104,8 @@ public class ToopDirClient {
 
 
   public static void main(String[] args) {
-
     try {
-      performSearch("GQ", null);
+      performSearch(null, null);
     } catch (Exception ex) {
       ex.printStackTrace();
     }

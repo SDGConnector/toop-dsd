@@ -37,6 +37,10 @@ public class BregDCatHelper {
 
   private static Map<String, String> _namespaceMap = new HashMap<>();
 
+  /**
+   * NOTE: we will ultimately use JAXB bindings for the toop breg dcat ap,
+   * but for phase 0, this is ok.
+   */
   private static final String DCAT = "dcat";
   private static final String DCT = "dct";
   private static final String SKOS = "skos";
@@ -74,6 +78,7 @@ public class BregDCatHelper {
     final List<Document> dcatDocs = new ArrayList<>(matchTypes.size());
     matchTypes.forEach(matchType -> {
       Document document = DOCUMENT_BUILDER.newDocument();
+      dcatDocs.add(document);
       final Element dataset = _createElement(document, DCAT, "Dataset");
 
       _namespaceMap.forEach((prefix, namespace) -> {
@@ -87,7 +92,9 @@ public class BregDCatHelper {
       Element title = _createElement(document, DCT, "title");
       title.setTextContent(matchType.getEntity().get(0).getName().get(0).getValue());
       dataset.appendChild(title);
-      dcatDocs.add(document);
+
+
+
     });
 
     return dcatDocs;

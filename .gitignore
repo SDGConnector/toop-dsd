@@ -29,3 +29,5 @@ target/
 /.classpath
 *.orig
 .factorypath
+request.xml
+response.xml
