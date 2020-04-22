@@ -20,9 +20,9 @@ import java.util.List;
 
 import org.w3c.dom.Document;
 
-import eu.toop.edm.regrep.SlotBuilder;
 import eu.toop.regrep.RegRep4Writer;
 import eu.toop.regrep.RegRepHelper;
+import eu.toop.regrep.SlotBuilder;
 import eu.toop.regrep.query.QueryResponse;
 
 /**
