@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 
 /**
@@ -44,7 +45,6 @@ public class DSDQueryService {
   public static final String PARAM_NAME_QUERY_ID = "queryId";
   private static final String PARAM_NAME_COUNTRY_CODE = "countryCode";
   private static final String PARAM_NAME_DATA_PROVIDER_TYPE = "dataProviderType";
-  private static final String PARAM_REQUEST_ID = "requestId";
 
 
   /**
@@ -91,18 +91,9 @@ public class DSDQueryService {
   }
 
   public static void processDataSetRequest(Map<String, String[]> parameterMap, OutputStream responseStream) throws IOException {
-
-    String s_RequestId;
     String s_DataSetType;
     String s_CountryCode = null;
     String s_DataProviderType = null;
-
-    String[] requestId = parameterMap.get(PARAM_REQUEST_ID);
-    ValueEnforcer.notEmpty(requestId, "requestId");
-    if (requestId.length != 1)
-      throw new IllegalStateException("requestId invalid");
-
-    s_RequestId = requestId[0];
 
     String[] dataSetType = parameterMap.get(PARAM_NAME_DATA_SET_TYPE);
     ValueEnforcer.notEmpty(dataSetType, "dataSetType");
@@ -138,7 +129,7 @@ public class DSDQueryService {
 
     List<Document> dcatDocuments = BregDCatHelper.convertBusinessCardsToDCat(matchTypes);
 
-    String resultXml = DSDRegRep.createQueryResponse(s_RequestId, dcatDocuments);
+    String resultXml = DSDRegRep.createQueryResponse(UUID.randomUUID().toString(), dcatDocuments);
     responseStream.write(resultXml.getBytes(StandardCharsets.UTF_8));
   }
 }

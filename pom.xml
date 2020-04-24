@@ -86,6 +86,12 @@
       <version>${toop.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>eu.toop</groupId>
+      <artifactId>toop-edm</artifactId>
+      <version>${toop.version}</version>
+    </dependency>
+
     <!-- the business card api -->
     <dependency>
       <groupId>com.helger</groupId>

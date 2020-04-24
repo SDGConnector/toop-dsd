@@ -44,22 +44,22 @@ limitations under the License.
                 </div>
 
                 <div class="form-group">
-                    <label for="DataSetType">DataSetType</label>
-                    <input type="text" class="form-control" id="DataSetType" name="DataSetType" aria-describedby="DataSetTypeHelp"
+                    <label for="dataSetType">DataSetType</label>
+                    <input type="text" class="form-control" id="dataSetType" name="dataSetType" aria-describedby="DataSetTypeHelp"
                            value="REGISTERED_ORGANIZATION_TYPE">
                     <small id="DataSetTypeHelp" class="form-text text-muted">This field is required</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="countryCode">countryCode</label>
+                    <label for="countryCode">Country Code</label>
                     <input type="text" class="form-control" id="countryCode" name="countryCode" aria-describedby="countryCodeHelp"
-                           value="GR">
+                           value="GQ">
                     <small id="countryCodeHelp" class="form-text text-muted">This field is optional</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="DataProviderType">DataProviderType</label>
-                    <input type="text" class="form-control" id="DataProviderType" name="DataProviderType"
+                    <label for="dataProviderType">Data Provider Type</label>
+                    <input type="text" class="form-control" id="dataProviderType" name="dataProviderType"
                            aria-describedby="DataProviderTypeHelp"
                            value="RecognizedOrganization">
                     <small id="DataProviderTypeHelp" class="form-text text-muted">This field is optional</small>
