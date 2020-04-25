@@ -43,8 +43,8 @@ public class DSDQueryService {
 
   public static final String PARAM_NAME_DATA_SET_TYPE = "dataSetType";
   public static final String PARAM_NAME_QUERY_ID = "queryId";
-  private static final String PARAM_NAME_COUNTRY_CODE = "countryCode";
-  private static final String PARAM_NAME_DATA_PROVIDER_TYPE = "dataProviderType";
+  public static final String PARAM_NAME_COUNTRY_CODE = "countryCode";
+  public static final String PARAM_NAME_DATA_PROVIDER_TYPE = "dataProviderType";
 
 
   /**
