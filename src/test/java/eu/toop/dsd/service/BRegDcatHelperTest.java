@@ -1,9 +1,11 @@
 package eu.toop.dsd.service;
 
 
+import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.pd.searchapi.PDSearchAPIReader;
 import com.helger.pd.searchapi.PDSearchAPIWriter;
 import com.helger.pd.searchapi.v1.ResultListType;
+import eu.toop.regrep.CRegRep4;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -18,8 +20,22 @@ public class BRegDcatHelperTest {
 
   @Test
   public void testConvertMatchTypes() throws Exception{
+
+    CRegRep4.allXSDsQueryList.addAll(CRegRep4.getAllXSDIncludes());
+    CRegRep4.allXSDsQueryList.add(CRegRep4.getXSDResourceQuery());
+    //FIXME muhammet: I added these here because it wasn't being able to
+    // serialize the cagv:PublicOrganizationType as dct:publisher because
+    // it couldn't validate against the xsd (not being able to find it).
+    // however this is the 'regrep' module and these xsds shouldn't be
+    // here. We need to find a better place for them.
+    CRegRep4.allXSDsQueryList.add(new ClassPathResource("schemas/CV-Agent.xsd",CRegRep4.class.getClassLoader()));
+    CRegRep4.allXSDsQueryList.add(new ClassPathResource("schemas/dcterms.xsd",CRegRep4.class.getClassLoader()));
+    CRegRep4.allXSDsQueryList.add(new ClassPathResource("schemas/locn.xsd", CRegRep4.class.getClassLoader()));
+
     final ResultListType read = PDSearchAPIReader.resultListV1().read(BRegDcatHelperTest.class.getResourceAsStream("/directory-results.xml"));
     final List<Document> documents = BregDCatHelper.convertBusinessCardsToDCat(read.getMatch());
+
+
 
 
     String resultXml = DSDRegRep.createQueryResponse(UUID.randomUUID().toString(), documents);
