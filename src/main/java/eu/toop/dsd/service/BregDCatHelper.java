@@ -18,14 +18,15 @@ package eu.toop.dsd.service;
 import com.helger.pd.searchapi.PDSearchAPIWriter;
 import com.helger.pd.searchapi.v1.MatchType;
 import eu.toop.edm.dcatap.DCatAPDatasetMarshaller;
+import eu.toop.edm.jaxb.cv.agent.LocationType;
 import eu.toop.edm.jaxb.cv.agent.PublicOrganizationType;
+import eu.toop.edm.jaxb.cv.cac.AddressType;
 import eu.toop.edm.jaxb.cv.cbc.IDType;
 import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
 import eu.toop.edm.jaxb.dcatap.DCatAPDistributionType;
 import eu.toop.edm.jaxb.dcatap.ObjectFactory;
 import eu.toop.edm.jaxb.dcterms.DCMediaType;
 import eu.toop.edm.jaxb.dcterms.DCStandardType;
-import eu.toop.edm.jaxb.w3.locn.AddressType;
 import org.w3c.dom.Document;
 
 import javax.xml.bind.JAXBElement;
@@ -124,12 +125,15 @@ public class BregDCatHelper {
      */
     eu.toop.edm.jaxb.cv.agent.ObjectFactory of_cvAgent = new eu.toop.edm.jaxb.cv.agent.ObjectFactory();
 
+    //<dct:publisher xsi:type="cagv:PublicOrganizationType">
+    PublicOrganizationType publicOrganizationType = of_cvAgent.createPublicOrganizationType();
+
     //<cbc:id schemeID="VAT">DE730757727</cbc:id>
     eu.toop.edm.jaxb.cv.cbc.ObjectFactory of_cbc = new eu.toop.edm.jaxb.cv.cbc.ObjectFactory();
     final IDType idType = of_cbc.createIDType();
     idType.setSchemeName("VAT");
     idType.setValue("DE730757727");
-    of_cbc.createId(idType);
+    publicOrganizationType.addId(idType);
 
     /*
      <cagv:location xsi:type="locn:AddressType">
@@ -137,13 +141,17 @@ public class BregDCatHelper {
             <locn:adminUnitLevel1>GB</locn:adminUnitLevel1>
         </cagv:location>
      */
-    eu.toop.edm.jaxb.w3.locn.ObjectFactory of_address = new eu.toop.edm.jaxb.w3.locn.ObjectFactory();
+    eu.toop.edm.jaxb.cv.cac.ObjectFactory of_address = new eu.toop.edm.jaxb.cv.cac.ObjectFactory();
     final AddressType addressType = of_address.createAddressType();
     addressType.setFullAddress("Prince Street 15");
     addressType.setAdminUnitLevel1("GB");
+    final LocationType locationType = of_cvAgent.createLocationType();
+    locationType.setAddress(addressType);
+    publicOrganizationType.addLocation(locationType);
 
 
-    PublicOrganizationType publicOrganizationType = of_cvAgent.createPublicOrganizationType();
+
+
     publicOrganizationType.getPrefLabel().add(matchType.getEntity().get(0).getName().toString());
     final eu.toop.edm.jaxb.cv.cbc.NameType nameType = of_cbc.createNameType();
     nameType.setValue(matchType.getEntity().get(0).getName().get(0).getValue());
