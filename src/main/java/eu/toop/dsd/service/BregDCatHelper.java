@@ -17,7 +17,7 @@ package eu.toop.dsd.service;
 
 import com.helger.pd.searchapi.PDSearchAPIWriter;
 import com.helger.pd.searchapi.v1.MatchType;
-import eu.toop.edm.dcatap.DCatAPDatasetMarshaller;
+
 import eu.toop.edm.jaxb.cv.agent.PublicOrganizationType;
 import eu.toop.edm.jaxb.cv.cbc.IDType;
 import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
@@ -26,6 +26,8 @@ import eu.toop.edm.jaxb.dcatap.ObjectFactory;
 import eu.toop.edm.jaxb.dcterms.DCMediaType;
 import eu.toop.edm.jaxb.dcterms.DCStandardType;
 import eu.toop.edm.jaxb.w3.locn.AddressType;
+import eu.toop.edm.xml.dcatap.DCatAPDatasetMarshaller;
+
 import org.w3c.dom.Document;
 
 import javax.xml.bind.JAXBElement;
