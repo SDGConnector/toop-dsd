@@ -91,16 +91,16 @@ public class DSDQueryService {
   }
 
   public static void processDataSetRequest(Map<String, String[]> parameterMap, OutputStream responseStream) throws IOException {
-    String s_DataSetType;
+    String s_DataSetType = null;
     String s_CountryCode = null;
     String s_DataProviderType = null;
 
     String[] dataSetType = parameterMap.get(PARAM_NAME_DATA_SET_TYPE);
-    ValueEnforcer.notEmpty(dataSetType, "dataSetType");
-    if (dataSetType.length != 1)
-      throw new IllegalStateException("dataSetType invalid");
+    //ValueEnforcer.notEmpty(dataSetType, "dataSetType");
+    //if (dataSetType.length != 1)
+    //  throw new IllegalStateException("dataSetType invalid");
 
-    s_DataSetType = dataSetType[0];
+    //s_DataSetType = dataSetType[0];
 
     String[] countryCode = parameterMap.get(PARAM_NAME_COUNTRY_CODE);
     if (countryCode != null) {

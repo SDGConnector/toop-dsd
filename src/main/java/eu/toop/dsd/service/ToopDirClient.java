@@ -19,6 +19,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.SimpleURL;
 import com.helger.pd.searchapi.PDSearchAPIReader;
+import com.helger.pd.searchapi.PDSearchAPIWriter;
 import com.helger.pd.searchapi.v1.MatchType;
 import com.helger.pd.searchapi.v1.ResultListType;
 import eu.toop.dsd.config.DSDConfig;
@@ -32,7 +33,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 /**
@@ -56,6 +59,11 @@ public class ToopDirClient {
   public static List<MatchType> performSearch(@Nullable final String sCountryCode,
                                               @Nullable final String aDocumentTypeID) throws IOException {
 
+    return performSearch(sCountryCode, aDocumentTypeID);
+
+  }
+
+  static ResultListType performSearchResultsLists(@Nullable String sCountryCode, @Nullable String aDocumentTypeID) throws IOException {
     final String sBaseURL = DSDConfig.getToopDirUrl();
     if (StringHelper.hasNoText(sBaseURL))
       throw new IllegalStateException("The Directory base URL configuration is missing");
@@ -93,22 +101,7 @@ public class ToopDirClient {
       LOGGER.debug(s_result);
 
       final ResultListType read = PDSearchAPIReader.resultListV1().read(s_result);
-      read.getMatch().forEach(match -> {
-        LOGGER.debug(match.toString());
-      });
-
-      return read.getMatch();
+      return read;
     }
-
-  }
-
-
-  public static void main(String[] args) {
-    try {
-      performSearch(null, null);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-
   }
 }
