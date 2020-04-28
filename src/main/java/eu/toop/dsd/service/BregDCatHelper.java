@@ -15,25 +15,22 @@
  */
 package eu.toop.dsd.service;
 
-import com.helger.pd.searchapi.PDSearchAPIWriter;
+
 import com.helger.pd.searchapi.v1.MatchType;
-import eu.toop.edm.dcatap.DCatAPDatasetMarshaller;
-import eu.toop.edm.jaxb.cv.agent.LocationType;
 import eu.toop.edm.jaxb.cv.agent.PublicOrganizationType;
-import eu.toop.edm.jaxb.cv.cac.AddressType;
 import eu.toop.edm.jaxb.cv.cbc.IDType;
 import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
 import eu.toop.edm.jaxb.dcatap.DCatAPDistributionType;
 import eu.toop.edm.jaxb.dcatap.ObjectFactory;
 import eu.toop.edm.jaxb.dcterms.DCMediaType;
 import eu.toop.edm.jaxb.dcterms.DCStandardType;
+import eu.toop.edm.jaxb.w3.locn.AddressType;
+import eu.toop.edm.xml.dcatap.DCatAPDatasetMarshaller;
 import org.w3c.dom.Document;
 
 import javax.xml.bind.JAXBElement;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is responsible for converting the TOOP Directory query result into
@@ -116,9 +113,11 @@ public class BregDCatHelper {
     /*
     <dct:publisher xsi:type="cagv:PublicOrganizationType">
         <cbc:id schemeID="VAT">DE730757727</cbc:id>
-        <cagv:location xsi:type="locn:AddressType">
-            <locn:fullAddress>Prince Street 15</locn:fullAddress>
-            <locn:adminUnitLevel1>GB</locn:adminUnitLevel1>
+        <cagv:location>
+           <cagv:address>
+               <locn:fullAddress>Prince Street 15</locn:fullAddress>
+               <locn:adminUnitLevel1>GB</locn:adminUnitLevel1>
+           </cagv:address>
         </cagv:location>
         <skos:prefLabel>PublisherName</skos:prefLabel>
     </dct:publisher>
@@ -136,20 +135,20 @@ public class BregDCatHelper {
     publicOrganizationType.addId(idType);
 
     /*
-     <cagv:location xsi:type="locn:AddressType">
-            <locn:fullAddress>Prince Street 15</locn:fullAddress>
-            <locn:adminUnitLevel1>GB</locn:adminUnitLevel1>
+       <cagv:location>
+           <cagv:address>
+               <locn:fullAddress>Prince Street 15</locn:fullAddress>
+               <locn:adminUnitLevel1>GB</locn:adminUnitLevel1>
+           </cagv:address>
         </cagv:location>
      */
-    eu.toop.edm.jaxb.cv.cac.ObjectFactory of_address = new eu.toop.edm.jaxb.cv.cac.ObjectFactory();
-    final AddressType addressType = of_address.createAddressType();
+    eu.toop.edm.jaxb.w3.locn.ObjectFactory of_locn = new eu.toop.edm.jaxb.w3.locn.ObjectFactory();
+    final AddressType addressType = of_locn.createAddressType();
     addressType.setFullAddress("Prince Street 15");
     addressType.setAdminUnitLevel1("GB");
-    final LocationType locationType = of_cvAgent.createLocationType();
+    final eu.toop.edm.jaxb.cv.agent.LocationType locationType = of_cvAgent.createLocationType();
     locationType.setAddress(addressType);
     publicOrganizationType.addLocation(locationType);
-
-
 
 
     publicOrganizationType.getPrefLabel().add(matchType.getEntity().get(0).getName().toString());
