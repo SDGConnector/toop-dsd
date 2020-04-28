@@ -53,7 +53,6 @@ public class BregDCatHelper {
 
     final List<Document> dcatDocs = new ArrayList<>(matchTypes.size());
     matchTypes.forEach(matchType -> {
-      try {
         DCatAPDatasetMarshaller marshaller = new DCatAPDatasetMarshaller();
         ObjectFactory of_dcat = new ObjectFactory();
         eu.toop.edm.jaxb.dcterms.ObjectFactory of_dcTerms = new eu.toop.edm.jaxb.dcterms.ObjectFactory();
@@ -73,14 +72,8 @@ public class BregDCatHelper {
         addPublisher(matchType, of_dcTerms, datasetType);
         //distribution
         datasetType.addContent(createDistribution(matchType, of_dcat, of_dcTerms));
-
-
         final Document document = marshaller.getAsDocument(datasetType);
-
         dcatDocs.add(document);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
 
     });
 
@@ -109,7 +102,6 @@ public class BregDCatHelper {
   private static void addPublisher(MatchType matchType,
                                    eu.toop.edm.jaxb.dcterms.ObjectFactory of_dcTerms,
                                    DCatAPDatasetType datasetType) {
-
     /*
     <dct:publisher xsi:type="cagv:PublicOrganizationType">
         <cbc:id schemeID="VAT">DE730757727</cbc:id>
@@ -142,8 +134,8 @@ public class BregDCatHelper {
            </cagv:address>
         </cagv:location>
      */
-    eu.toop.edm.jaxb.w3.locn.ObjectFactory of_locn = new eu.toop.edm.jaxb.w3.locn.ObjectFactory();
-    final AddressType addressType = of_locn.createAddressType();
+    eu.toop.edm.jaxb.cv.cac.ObjectFactory of_cac = new eu.toop.edm.jaxb.cv.cac.ObjectFactory();
+    final AddressType addressType = of_cac.createAddressType();
     addressType.setFullAddress("Prince Street 15");
     addressType.setAdminUnitLevel1("GB");
     final eu.toop.edm.jaxb.cv.agent.LocationType locationType = of_cvAgent.createLocationType();
@@ -151,10 +143,9 @@ public class BregDCatHelper {
     publicOrganizationType.addLocation(locationType);
 
 
-    publicOrganizationType.getPrefLabel().add(matchType.getEntity().get(0).getName().toString());
-    final eu.toop.edm.jaxb.cv.cbc.NameType nameType = of_cbc.createNameType();
-    nameType.setValue(matchType.getEntity().get(0).getName().get(0).getValue());
-    publicOrganizationType.addFormalName(nameType);
+    //<skos:prefLabel>PublisherName</skos:prefLabel>
+    publicOrganizationType.getPrefLabel().add(matchType.getEntity().get(0).getName().get(0).getValue());
+
     datasetType.addContent(of_dcTerms.createPublisher(publicOrganizationType));
   }
 }
