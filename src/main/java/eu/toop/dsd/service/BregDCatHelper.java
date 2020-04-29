@@ -16,7 +16,13 @@
 package eu.toop.dsd.service;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.w3c.dom.Document;
+
 import com.helger.pd.searchapi.v1.MatchType;
+
 import eu.toop.edm.jaxb.cv.agent.PublicOrganizationType;
 import eu.toop.edm.jaxb.cv.cbc.IDType;
 import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
@@ -26,11 +32,6 @@ import eu.toop.edm.jaxb.dcterms.DCMediaType;
 import eu.toop.edm.jaxb.dcterms.DCStandardType;
 import eu.toop.edm.jaxb.w3.locn.AddressType;
 import eu.toop.edm.xml.dcatap.DatasetMarshaller;
-import org.w3c.dom.Document;
-
-import javax.xml.bind.JAXBElement;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class is responsible for converting the TOOP Directory query result into
@@ -61,17 +62,17 @@ public class BregDCatHelper {
         //conformsTo
         setConformsTo(of_dcTerms, datasetType);
         //identifier
-        datasetType.addContent(of_dcTerms.createIdentifier("RE238918378"));
+        datasetType.addIdentifier ("RE238918378");
         //type
-        datasetType.addContent(of_dcTerms.createType("REGISTERED_ORGANIZATION_TYPE"));
+        datasetType.setType ("REGISTERED_ORGANIZATION_TYPE");
         //title
-        datasetType.addContent(of_dcTerms.createTitle("Companies registry"));
+        datasetType.addTitle ("Companies registry");
         //description
-        datasetType.addContent(of_dcTerms.createDescription("A dataset about the Registered organizations"));
+        datasetType.addDescription ("A dataset about the Registered organizations");
         //publisher
         addPublisher(matchType, of_dcTerms, datasetType);
         //distribution
-        datasetType.addContent(createDistribution(matchType, of_dcat, of_dcTerms));
+        datasetType.addDistribution (createDistribution(matchType, of_dcat, of_dcTerms));
         final Document document = marshaller.getAsDocument(datasetType);
         dcatDocs.add(document);
 
@@ -83,10 +84,10 @@ public class BregDCatHelper {
   private static void setConformsTo(eu.toop.edm.jaxb.dcterms.ObjectFactory of_dcTerms, DCatAPDatasetType datasetType) {
     final DCStandardType dcStandardType = of_dcTerms.createDCStandardType();
     dcStandardType.setValue("REGISTERED_ORGANIZATION_ONTOLOGY_URI");
-    datasetType.addContent(of_dcTerms.createConformsTo(dcStandardType));
+    datasetType.addConformsTo (dcStandardType);
   }
 
-  private static JAXBElement<DCatAPDistributionType> createDistribution(MatchType matchType, ObjectFactory of_dcat, eu.toop.edm.jaxb.dcterms.ObjectFactory of_dcterms) {
+  private static DCatAPDistributionType createDistribution(MatchType matchType, ObjectFactory of_dcat, eu.toop.edm.jaxb.dcterms.ObjectFactory of_dcterms) {
     final DCatAPDistributionType distributionType = of_dcat.createDCatAPDistributionType();
     distributionType.setAccessURL("");
 
@@ -96,7 +97,7 @@ public class BregDCatHelper {
     final DCMediaType dcMediaType = of_dcterms.createDCMediaType();
 
     distributionType.setFormat(dcMediaType);
-    return of_dcat.createDistribution(distributionType);
+    return distributionType;
   }
 
   private static void addPublisher(MatchType matchType,
@@ -146,6 +147,6 @@ public class BregDCatHelper {
     //<skos:prefLabel>PublisherName</skos:prefLabel>
     publicOrganizationType.getPrefLabel().add(matchType.getEntity().get(0).getName().get(0).getValue());
 
-    datasetType.addContent(of_dcTerms.createPublisher(publicOrganizationType));
+    datasetType.addPublisher (publicOrganizationType);
   }
 }

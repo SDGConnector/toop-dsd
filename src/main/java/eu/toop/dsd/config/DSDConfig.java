@@ -15,10 +15,11 @@
  */
 package eu.toop.dsd.config;
 
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 
 /**
  * The utility class for reading the dsd-config.conf file.

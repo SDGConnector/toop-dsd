@@ -15,14 +15,12 @@
  */
 package eu.toop.dsd.service;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.url.SimpleURL;
-import com.helger.pd.searchapi.PDSearchAPIReader;
-import com.helger.pd.searchapi.PDSearchAPIWriter;
-import com.helger.pd.searchapi.v1.MatchType;
-import com.helger.pd.searchapi.v1.ResultListType;
-import eu.toop.dsd.config.DSDConfig;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -31,12 +29,13 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
+import com.helger.commons.string.StringHelper;
+import com.helger.commons.url.SimpleURL;
+import com.helger.pd.searchapi.PDSearchAPIReader;
+import com.helger.pd.searchapi.v1.MatchType;
+import com.helger.pd.searchapi.v1.ResultListType;
+
+import eu.toop.dsd.config.DSDConfig;
 
 /**
  * This class is the bridge between DSD and TOOP directory.

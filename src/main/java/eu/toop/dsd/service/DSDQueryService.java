@@ -16,18 +16,19 @@
 
 package eu.toop.dsd.service;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.pd.searchapi.v1.MatchType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+
+import com.helger.commons.ValueEnforcer;
+import com.helger.pd.searchapi.v1.MatchType;
 
 
 /**
