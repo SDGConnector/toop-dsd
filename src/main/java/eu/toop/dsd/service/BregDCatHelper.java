@@ -23,11 +23,11 @@ import org.w3c.dom.Document;
 
 import com.helger.pd.searchapi.v1.MatchType;
 
+import eu.toop.edm.jaxb.cv.agent.LocationType;
 import eu.toop.edm.jaxb.cv.agent.PublicOrganizationType;
 import eu.toop.edm.jaxb.cv.cbc.IDType;
 import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
 import eu.toop.edm.jaxb.dcatap.DCatAPDistributionType;
-import eu.toop.edm.jaxb.dcatap.ObjectFactory;
 import eu.toop.edm.jaxb.dcterms.DCMediaType;
 import eu.toop.edm.jaxb.dcterms.DCStandardType;
 import eu.toop.edm.jaxb.w3.locn.AddressType;
@@ -55,12 +55,10 @@ public class BregDCatHelper {
     final List<Document> dcatDocs = new ArrayList<>(matchTypes.size());
     matchTypes.forEach(matchType -> {
         DatasetMarshaller marshaller = new DatasetMarshaller();
-        ObjectFactory of_dcat = new ObjectFactory();
-        eu.toop.edm.jaxb.dcterms.ObjectFactory of_dcTerms = new eu.toop.edm.jaxb.dcterms.ObjectFactory();
 
-        DCatAPDatasetType datasetType = of_dcat.createDCatAPDatasetType();
+        DCatAPDatasetType datasetType = new DCatAPDatasetType();
         //conformsTo
-        setConformsTo(of_dcTerms, datasetType);
+        setConformsTo(datasetType);
         //identifier
         datasetType.addIdentifier ("RE238918378");
         //type
@@ -70,9 +68,9 @@ public class BregDCatHelper {
         //description
         datasetType.addDescription ("A dataset about the Registered organizations");
         //publisher
-        addPublisher(matchType, of_dcTerms, datasetType);
+        addPublisher(matchType, datasetType);
         //distribution
-        datasetType.addDistribution (createDistribution(matchType, of_dcat, of_dcTerms));
+        datasetType.addDistribution (createDistribution(matchType));
         final Document document = marshaller.getAsDocument(datasetType);
         dcatDocs.add(document);
 
@@ -81,27 +79,26 @@ public class BregDCatHelper {
     return dcatDocs;
   }
 
-  private static void setConformsTo(eu.toop.edm.jaxb.dcterms.ObjectFactory of_dcTerms, DCatAPDatasetType datasetType) {
-    final DCStandardType dcStandardType = of_dcTerms.createDCStandardType();
+  private static void setConformsTo( DCatAPDatasetType datasetType) {
+    final DCStandardType dcStandardType =  new DCStandardType();
     dcStandardType.setValue("REGISTERED_ORGANIZATION_ONTOLOGY_URI");
     datasetType.addConformsTo (dcStandardType);
   }
 
-  private static DCatAPDistributionType createDistribution(MatchType matchType, ObjectFactory of_dcat, eu.toop.edm.jaxb.dcterms.ObjectFactory of_dcterms) {
-    final DCatAPDistributionType distributionType = of_dcat.createDCatAPDistributionType();
+  private static DCatAPDistributionType createDistribution(MatchType matchType) {
+    final DCatAPDistributionType distributionType = new DCatAPDistributionType();
     distributionType.setAccessURL("");
 
-    final DCStandardType conformsTo = of_dcterms.createDCStandardType();
+    final DCStandardType conformsTo =  new DCStandardType();
     conformsTo.setValue("CCCEV");
     distributionType.addConformsTo(conformsTo);
-    final DCMediaType dcMediaType = of_dcterms.createDCMediaType();
+    final DCMediaType dcMediaType = new DCMediaType();
 
     distributionType.setFormat(dcMediaType);
     return distributionType;
   }
 
   private static void addPublisher(MatchType matchType,
-                                   eu.toop.edm.jaxb.dcterms.ObjectFactory of_dcTerms,
                                    DCatAPDatasetType datasetType) {
     /*
     <dct:publisher xsi:type="cagv:PublicOrganizationType">
@@ -115,14 +112,11 @@ public class BregDCatHelper {
         <skos:prefLabel>PublisherName</skos:prefLabel>
     </dct:publisher>
      */
-    eu.toop.edm.jaxb.cv.agent.ObjectFactory of_cvAgent = new eu.toop.edm.jaxb.cv.agent.ObjectFactory();
-
     //<dct:publisher xsi:type="cagv:PublicOrganizationType">
-    PublicOrganizationType publicOrganizationType = of_cvAgent.createPublicOrganizationType();
+    PublicOrganizationType publicOrganizationType = new PublicOrganizationType();
 
     //<cbc:id schemeID="VAT">DE730757727</cbc:id>
-    eu.toop.edm.jaxb.cv.cbc.ObjectFactory of_cbc = new eu.toop.edm.jaxb.cv.cbc.ObjectFactory();
-    final IDType idType = of_cbc.createIDType();
+    final IDType idType = new IDType();
     idType.setSchemeName("VAT");
     idType.setValue("DE730757727");
     publicOrganizationType.addId(idType);
@@ -135,11 +129,10 @@ public class BregDCatHelper {
            </cagv:address>
         </cagv:location>
      */
-    eu.toop.edm.jaxb.cv.cac.ObjectFactory of_cac = new eu.toop.edm.jaxb.cv.cac.ObjectFactory();
-    final AddressType addressType = of_cac.createAddressType();
+    final AddressType addressType = new AddressType();
     addressType.setFullAddress("Prince Street 15");
     addressType.setAdminUnitLevel1("GB");
-    final eu.toop.edm.jaxb.cv.agent.LocationType locationType = of_cvAgent.createLocationType();
+    final LocationType locationType = new LocationType();
     locationType.setAddress(addressType);
     publicOrganizationType.addLocation(locationType);
 
