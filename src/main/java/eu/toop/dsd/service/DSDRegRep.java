@@ -20,6 +20,9 @@ import java.util.List;
 
 import org.w3c.dom.Document;
 
+import com.helger.commons.io.resource.ClassPathResource;
+
+import eu.toop.edm.xml.cagv.CCAGV;
 import eu.toop.regrep.RegRep4Writer;
 import eu.toop.regrep.RegRepHelper;
 import eu.toop.regrep.SlotBuilder;
@@ -32,6 +35,15 @@ import eu.toop.regrep.query.QueryResponse;
  */
 public class DSDRegRep
 {
+  //FIXME muhammet: I added these here because it wasn't being able to
+  // serialize the cagv:PublicOrganizationType as dct:publisher because
+  // it couldn't validate against the xsd (not being able to find it).
+  // however this is the 'regrep' module and these xsds shouldn't be
+  // here. We need to find a better place for them.
+  private static final ClassPathResource[] ADDITIONAL_XSDS = CCAGV.XSDS.toArray (new ClassPathResource [0]); 
+//  CRegRep4.allXSDsQueryList.add(new ClassPathResource("schemas/CV-Agent.xsd",CRegRep4.class.getClassLoader()));
+//  CRegRep4.allXSDsQueryList.add(new ClassPathResource("schemas/dcterms.xsd",CRegRep4.class.getClassLoader()));
+//  CRegRep4.allXSDsQueryList.add(new ClassPathResource("schemas/locn.xsd", CRegRep4.class.getClassLoader()));
 
   /**
    * Wrap the given list of <code>org.w3c.dom.Document</code> objects into
@@ -57,6 +69,6 @@ public class DSDRegRep
 
     aQResponse.setTotalResultCount (BigInteger.valueOf (dcatDocuments.size ()));
     aQResponse.setStartIndex (BigInteger.ZERO);
-    return RegRep4Writer.queryResponse ().setFormattedOutput (true).getAsString (aQResponse);
+    return RegRep4Writer.queryResponse (ADDITIONAL_XSDS).setFormattedOutput (true).getAsString (aQResponse);
   }
 }
