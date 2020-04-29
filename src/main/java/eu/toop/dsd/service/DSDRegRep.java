@@ -21,6 +21,7 @@ import java.util.List;
 import org.w3c.dom.Document;
 
 import eu.toop.edm.xml.cagv.CCAGV;
+import eu.toop.regrep.ERegRepResponseStatus;
 import eu.toop.regrep.RegRep4Writer;
 import eu.toop.regrep.RegRepHelper;
 import eu.toop.regrep.SlotBuilder;
@@ -38,16 +39,16 @@ public class DSDRegRep
    * RegRep slots of <code>AnyValueType</code> and returns the created
    * <code>QueryResponse</code> as a <code>String</code>
    *
-   * @param sReqesutID
+   * @param sRequestID
    *        the request identifier, obtained from the QueryRequest
    * @param dcatDocuments
    *        the list of dcat documents to be contained in slots
    * @return the QueryResponse as a String
    */
-  public static String createQueryResponse (final String sReqesutID, final List <Document> dcatDocuments)
+  public static String createQueryResponse (final String sRequestID, final List <Document> dcatDocuments)
   {
 
-    final QueryResponse aQResponse = RegRepHelper.createQueryResponse (sReqesutID);
+    final QueryResponse aQResponse = RegRepHelper.createQueryResponse (ERegRepResponseStatus.SUCCESS, sRequestID);
 
     dcatDocuments.forEach (dcatDocument -> {
       aQResponse.addSlot (new SlotBuilder ().setName ("Dataset")
