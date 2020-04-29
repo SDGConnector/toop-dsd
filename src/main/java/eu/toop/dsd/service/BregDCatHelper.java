@@ -25,7 +25,7 @@ import eu.toop.edm.jaxb.dcatap.ObjectFactory;
 import eu.toop.edm.jaxb.dcterms.DCMediaType;
 import eu.toop.edm.jaxb.dcterms.DCStandardType;
 import eu.toop.edm.jaxb.w3.locn.AddressType;
-import eu.toop.edm.xml.dcatap.DCatAPDatasetMarshaller;
+import eu.toop.edm.xml.dcatap.DatasetMarshaller;
 import org.w3c.dom.Document;
 
 import javax.xml.bind.JAXBElement;
@@ -53,7 +53,7 @@ public class BregDCatHelper {
 
     final List<Document> dcatDocs = new ArrayList<>(matchTypes.size());
     matchTypes.forEach(matchType -> {
-        DCatAPDatasetMarshaller marshaller = new DCatAPDatasetMarshaller();
+        DatasetMarshaller marshaller = new DatasetMarshaller();
         ObjectFactory of_dcat = new ObjectFactory();
         eu.toop.edm.jaxb.dcterms.ObjectFactory of_dcTerms = new eu.toop.edm.jaxb.dcterms.ObjectFactory();
 
