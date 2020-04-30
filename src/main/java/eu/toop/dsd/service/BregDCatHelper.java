@@ -51,7 +51,7 @@ public class BregDCatHelper {
    * @param matchTypes the list of <code>MatchType</code> objects to be converted
    * @return the list if <code>org.w3c.dom.Document</code> objects
    */
-  public static List<Document> convertBusinessCardsToDCat(String s_DataSetType, List<MatchType> matchTypes) {
+  public static List<Document> convertBusinessCardsToDCat(final String s_DataSetType, List<MatchType> matchTypes) {
 
 
     final List<Document> dcatDocs = new ArrayList<>(matchTypes.size());

@@ -25,7 +25,7 @@ public class BRegDcatHelperTest {
   public void testConvertMatchTypes(){
     final ResultListType read = PDSearchAPIReader.resultListV1().read(BRegDcatHelperTest.class.getResourceAsStream("/directory-results.xml"));
     final List<MatchType> match = read.getMatch();
-    final List<Document> documents = BregDCatHelper.convertBusinessCardsToDCat(s_DataSetType, match);
+    final List<Document> documents = BregDCatHelper.convertBusinessCardsToDCat("mydatasettype", match);
     String resultXml = DSDRegRep.createQueryResponse(UUID.randomUUID().toString(), documents);
     System.out.println(resultXml);
   }
@@ -34,7 +34,7 @@ public class BRegDcatHelperTest {
   public void testConvertSingleMatchType(){
     final ResultListType read = PDSearchAPIReader.resultListV1().read(BRegDcatHelperTest.class.getResourceAsStream("/directory-result-single.xml"));
     final List<MatchType> match = read.getMatch();
-    final List<Document> documents = BregDCatHelper.convertBusinessCardsToDCat(s_DataSetType, match);
+    final List<Document> documents = BregDCatHelper.convertBusinessCardsToDCat("mydatasettype", match);
     String resultXml = DSDRegRep.createQueryResponse(UUID.randomUUID().toString(), documents);
     System.out.println(resultXml);
   }
