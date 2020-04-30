@@ -58,7 +58,7 @@ public class ToopDirClient {
   public static List<MatchType> performSearch(@Nullable final String sCountryCode,
                                               @Nullable final String aDocumentTypeID) throws IOException {
 
-    return performSearch(sCountryCode, aDocumentTypeID);
+    return performSearchResultsLists(sCountryCode, aDocumentTypeID).getMatch();
 
   }
 

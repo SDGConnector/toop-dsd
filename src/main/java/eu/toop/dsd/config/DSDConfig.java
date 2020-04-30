@@ -47,7 +47,7 @@ public class DSDConfig {
     LOGGER.info("Loading config from the \"" + pathName);
     Config config = ConfigFactory.parseURL(
         DSDConfig.class.getResource(DSD_CONFIG_RESOURCE_NAME)).
-        withFallback(ConfigFactory.systemProperties());
+        withFallback(ConfigFactory.systemProperties()).resolve();
 
     toopDirUrl = config.getString("dsd.toop-dir-url");
 

@@ -57,21 +57,13 @@ limitations under the License.
                     <small id="countryCodeHelp" class="form-text text-muted">This field is optional</small>
                 </div>
 
-                <div class="form-group">
-                    <label for="dataProviderType">Data Provider Type</label>
-                    <input type="text" class="form-control" id="dataProviderType" name="dataProviderType"
-                           aria-describedby="DataProviderTypeHelp"
-                           value="RecognizedOrganization">
-                    <small id="DataProviderTypeHelp" class="form-text text-muted">This field is optional</small>
-                </div>
-
                 <button class="btn btn-primary" type="submit">Query</button>
             </form>
 
 
             <br/><br/>
             <h3>Parameters</h3>
-            <b>Toop Directory Address: </b> <span>https://example.org</span>
+            <b>Toop Directory Address: </b> <span> <%= eu.toop.dsd.config.DSDConfig.getToopDirUrl() %> </span>
         </div>
     </div>
 </div>
