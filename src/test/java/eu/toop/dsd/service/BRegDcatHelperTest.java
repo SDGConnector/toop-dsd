@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.helger.pd.searchapi.v1.MatchType;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -21,20 +22,21 @@ import com.helger.pd.searchapi.v1.ResultListType;
 public class BRegDcatHelperTest {
 
   @Test
-  public void testConvertMatchTypes() throws Exception{
+  public void testConvertMatchTypes(){
     final ResultListType read = PDSearchAPIReader.resultListV1().read(BRegDcatHelperTest.class.getResourceAsStream("/directory-results.xml"));
-    final List<Document> documents = BregDCatHelper.convertBusinessCardsToDCat(read.getMatch());
-
-
-
-
+    final List<MatchType> match = read.getMatch();
+    final List<Document> documents = BregDCatHelper.convertBusinessCardsToDCat(s_DataSetType, match);
     String resultXml = DSDRegRep.createQueryResponse(UUID.randomUUID().toString(), documents);
-
     System.out.println(resultXml);
+  }
 
-    //try(PrintWriter pw = new PrintWriter("tmp.xml")){
-    //  pw.println(resultXml);
-    //}
+  @Test
+  public void testConvertSingleMatchType(){
+    final ResultListType read = PDSearchAPIReader.resultListV1().read(BRegDcatHelperTest.class.getResourceAsStream("/directory-result-single.xml"));
+    final List<MatchType> match = read.getMatch();
+    final List<Document> documents = BregDCatHelper.convertBusinessCardsToDCat(s_DataSetType, match);
+    String resultXml = DSDRegRep.createQueryResponse(UUID.randomUUID().toString(), documents);
+    System.out.println(resultXml);
   }
 
 

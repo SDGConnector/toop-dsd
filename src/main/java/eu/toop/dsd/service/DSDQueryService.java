@@ -19,10 +19,13 @@ package eu.toop.dsd.service;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import com.helger.pd.searchapi.v1.IDType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -75,7 +78,6 @@ public class DSDQueryService {
     //currently only one type of query is supported
     switch (s_QueryId) {
       case QUERY_DATASET_REQUEST: {
-
         try {
           processDataSetRequest(parameterMap, responseStream);
         } catch (IOException e) {
@@ -92,16 +94,15 @@ public class DSDQueryService {
   }
 
   public static void processDataSetRequest(Map<String, String[]> parameterMap, OutputStream responseStream) throws IOException {
-    String s_DataSetType = null;
+    String s_DataSetType;
     String s_CountryCode = null;
-    String s_DataProviderType = null;
 
     String[] dataSetType = parameterMap.get(PARAM_NAME_DATA_SET_TYPE);
-    //ValueEnforcer.notEmpty(dataSetType, "dataSetType");
-    //if (dataSetType.length != 1)
-    //  throw new IllegalStateException("dataSetType invalid");
+    ValueEnforcer.notEmpty(dataSetType, "dataSetType");
+    if (dataSetType.length != 1)
+      throw new IllegalStateException("dataSetType invalid");
 
-    //s_DataSetType = dataSetType[0];
+    s_DataSetType = dataSetType[0];
 
     String[] countryCode = parameterMap.get(PARAM_NAME_COUNTRY_CODE);
     if (countryCode != null) {
@@ -111,26 +112,50 @@ public class DSDQueryService {
       s_CountryCode = countryCode[0];
     }
 
-    String[] dataProviderType = parameterMap.get(PARAM_NAME_DATA_PROVIDER_TYPE);
-    if (dataProviderType != null) {
-      if (dataProviderType.length != 1) {
-        throw new IllegalStateException("dataProviderType invalid");
-      }
-
-      s_DataProviderType = dataProviderType[0];
-    }
-
-
     LOGGER.debug("Processing data set request [dataSetType: " + s_DataSetType +
-        ", countryCode: " + s_CountryCode + ", dataProviderType: " + s_DataProviderType + "]");
+        ", countryCode: " + s_CountryCode + "]");
 
-    LOGGER.warn("Ingoring \"dataProviderType\":" + dataProviderType + " parameter for now");
+    //query all the matches without a document type id.
+    final List<MatchType> matchTypes = ToopDirClient.performSearch(s_CountryCode, null);
 
-    final List<MatchType> matchTypes = ToopDirClient.performSearch(s_CountryCode, s_DataSetType);
+    //now filter the matches that contain a part of the datasettype in their Doctypeids.
+    filterDirectoryResult(s_DataSetType, matchTypes);
 
-    List<Document> dcatDocuments = BregDCatHelper.convertBusinessCardsToDCat(matchTypes);
+    List<Document> dcatDocuments = BregDCatHelper.convertBusinessCardsToDCat(s_DataSetType, matchTypes);
 
     String resultXml = DSDRegRep.createQueryResponse(UUID.randomUUID().toString(), dcatDocuments);
     responseStream.write(resultXml.getBytes(StandardCharsets.UTF_8));
+  }
+
+  /**
+   * This is a tentative approach. We filter out match types as following:<br/>
+   * <pre>
+   *   for each matchtype
+   *     for each doctype of that matchtype
+   *       remote the doctype if it does not contain datasetType
+   *     if all doctypes were removed
+   *        then remove the matchtype
+   * </pre>
+   * @param matchTypes
+   */
+  private static void filterDirectoryResult(String datasetType, List<MatchType> matchTypes) {
+    //filter
+    final Iterator<MatchType> iterator = matchTypes.iterator();
+
+    iterator.forEachRemaining(matchType -> {
+      final Iterator<IDType> iterator1 = matchType.getDocTypeID().iterator();
+      iterator1.forEachRemaining(idType -> {
+        String concatenated = idType.getScheme() + ":" + idType.getValue();
+
+        //TODO: this is so unsafe, we need a better way here.
+        if (!concatenated.toLowerCase().contains(datasetType.toLowerCase())){
+          iterator1.remove();
+        }
+      });
+
+      if (matchType.getDocTypeID().size() == 0){
+        iterator.remove();
+      }
+    });
   }
 }

@@ -46,10 +46,12 @@ public class BregDCatHelper {
    * as <code>MatchType</code> instances into <code>org.w3c.dom.Document</code>
    * objects compatible with the DSD BregDcatAP.
    *
+   *
+   * @param s_DataSetType
    * @param matchTypes the list of <code>MatchType</code> objects to be converted
    * @return the list if <code>org.w3c.dom.Document</code> objects
    */
-  public static List<Document> convertBusinessCardsToDCat(List<MatchType> matchTypes) {
+  public static List<Document> convertBusinessCardsToDCat(String s_DataSetType, List<MatchType> matchTypes) {
 
 
     final List<Document> dcatDocs = new ArrayList<>(matchTypes.size());
@@ -62,11 +64,11 @@ public class BregDCatHelper {
         //identifier
         datasetType.addIdentifier ("RE238918378");
         //type
-        datasetType.setType ("REGISTERED_ORGANIZATION_TYPE");
+        datasetType.setType (s_DataSetType);
         //title
-        datasetType.addTitle ("Companies registry");
+        datasetType.addTitle ("?title?");
         //description
-        datasetType.addDescription ("A dataset about the Registered organizations");
+        datasetType.addDescription ("?description?");
         //publisher
         addPublisher(matchType, datasetType);
         //distribution
@@ -117,8 +119,8 @@ public class BregDCatHelper {
 
     //<cbc:id schemeID="VAT">DE730757727</cbc:id>
     final IDType idType = new IDType();
-    idType.setSchemeName("VAT");
-    idType.setValue("DE730757727");
+    idType.setSchemeName(matchType.getParticipantID().getScheme());
+    idType.setValue(matchType.getParticipantIDValue());
     publicOrganizationType.addId(idType);
 
     /*
