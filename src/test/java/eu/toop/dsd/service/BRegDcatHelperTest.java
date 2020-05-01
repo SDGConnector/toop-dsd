@@ -22,7 +22,7 @@ import com.helger.pd.searchapi.v1.ResultListType;
 public class BRegDcatHelperTest {
 
   @Test
-  public void testConvertMatchTypes(){
+  public void testConvertMatchTypes() {
     final ResultListType read = PDSearchAPIReader.resultListV1().read(BRegDcatHelperTest.class.getResourceAsStream("/directory-results.xml"));
     final List<MatchType> match = read.getMatch();
     final List<Document> documents = BregDCatHelper.convertBusinessCardsToDCat("mydatasettype", match);
@@ -31,10 +31,12 @@ public class BRegDcatHelperTest {
   }
 
   @Test
-  public void testConvertSingleMatchType(){
+  public void testConvertSingleMatchType() {
     final ResultListType read = PDSearchAPIReader.resultListV1().read(BRegDcatHelperTest.class.getResourceAsStream("/directory-result-single.xml"));
     final List<MatchType> match = read.getMatch();
-    final List<Document> documents = BregDCatHelper.convertBusinessCardsToDCat("mydatasettype", match);
+    final String s_dataSetType = "REGISTERED_ORGANIZATION";
+    DSDQueryService.filterDirectoryResult(s_dataSetType, match);
+    final List<Document> documents = BregDCatHelper.convertBusinessCardsToDCat(s_dataSetType, match);
     String resultXml = DSDRegRep.createQueryResponse(UUID.randomUUID().toString(), documents);
     System.out.println(resultXml);
   }

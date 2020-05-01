@@ -24,10 +24,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import eu.toop.dsd.service.DSDQueryService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import eu.toop.dsd.service.DSDQueryService;
 
 /**
  * The HTTP servlet for the REST query. One servlet could be used

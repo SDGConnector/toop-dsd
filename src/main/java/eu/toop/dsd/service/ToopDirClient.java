@@ -103,4 +103,9 @@ public class ToopDirClient {
       return read;
     }
   }
+
+  public static String flattenIdType(com.helger.pd.searchapi.v1.IDType idType) {
+    return idType.getScheme() + "::" + idType.getValue();
+  }
+
 }

@@ -19,6 +19,8 @@ package eu.toop.dsd.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.helger.pd.searchapi.v1.NameType;
+import eu.toop.edm.jaxb.dcatap.DCatAPDataServiceType;
 import org.w3c.dom.Document;
 
 import com.helger.pd.searchapi.v1.MatchType;
@@ -46,9 +48,8 @@ public class BregDCatHelper {
    * as <code>MatchType</code> instances into <code>org.w3c.dom.Document</code>
    * objects compatible with the DSD BregDcatAP.
    *
-   *
    * @param s_DataSetType
-   * @param matchTypes the list of <code>MatchType</code> objects to be converted
+   * @param matchTypes    the list of <code>MatchType</code> objects to be converted
    * @return the list if <code>org.w3c.dom.Document</code> objects
    */
   public static List<Document> convertBusinessCardsToDCat(final String s_DataSetType, List<MatchType> matchTypes) {
@@ -56,52 +57,93 @@ public class BregDCatHelper {
 
     final List<Document> dcatDocs = new ArrayList<>(matchTypes.size());
     matchTypes.forEach(matchType -> {
+      //make sure we work on some real doctypes and entities
+      if (matchType.getDocTypeID().size() > 0 && matchType.getEntity().size() > 0) {
         DatasetMarshaller marshaller = new DatasetMarshaller();
 
         DCatAPDatasetType datasetType = new DCatAPDatasetType();
         //conformsTo
-        setConformsTo(datasetType);
+        setConformsTo(datasetType, s_DataSetType);
         //identifier
-        datasetType.addIdentifier ("RE238918378");
+        datasetType.addIdentifier(ToopDirClient.flattenIdType(matchType.getParticipantID()));
         //type
-        datasetType.setType (s_DataSetType);
+        datasetType.setType(s_DataSetType);
         //title
-        datasetType.addTitle ("?title?");
+        datasetType.addTitle(s_DataSetType + " dataset");
         //description
-        datasetType.addDescription ("?description?");
+        datasetType.addDescription("A dataset for " + s_DataSetType);
         //publisher
-        addPublisher(matchType, datasetType);
+        addPublishers(matchType, datasetType);
         //distribution
-        datasetType.addDistribution (createDistribution(matchType));
+        addDistributions(matchType, datasetType, s_DataSetType);
         final Document document = marshaller.getAsDocument(datasetType);
         dcatDocs.add(document);
-
+      }
     });
 
     return dcatDocs;
   }
 
-  private static void setConformsTo( DCatAPDatasetType datasetType) {
-    final DCStandardType dcStandardType =  new DCStandardType();
-    dcStandardType.setValue("REGISTERED_ORGANIZATION_ONTOLOGY_URI");
-    datasetType.addConformsTo (dcStandardType);
+  private static void addDistributions(MatchType matchType, DCatAPDatasetType datasetType, String s_dataSetType) {
+    /*
+    <dcat:distribution>
+      <dct:conformsTo>RegRepv4-EDMv2</dct:conformsTo>
+      <dct:description>This is a pdf distribution of the Criminal Record</dct:description>
+      <dct:format>UNSTRUCTURED</dct:format>
+      <dcat:accessService>
+        <!-- doctypeid -->
+        <dct:identifier>toop-doctypeid-qns::urn:eu:toop:ns:dataexchange-2::Request##urn:eu.toop.request.criminalRecord::2.0</dct:identifier>
+        <dct:title>Access Service Title</dct:title>
+      </dcat:accessService>
+      <dcat:mediaType>application/pdf</dcat:mediaType>
+    </dcat:distribution>
+     */
+
+    matchType.getDocTypeID().forEach(idType -> {
+      final DCatAPDistributionType distributionType = new DCatAPDistributionType();
+      distributionType.setAccessURL("");
+
+      final DCStandardType conformsTo = new DCStandardType();
+      //<dct:conformsTo>RegRepv4-EDMv2</dct:conformsTo>
+      conformsTo.setValue("CCCEV");
+      distributionType.addConformsTo(conformsTo);
+
+      //<dct:format>UNSTRUCTURED</dct:format>
+      final DCMediaType dcMediaType = new DCMediaType();
+      dcMediaType.addContent("UNSTRUCTURED");
+      distributionType.setFormat(dcMediaType);
+
+      //<dct:description>This is a pdf distribution of the Criminal Record</dct:description>
+      distributionType.addDescription("This is a distribution of " + s_dataSetType);
+
+      // <dcat:accessService>
+      //   <!-- doctypeid -->
+      //   <dct:identifier>toop-doctypeid-qns::urn:eu:toop:ns:dataexchange-2::Request##urn:eu.toop.request.criminalRecord::2.0</dct:identifier>
+      //   <dct:title>Access Service Title</dct:title>
+      // </dcat:accessService>
+      DCatAPDataServiceType accessService = new DCatAPDataServiceType();
+      accessService.setIdentifier(ToopDirClient.flattenIdType(idType));
+      accessService.setTitle("Service for " + s_dataSetType + " distribution");
+      accessService.addEndpointURL("");
+      distributionType.setAccessService(accessService);
+
+      //<dcat:mediaType>application/pdf</dcat:mediaType>
+      DCMediaType mediaType = new DCMediaType();
+      mediaType.addContent("application/xml");
+      distributionType.setMediaType(mediaType);
+
+      datasetType.addDistribution(distributionType);
+    });
   }
 
-  private static DCatAPDistributionType createDistribution(MatchType matchType) {
-    final DCatAPDistributionType distributionType = new DCatAPDistributionType();
-    distributionType.setAccessURL("");
-
-    final DCStandardType conformsTo =  new DCStandardType();
-    conformsTo.setValue("CCCEV");
-    distributionType.addConformsTo(conformsTo);
-    final DCMediaType dcMediaType = new DCMediaType();
-
-    distributionType.setFormat(dcMediaType);
-    return distributionType;
+  private static void setConformsTo(DCatAPDatasetType datasetType, String s_DataSetType) {
+    final DCStandardType dcStandardType = new DCStandardType();
+    dcStandardType.setValue(s_DataSetType + "_ONTOLOGY_URI");
+    datasetType.addConformsTo(dcStandardType);
   }
 
-  private static void addPublisher(MatchType matchType,
-                                   DCatAPDatasetType datasetType) {
+  private static void addPublishers(MatchType matchType,
+                                    DCatAPDatasetType datasetType) {
     /*
     <dct:publisher xsi:type="cagv:PublicOrganizationType">
         <cbc:id schemeID="VAT">DE730757727</cbc:id>
@@ -114,14 +156,16 @@ public class BregDCatHelper {
         <skos:prefLabel>PublisherName</skos:prefLabel>
     </dct:publisher>
      */
-    //<dct:publisher xsi:type="cagv:PublicOrganizationType">
-    PublicOrganizationType publicOrganizationType = new PublicOrganizationType();
 
-    //<cbc:id schemeID="VAT">DE730757727</cbc:id>
-    final IDType idType = new IDType();
-    idType.setSchemeName(matchType.getParticipantID().getScheme());
-    idType.setValue(matchType.getParticipantIDValue());
-    publicOrganizationType.addId(idType);
+    matchType.getEntity().forEach(entityType -> {
+      //<dct:publisher xsi:type="cagv:PublicOrganizationType">
+      PublicOrganizationType publicOrganizationType = new PublicOrganizationType();
+
+      //<cbc:id schemeID="VAT">DE730757727</cbc:id>
+      final IDType idType = new IDType();
+      idType.setSchemeName(matchType.getParticipantID().getScheme());
+      idType.setValue(matchType.getParticipantIDValue());
+      publicOrganizationType.addId(idType);
 
     /*
        <cagv:location>
@@ -131,17 +175,21 @@ public class BregDCatHelper {
            </cagv:address>
         </cagv:location>
      */
-    final AddressType addressType = new AddressType();
-    addressType.setFullAddress("Prince Street 15");
-    addressType.setAdminUnitLevel1("GB");
-    final LocationType locationType = new LocationType();
-    locationType.setAddress(addressType);
-    publicOrganizationType.addLocation(locationType);
+      final AddressType addressType = new AddressType();
 
+      addressType.setAdminUnitLevel1(entityType.getCountryCode());
+      addressType.setFullAddress(entityType.getGeoInfo());
 
-    //<skos:prefLabel>PublisherName</skos:prefLabel>
-    publicOrganizationType.getPrefLabel().add(matchType.getEntity().get(0).getName().get(0).getValue());
+      final LocationType locationType = new LocationType();
+      locationType.setAddress(addressType);
+      publicOrganizationType.addLocation(locationType);
 
-    datasetType.addPublisher (publicOrganizationType);
+      //<skos:prefLabel>PublisherName</skos:prefLabel> (for each name type)
+      final List<NameType> entityNames = entityType.getName();
+      entityNames.forEach(nameType -> {
+        publicOrganizationType.getPrefLabel().add(nameType.getValue());
+      });
+      datasetType.addPublisher(publicOrganizationType);
+    });
   }
 }

@@ -117,7 +117,7 @@ public class DSDQueryService {
     final List<MatchType> matchTypes = ToopDirClient.performSearch(s_CountryCode, null);
 
     //now filter the matches that contain a part of the datasettype in their Doctypeids.
-    //filterDirectoryResult(s_DataSetType, matchTypes);
+    filterDirectoryResult(s_DataSetType, matchTypes);
 
     List<Document> dcatDocuments = BregDCatHelper.convertBusinessCardsToDCat(s_DataSetType, matchTypes);
 
@@ -134,26 +134,33 @@ public class DSDQueryService {
    *     if all doctypes were removed
    *        then remove the matchtype
    * </pre>
+   *
    * @param matchTypes
    */
-  private static void filterDirectoryResult(String datasetType, List<MatchType> matchTypes) {
+  public static void filterDirectoryResult(String s_datasetType, List<MatchType> matchTypes) {
     //filter
     final Iterator<MatchType> iterator = matchTypes.iterator();
 
-    iterator.forEachRemaining(matchType -> {
+    while (iterator.hasNext()) {
+      MatchType matchType = iterator.next();
       final Iterator<IDType> iterator1 = matchType.getDocTypeID().iterator();
-      iterator1.forEachRemaining(idType -> {
-        String concatenated = idType.getScheme() + ":" + idType.getValue();
+      while (iterator1.hasNext()) {
+        IDType idType = iterator1.next();
+        String concatenated = ToopDirClient.flattenIdType(idType);
 
-        //TODO: this is so unsafe, we need a better way here.
-        if (!concatenated.toLowerCase().contains(datasetType.toLowerCase())){
+        // TODO: This is temporary, for now we are removing _ (underscore) and performing a case insensitive "contains" search
+
+        //  ignore cases and underscores (CRIMINAL_RECORD = criminalRecord)
+        if (!concatenated.replaceAll("_", "").toLowerCase()
+            .contains(s_datasetType.replaceAll("_", "").toLowerCase())) {
           iterator1.remove();
         }
-      });
+      }
 
-      if (matchType.getDocTypeID().size() == 0){
+      // if all doctypes have been removed then, eliminate this business card
+      if (matchType.getDocTypeID().size() == 0) {
         iterator.remove();
       }
-    });
+    }
   }
 }

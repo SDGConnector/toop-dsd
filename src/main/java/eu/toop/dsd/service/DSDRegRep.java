@@ -17,7 +17,10 @@ package eu.toop.dsd.service;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.UUID;
 
+import eu.toop.regrep.rim.RegistryObjectListType;
+import eu.toop.regrep.rim.RegistryObjectType;
 import org.w3c.dom.Document;
 
 import eu.toop.edm.xml.cagv.CCAGV;
@@ -50,12 +53,17 @@ public class DSDRegRep
 
     final QueryResponse aQResponse = RegRepHelper.createQueryResponse (ERegRepResponseStatus.SUCCESS, sRequestID);
 
+    RegistryObjectListType registryObjectListType = new RegistryObjectListType();
     dcatDocuments.forEach (dcatDocument -> {
-      aQResponse.addSlot (new SlotBuilder ().setName ("Dataset")
+      RegistryObjectType registryObjectType = new RegistryObjectType();
+      registryObjectType.setId(UUID.randomUUID().toString());
+      registryObjectType.addSlot (new SlotBuilder ().setName ("Dataset")
                                             .setValue (dcatDocument.getDocumentElement ())
                                             .build ());
+      registryObjectListType.addRegistryObject(registryObjectType);
     });
 
+    aQResponse.setRegistryObjectList(registryObjectListType);
     aQResponse.setTotalResultCount (BigInteger.valueOf (dcatDocuments.size ()));
     aQResponse.setStartIndex (BigInteger.ZERO);
     // Additional XSDs are required for xsi:type

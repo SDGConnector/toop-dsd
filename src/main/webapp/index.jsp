@@ -46,7 +46,7 @@ limitations under the License.
                 <div class="form-group">
                     <label for="dataSetType">DataSetType</label>
                     <input type="text" class="form-control" id="dataSetType" name="dataSetType" aria-describedby="DataSetTypeHelp"
-                           value="REGISTERED_ORGANIZATION_TYPE">
+                           value="REGISTERED_ORGANIZATION">
                     <small id="DataSetTypeHelp" class="form-text text-muted">This field is required</small>
                 </div>
 
