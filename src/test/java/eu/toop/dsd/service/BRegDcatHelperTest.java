@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
 
 import com.helger.pd.searchapi.v1.MatchType;
 import org.junit.Ignore;
@@ -58,6 +59,12 @@ public class BRegDcatHelperTest {
 
   }
 
+  @Test
+  public void testDoctypeEdm20Compliant(){
+    //Matcher matcher = BregDCatHelper.eDM20ComplianceMatcher("RegisteredOrganization::REGISTERED_ORGANIZATION_TYPE::CONCEPT##CCCEV::toop-edm:v2.0");
+    Matcher matcher = BregDCatHelper.eDM20ComplianceMatcher("RegisteredOrganization::REGISTERED_ORGANIZATION_TYPE::CONCEPT::toop-edm");
+    System.out.println(matcher.matches());
+  }
 
   public static void main(String[] args) throws IOException {
 

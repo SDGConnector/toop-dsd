@@ -50,12 +50,17 @@ public class DSDRestQueryServlet extends HttpServlet {
     try {
       Map<String, String[]> parameterMap = req.getParameterMap();
       DSDQueryService.processRequest(parameterMap, resp.getOutputStream());
-    } catch (IllegalArgumentException ex) {
-      //convert this to bad request
+      resp.setContentType("application/xml");
     } catch (Exception ex) {
+      resp.setContentType("text/plain");
       LOGGER.error(ex.getMessage(), ex);
-      //convert this to internal server error
-      resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+      if(ex instanceof IllegalStateException) {
+        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      } else {
+        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      }
+
       final String message = ex.getMessage();
       resp.getOutputStream().println(message != null ? message : "UNKNOWN ERROR");
     }

@@ -18,6 +18,8 @@ package eu.toop.dsd.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.helger.pd.searchapi.v1.NameType;
 import eu.toop.edm.jaxb.dcatap.DCatAPDataServiceType;
@@ -62,10 +64,21 @@ public class BregDCatHelper {
         DatasetMarshaller marshaller = new DatasetMarshaller();
 
         DCatAPDatasetType datasetType = new DCatAPDatasetType();
-        //conformsTo
-        setConformsTo(datasetType, s_DataSetType);
-        //identifier
-        datasetType.addIdentifier(ToopDirClient.flattenIdType(matchType.getParticipantID()));
+
+        Matcher edm20DoctypeMatcher = eDM20ComplianceMatcher(s_DataSetType);
+        if (edm20DoctypeMatcher.matches()) {
+          //conformsTo
+          setConformsTo(datasetType, edm20DoctypeMatcher.group("conformsTo"));
+          //identifier
+          datasetType.addIdentifier(edm20DoctypeMatcher.group("datasetTypeIdentifier"));
+        } else {
+          // old style, make up values
+          //conformsTo
+          setConformsTo(datasetType, s_DataSetType + "ONTOLOGY_URI");
+          //identifier
+          datasetType.addIdentifier(ToopDirClient.flattenIdType(matchType.getParticipantID()));
+        }
+
         //type
         datasetType.setType(s_DataSetType);
         //title
@@ -84,6 +97,29 @@ public class BregDCatHelper {
     return dcatDocs;
   }
 
+/*
+private static Pattern pattern = Pattern.compile("(?<DataSetIdentifier>[_|\\w]+)::" +
+      "(?<DatasetType>[_|\\w|\\d]+)::" +
+      "(?<Distribution>[_|\\w|\\d]+[##[_|\\w|\\d]+]?)::" +
+      "(?<ConformsTo>[_|\\w|\\d]+:[_|\\w|\\d])");
+ */
+  //"RegisteredOrganization::REGISTERED_ORGANIZATION_TYPE::CONCEPT##CCCEV::toop-edm:v2.0"
+
+  private static Pattern pattern = Pattern.compile("([_|\\w]+)::" +
+      "([_|\\w|\\d]+)::" +
+      "([_|\\w|\\d]+)::" +
+      "([_|\\w|\\d]+)");
+
+  /**
+   * A temporary method tho check whether the doctype is the new version
+   * @param s_dataSetType
+   * @return
+   */
+  public static Matcher eDM20ComplianceMatcher(String s_dataSetType) {
+    //<DatasetIdentifier>::<DatasetType>::<Distribution.Format>[##<Distribution.ConformsTo>]::<Dataservice.ConformsTo>
+    return pattern.matcher(s_dataSetType);
+  }
+
   private static void addDistributions(MatchType matchType, DCatAPDatasetType datasetType, String s_dataSetType) {
     /*
     <dcat:distribution>
@@ -98,6 +134,8 @@ public class BregDCatHelper {
       <dcat:mediaType>application/pdf</dcat:mediaType>
     </dcat:distribution>
      */
+
+    //<DatasetIdentifier>::<DatasetType>::<Distribution.Format>[##<Distribution.ConformsTo>]::<Dataservice.ConformsTo>
 
     matchType.getDocTypeID().forEach(idType -> {
       final DCatAPDistributionType distributionType = new DCatAPDistributionType();
@@ -136,9 +174,9 @@ public class BregDCatHelper {
     });
   }
 
-  private static void setConformsTo(DCatAPDatasetType datasetType, String s_DataSetType) {
+  private static void setConformsTo(DCatAPDatasetType datasetType, String conformsTo) {
     final DCStandardType dcStandardType = new DCStandardType();
-    dcStandardType.setValue(s_DataSetType + "_ONTOLOGY_URI");
+    dcStandardType.setValue(conformsTo);
     datasetType.addConformsTo(dcStandardType);
   }
 
