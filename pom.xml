@@ -187,6 +187,7 @@
       <resource>
         <directory>${basedir}/src/main/resources</directory>
         <targetPath>${project.build.directory}/classes</targetPath>
+        <filtering>true</filtering>
       </resource>
       <resource>
         <directory>${basedir}/src/main/webapp</directory>

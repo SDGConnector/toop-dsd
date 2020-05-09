@@ -16,7 +16,7 @@
 FROM tomcat:9-jre11
 
 
-ARG VERSION="1.0.0-SNAPSHOT"
+ARG VERSION="2.0.0-SNAPSHOT"
 ARG WAR_NAME=data-services-directory-${VERSION}.war
 
 #create tc webapp folder

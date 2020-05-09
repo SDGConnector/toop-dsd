@@ -18,11 +18,11 @@ package eu.toop.dsd.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.helger.pd.searchapi.v1.NameType;
 import eu.toop.edm.jaxb.dcatap.DCatAPDataServiceType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.helger.pd.searchapi.v1.MatchType;
@@ -44,6 +44,7 @@ import eu.toop.edm.xml.dcatap.DatasetMarshaller;
  * @author @yerlibilgin
  */
 public class BregDCatHelper {
+  private static final Logger LOGGER = LoggerFactory.getLogger(BregDCatHelper.class);
 
   /**
    * Converts the BusinessCards that are obtained from the TOOP Directory
@@ -57,70 +58,48 @@ public class BregDCatHelper {
   public static List<Document> convertBusinessCardsToDCat(final String s_DataSetType, List<MatchType> matchTypes) {
 
 
+    LOGGER.debug("DatasetType: " + s_DataSetType);
+
     final List<Document> dcatDocs = new ArrayList<>(matchTypes.size());
     matchTypes.forEach(matchType -> {
-      //make sure we work on some real doctypes and entities
-      if (matchType.getDocTypeID().size() > 0 && matchType.getEntity().size() > 0) {
-        DatasetMarshaller marshaller = new DatasetMarshaller();
+      matchType.getDocTypeID().forEach(docType -> {
+        //make sure we work on some real doctypes and entities
+        if (matchType.getDocTypeID().size() > 0 && matchType.getEntity().size() > 0) {
+          DatasetMarshaller marshaller = new DatasetMarshaller();
 
-        DCatAPDatasetType datasetType = new DCatAPDatasetType();
+          DCatAPDatasetType datasetType = new DCatAPDatasetType();
 
-        Matcher edm20DoctypeMatcher = eDM20ComplianceMatcher(s_DataSetType);
-        if (edm20DoctypeMatcher.matches()) {
+          final String s_docType = docType.getScheme() + "::" + docType.getValue();
+
+          DoctypeParts parts = DoctypeParts.parse(s_docType);
+
+
           //conformsTo
-          setConformsTo(datasetType, edm20DoctypeMatcher.group("conformsTo"));
+          setConformsTo(datasetType, parts.getConformsTo());
           //identifier
-          datasetType.addIdentifier(edm20DoctypeMatcher.group("datasetTypeIdentifier"));
-        } else {
-          // old style, make up values
-          //conformsTo
-          setConformsTo(datasetType, s_DataSetType + "ONTOLOGY_URI");
-          //identifier
-          datasetType.addIdentifier(ToopDirClient.flattenIdType(matchType.getParticipantID()));
+          datasetType.addIdentifier(parts.getDataSetIdentifier());
+
+
+          //type
+          datasetType.setType(s_DataSetType);
+          //title
+          datasetType.addTitle("?" + s_DataSetType + " dataset?");
+          //description
+          datasetType.addDescription("?A dataset for " + s_DataSetType + "?");
+          //publisher
+          addPublishers(matchType, datasetType);
+          //distribution
+          addDistribution(matchType, docType, datasetType, s_DataSetType, parts);
+          final Document document = marshaller.getAsDocument(datasetType);
+          dcatDocs.add(document);
         }
-
-        //type
-        datasetType.setType(s_DataSetType);
-        //title
-        datasetType.addTitle(s_DataSetType + " dataset");
-        //description
-        datasetType.addDescription("A dataset for " + s_DataSetType);
-        //publisher
-        addPublishers(matchType, datasetType);
-        //distribution
-        addDistributions(matchType, datasetType, s_DataSetType);
-        final Document document = marshaller.getAsDocument(datasetType);
-        dcatDocs.add(document);
-      }
+      });
     });
 
     return dcatDocs;
   }
 
-/*
-private static Pattern pattern = Pattern.compile("(?<DataSetIdentifier>[_|\\w]+)::" +
-      "(?<DatasetType>[_|\\w|\\d]+)::" +
-      "(?<Distribution>[_|\\w|\\d]+[##[_|\\w|\\d]+]?)::" +
-      "(?<ConformsTo>[_|\\w|\\d]+:[_|\\w|\\d])");
- */
-  //"RegisteredOrganization::REGISTERED_ORGANIZATION_TYPE::CONCEPT##CCCEV::toop-edm:v2.0"
-
-  private static Pattern pattern = Pattern.compile("([_|\\w]+)::" +
-      "([_|\\w|\\d]+)::" +
-      "([_|\\w|\\d]+)::" +
-      "([_|\\w|\\d]+)");
-
-  /**
-   * A temporary method tho check whether the doctype is the new version
-   * @param s_dataSetType
-   * @return
-   */
-  public static Matcher eDM20ComplianceMatcher(String s_dataSetType) {
-    //<DatasetIdentifier>::<DatasetType>::<Distribution.Format>[##<Distribution.ConformsTo>]::<Dataservice.ConformsTo>
-    return pattern.matcher(s_dataSetType);
-  }
-
-  private static void addDistributions(MatchType matchType, DCatAPDatasetType datasetType, String s_dataSetType) {
+  private static void addDistribution(MatchType matchType, com.helger.pd.searchapi.v1.IDType docType, DCatAPDatasetType datasetType, String s_dataSetType, DoctypeParts doctypeParts) {
     /*
     <dcat:distribution>
       <dct:conformsTo>RegRepv4-EDMv2</dct:conformsTo>
@@ -137,41 +116,43 @@ private static Pattern pattern = Pattern.compile("(?<DataSetIdentifier>[_|\\w]+)
 
     //<DatasetIdentifier>::<DatasetType>::<Distribution.Format>[##<Distribution.ConformsTo>]::<Dataservice.ConformsTo>
 
-    matchType.getDocTypeID().forEach(idType -> {
-      final DCatAPDistributionType distributionType = new DCatAPDistributionType();
-      distributionType.setAccessURL("");
+    final DCatAPDistributionType distributionType = new DCatAPDistributionType();
+    distributionType.setAccessURL("");
 
-      final DCStandardType conformsTo = new DCStandardType();
-      //<dct:conformsTo>RegRepv4-EDMv2</dct:conformsTo>
-      conformsTo.setValue("CCCEV");
-      distributionType.addConformsTo(conformsTo);
+    final DCStandardType conformsTo = new DCStandardType();
+    //<dct:conformsTo>RegRepv4-EDMv2</dct:conformsTo>
+    conformsTo.setValue(doctypeParts.getDistributionConformsTo());
 
-      //<dct:format>UNSTRUCTURED</dct:format>
-      final DCMediaType dcMediaType = new DCMediaType();
-      dcMediaType.addContent("UNSTRUCTURED");
-      distributionType.setFormat(dcMediaType);
+    distributionType.addConformsTo(conformsTo);
 
-      //<dct:description>This is a pdf distribution of the Criminal Record</dct:description>
-      distributionType.addDescription("This is a distribution of " + s_dataSetType);
+    //<dct:format>UNSTRUCTURED</dct:format>
+    final DCMediaType dcMediaType = new DCMediaType();
 
-      // <dcat:accessService>
-      //   <!-- doctypeid -->
-      //   <dct:identifier>toop-doctypeid-qns::urn:eu:toop:ns:dataexchange-2::Request##urn:eu.toop.request.criminalRecord::2.0</dct:identifier>
-      //   <dct:title>Access Service Title</dct:title>
-      // </dcat:accessService>
-      DCatAPDataServiceType accessService = new DCatAPDataServiceType();
-      accessService.setIdentifier(ToopDirClient.flattenIdType(idType));
-      accessService.setTitle("Service for " + s_dataSetType + " distribution");
-      accessService.addEndpointURL("");
-      distributionType.setAccessService(accessService);
+    dcMediaType.addContent(doctypeParts.getDistributionFormat());
 
-      //<dcat:mediaType>application/pdf</dcat:mediaType>
-      DCMediaType mediaType = new DCMediaType();
-      mediaType.addContent("application/xml");
-      distributionType.setMediaType(mediaType);
+    distributionType.setFormat(dcMediaType);
 
-      datasetType.addDistribution(distributionType);
-    });
+    //<dct:description>This is a pdf distribution of the Criminal Record</dct:description>
+    distributionType.addDescription("?This is a distribution of " + s_dataSetType + "?");
+
+    // <dcat:accessService>
+    //   <!-- doctypeid -->
+    //   <dct:identifier>toop-doctypeid-qns::urn:eu:toop:ns:dataexchange-2::Request##urn:eu.toop.request.criminalRecord::2.0</dct:identifier>
+    //   <dct:title>Access Service Title</dct:title>
+    // </dcat:accessService>
+    DCatAPDataServiceType accessService = new DCatAPDataServiceType();
+    accessService.setIdentifier(ToopDirClient.flattenIdType(docType));
+    accessService.setTitle("?Service for " + s_dataSetType + " distribution?");
+    accessService.addEndpointURL("");
+    distributionType.setAccessService(accessService);
+
+    //<dcat:mediaType>application/pdf</dcat:mediaType>
+    DCMediaType mediaType = new DCMediaType();
+    mediaType.addContent("?application/xml?");
+    distributionType.setMediaType(mediaType);
+
+    datasetType.addDistribution(distributionType);
+
   }
 
   private static void setConformsTo(DCatAPDatasetType datasetType, String conformsTo) {

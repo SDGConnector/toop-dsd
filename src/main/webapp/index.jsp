@@ -46,14 +46,14 @@ limitations under the License.
                 <div class="form-group">
                     <label for="dataSetType">DataSetType</label>
                     <input type="text" class="form-control" id="dataSetType" name="dataSetType" aria-describedby="DataSetTypeHelp"
-                           value="REGISTERED_ORGANIZATION">
+                           value="REGISTERED_ORGANIZATION_TYPE">
                     <small id="DataSetTypeHelp" class="form-text text-muted">This field is required</small>
                 </div>
 
                 <div class="form-group">
                     <label for="countryCode">Country Code</label>
                     <input type="text" class="form-control" id="countryCode" name="countryCode" aria-describedby="countryCodeHelp"
-                           value="GQ">
+                           value="SV">
                     <small id="countryCodeHelp" class="form-text text-muted">This field is optional</small>
                 </div>
 
@@ -63,7 +63,11 @@ limitations under the License.
 
             <br/><br/>
             <h3>Parameters</h3>
-            <b>Toop Directory Address: </b> <span> <%= eu.toop.dsd.config.DSDConfig.getToopDirUrl() %> </span>
+            <b>Toop Directory Address: </b> <span> <%= eu.toop.dsd.config.DSDConfig.getToopDirUrl() %> </span> </br></br>
+            <p class="small">
+                <b>Version: </b> <span> <%= eu.toop.dsd.config.DSDConfig.getDsdVersion() %></span> </br>
+                <b>Build Date</b> <span><%= eu.toop.dsd.config.DSDConfig.getBuildDate() %> </span> </br>
+            </p>
         </div>
     </div>
 </div>

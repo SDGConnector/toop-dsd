@@ -36,6 +36,8 @@ public class DSDConfig {
    * The TOOP Directory URL
    */
   private static final String toopDirUrl;
+  private static final String dsdVersion;
+  private static final String buildDate;
 
   private static final String DSD_CONFIG_RESOURCE_NAME = "/dsd-config.conf";
 
@@ -50,12 +52,23 @@ public class DSDConfig {
         withFallback(ConfigFactory.systemProperties()).resolve();
 
     toopDirUrl = config.getString("dsd.toop-dir-url");
+    dsdVersion = config.getString("dsd.version");
+    buildDate = config.getString("dsd.buildDate");
 
+    LOGGER.info("--------- RUNNING DSD-" + dsdVersion + " ---------");
     LOGGER.debug("toopDirUrl: " + toopDirUrl);
   }
 
 
   public static String getToopDirUrl() {
     return toopDirUrl;
+  }
+
+  public static String getDsdVersion() {
+    return dsdVersion;
+  }
+
+  public static String getBuildDate() {
+    return buildDate;
   }
 }
