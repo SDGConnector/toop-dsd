@@ -132,7 +132,7 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>peppol-id</artifactId>
-      <version>8.0.6</version>
+      <version>8.0.7</version>
     </dependency>
 
     <dependency>
