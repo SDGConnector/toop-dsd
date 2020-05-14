@@ -41,7 +41,7 @@ import eu.toop.dsd.config.DSDConfig;
  * This class is the bridge between DSD and TOOP directory.
  * It queries the TOOP directory and returns the responses as a list of <code>MatchType</code> objects
  *
- * @author @yerlibilgin
+ * @author yerlibilgin
  */
 public class ToopDirClient {
 

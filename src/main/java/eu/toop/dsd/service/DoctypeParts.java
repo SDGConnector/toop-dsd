@@ -1,10 +1,5 @@
 package eu.toop.dsd.service;
 
-import com.helger.commons.string.StringHelper;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class DoctypeParts {
   private String scheme;
   private String dataSetIdentifier;
@@ -57,8 +52,8 @@ public class DoctypeParts {
   /**
    * A temporary method tho check whether the doctype is the new version
    *
-   * @param s_docType
-   * @return
+   * @param s_docType string to parse
+   * @return The parsed doctype parts
    */
   public static DoctypeParts parse(String s_docType) {
     //<DatasetIdentifier>::<DatasetType>::<Distribution.Format>[##<Distribution.ConformsTo>]::<Dataservice.ConformsTo>

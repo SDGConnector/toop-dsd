@@ -19,8 +19,6 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.UUID;
 
-import eu.toop.regrep.rim.RegistryObjectListType;
-import eu.toop.regrep.rim.RegistryObjectType;
 import org.w3c.dom.Document;
 
 import eu.toop.edm.xml.cagv.CCAGV;
@@ -29,11 +27,13 @@ import eu.toop.regrep.RegRep4Writer;
 import eu.toop.regrep.RegRepHelper;
 import eu.toop.regrep.SlotBuilder;
 import eu.toop.regrep.query.QueryResponse;
+import eu.toop.regrep.rim.RegistryObjectListType;
+import eu.toop.regrep.rim.RegistryObjectType;
 
 /**
  * A simple RegRep helper that wraps data into RegRep slots.
  *
- * @author @yerlibilgin
+ * @author yerlibilgin
  */
 public class DSDRegRep
 {

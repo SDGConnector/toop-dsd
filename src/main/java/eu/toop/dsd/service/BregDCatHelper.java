@@ -19,17 +19,17 @@ package eu.toop.dsd.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.helger.pd.searchapi.v1.NameType;
-import eu.toop.edm.jaxb.dcatap.DCatAPDataServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.helger.pd.searchapi.v1.MatchType;
+import com.helger.pd.searchapi.v1.NameType;
 
 import eu.toop.edm.jaxb.cv.agent.LocationType;
 import eu.toop.edm.jaxb.cv.agent.PublicOrganizationType;
 import eu.toop.edm.jaxb.cv.cbc.IDType;
+import eu.toop.edm.jaxb.dcatap.DCatAPDataServiceType;
 import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
 import eu.toop.edm.jaxb.dcatap.DCatAPDistributionType;
 import eu.toop.edm.jaxb.dcterms.DCMediaType;
@@ -41,7 +41,7 @@ import eu.toop.edm.xml.dcatap.DatasetMarshaller;
  * This class is responsible for converting the TOOP Directory query result into
  * the DSD BregDCAT Profile documents.
  *
- * @author @yerlibilgin
+ * @author yerlibilgin
  */
 public class BregDCatHelper {
   private static final Logger LOGGER = LoggerFactory.getLogger(BregDCatHelper.class);
@@ -51,7 +51,7 @@ public class BregDCatHelper {
    * as <code>MatchType</code> instances into <code>org.w3c.dom.Document</code>
    * objects compatible with the DSD BregDcatAP.
    *
-   * @param s_DataSetType
+   * @param s_DataSetType Dataset type
    * @param matchTypes    the list of <code>MatchType</code> objects to be converted
    * @return the list if <code>org.w3c.dom.Document</code> objects
    */

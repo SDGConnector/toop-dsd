@@ -16,13 +16,6 @@
 
 package eu.toop.dsd.service;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.pd.searchapi.v1.IDType;
-import com.helger.pd.searchapi.v1.MatchType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -31,13 +24,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+
+import com.helger.commons.ValueEnforcer;
+import com.helger.pd.searchapi.v1.IDType;
+import com.helger.pd.searchapi.v1.MatchType;
+
 
 /**
  * This class is the main query processor for the DSD queries. It processes
  * the incoming queries and generates the required results with
  * respect to the TOOP DSD specifications.
  *
- * @author @yerlibilgin
+ * @author yerlibilgin
  */
 public class DSDQueryService {
   private static final Logger LOGGER = LoggerFactory.getLogger(DSDQueryService.class);
@@ -126,7 +127,7 @@ public class DSDQueryService {
   }
 
   /**
-   * This is a tentative approach. We filter out match types as following:<br/>
+   * This is a tentative approach. We filter out match types as following:<br>
    * <pre>
    *   for each matchtype
    *     for each doctype of that matchtype
@@ -135,7 +136,8 @@ public class DSDQueryService {
    *        then remove the matchtype
    * </pre>
    *
-   * @param matchTypes
+   * @param s_datasetType Dataset type
+   * @param matchTypes Match types
    */
   public static void filterDirectoryResult(String s_datasetType, List<MatchType> matchTypes) {
     //filter
