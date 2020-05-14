@@ -45,7 +45,7 @@
   <!--   properties   -->
   <!--                -->
   <properties>
-    <toop.version>2.0.0-SNAPSHOT</toop.version>
+    <toop.version>2.0.0-beta2</toop.version>
   </properties>
 
 
