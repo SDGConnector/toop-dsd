@@ -1,15 +1,6 @@
 package eu.toop.dsd.service;
 
 
-import com.helger.pd.searchapi.PDSearchAPIReader;
-import com.helger.pd.searchapi.PDSearchAPIWriter;
-import com.helger.pd.searchapi.v1.MatchType;
-import com.helger.pd.searchapi.v1.ResultListType;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.w3c.dom.Document;
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,6 +9,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.w3c.dom.Document;
+
+import com.helger.pd.searchapi.PDSearchAPIReader;
+import com.helger.pd.searchapi.PDSearchAPIWriter;
+import com.helger.pd.searchapi.v1.MatchType;
+import com.helger.pd.searchapi.v1.ResultListType;
 
 public class BRegDcatHelperTest {
 
@@ -46,7 +47,7 @@ public class BRegDcatHelperTest {
   @Test
   public void saveSearches() throws IOException {
     final ResultListType resultListType = ToopDirClient.performSearchResultsLists(null, null);
-    PDSearchAPIWriter p = PDSearchAPIWriter.resultListV1();
+    PDSearchAPIWriter<ResultListType> p = PDSearchAPIWriter.resultListV1();
     p.setFormattedOutput(true);
 
     try (StringWriter writer = new StringWriter()) {

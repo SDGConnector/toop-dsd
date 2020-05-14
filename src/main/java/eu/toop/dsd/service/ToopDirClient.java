@@ -34,6 +34,7 @@ import com.helger.commons.url.SimpleURL;
 import com.helger.pd.searchapi.PDSearchAPIReader;
 import com.helger.pd.searchapi.v1.MatchType;
 import com.helger.pd.searchapi.v1.ResultListType;
+import com.helger.peppolid.CIdentifier;
 
 import eu.toop.dsd.config.DSDConfig;
 
@@ -93,19 +94,24 @@ public class ToopDirClient {
 
     if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
       throw new IllegalStateException("Request failed " + response.getStatusLine().getStatusCode());
-    } else {
-      ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    }
+    
+    try (final ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
       response.getEntity().writeTo(stream);
-      final String s_result = new String(stream.toByteArray());
+      final byte[] s_bytes = stream.toByteArray ();
+      
+      // TODO charset is missing
+      final String s_result = new String(s_bytes);
       LOGGER.debug(s_result);
 
-      final ResultListType read = PDSearchAPIReader.resultListV1().read(s_result);
+      // Read from bytes to avoid charset error
+      final ResultListType read = PDSearchAPIReader.resultListV1().read(s_bytes);
       return read;
     }
   }
 
   public static String flattenIdType(com.helger.pd.searchapi.v1.IDType idType) {
-    return idType.getScheme() + "::" + idType.getValue();
+    return CIdentifier.getURIEncoded (idType.getScheme(), idType.getValue());
   }
 
 }
