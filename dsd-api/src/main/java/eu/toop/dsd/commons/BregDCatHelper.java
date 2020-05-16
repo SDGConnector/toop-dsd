@@ -20,8 +20,6 @@ import com.helger.pd.searchapi.v1.EntityType;
 import com.helger.pd.searchapi.v1.MatchType;
 import com.helger.pd.searchapi.v1.NameType;
 import com.helger.peppolid.CIdentifier;
-import com.helger.peppolid.factory.IDocumentTypeIdentifierFactory;
-import com.helger.peppolid.factory.SimpleIdentifierFactory;
 import eu.toop.dsd.commons.types.DoctypeParts;
 import eu.toop.edm.jaxb.cv.agent.LocationType;
 import eu.toop.edm.jaxb.cv.agent.PublicOrganizationType;
@@ -236,7 +234,6 @@ public class BregDCatHelper {
    */
   public static List<MatchType> convertDCatElementsToMatchTypes(List<Element> dcatElements) {
 
-    
     List<MatchType> matchTypes = new ArrayList<>(dcatElements.size());
 
     DatasetMarshaller dm = new DatasetMarshaller();

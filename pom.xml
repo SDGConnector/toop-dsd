@@ -19,35 +19,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-  <!--        -->
-  <!-- parent -->
-  <!--        -->
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>parent-pom</artifactId>
     <version>1.11.1</version>
   </parent>
 
-  <!--          -->
-  <!-- artifact -->
-  <!--          -->
   <groupId>eu.toop</groupId>
   <artifactId>data-services-directory</artifactId>
-  <version>2.0.0-SNAPSHOT</version>
-  <packaging>war</packaging>
-  <description>Contains the TOOP DSD Web Application</description>
-  <url>https://github.com/toop4eu/data-services-directory</url>
-  <inceptionYear>2020</inceptionYear>
+  <version>${revision}</version>
+  <packaging>pom</packaging>
 
+  <name>data-services-directory</name>
+  <description>Base POM to build the Data Services Directory projects</description>
+  <url>http://github.com/toop4eu/data-services-directory</url>
 
-  <!--                -->
-  <!--   properties   -->
-  <!--                -->
   <properties>
+    <revision>2.0.0-beta2-SNAPSHOT</revision>
     <toop.version>2.0.0-beta2</toop.version>
   </properties>
 
+  <inceptionYear>2020</inceptionYear>
 
   <licenses>
     <license>
@@ -77,146 +69,48 @@
     </developer>
   </developers>
 
-
-  <dependencies>
-
-    <dependency>
-      <groupId>eu.toop</groupId>
-      <artifactId>toop-regrep</artifactId>
-      <version>${toop.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>eu.toop</groupId>
-      <artifactId>toop-edm</artifactId>
-      <version>${toop.version}</version>
-    </dependency>
-
-    <!-- the business card api -->
-    <dependency>
-      <groupId>com.helger</groupId>
-      <artifactId>phoss-directory-businesscard</artifactId>
-      <version>0.8.6</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.helger</groupId>
-      <artifactId>phoss-directory-searchapi</artifactId>
-      <version>0.8.6</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.helger</groupId>
-      <artifactId>ph-commons</artifactId>
-      <version>9.4.2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.helger</groupId>
-      <artifactId>ph-httpclient</artifactId>
-      <version>9.1.12</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.helger</groupId>
-      <artifactId>ph-json</artifactId>
-      <version>9.4.2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.helger</groupId>
-      <artifactId>ph-xml</artifactId>
-      <version>9.4.2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.helger</groupId>
-      <artifactId>peppol-id</artifactId>
-      <version>8.0.7</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.typesafe</groupId>
-      <artifactId>config</artifactId>
-      <version>1.4.0</version>
-    </dependency>
-
-    <!-- included for JDK11 compliance -->
-    <dependency>
-      <groupId>com.sun.activation</groupId>
-      <artifactId>jakarta.activation</artifactId>
-      <version>1.2.2</version>
-    </dependency>
-
-    <!-- Logging -->
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-      <version>2.13.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-      <version>2.13.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-web</artifactId>
-      <version>2.13.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jul-to-slf4j</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-    </dependency>
-
-    <!-- JUnit 4 for testing -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+  <!-- Sub-projects - must match child directory names; order is important! -->
+  <modules>
+    <module>dsd-api</module>
+    <module>dsd-service</module>
+  </modules>
 
   <build>
-    <resources>
-      <resource>
-        <directory>${basedir}/src/main/resources</directory>
-        <targetPath>${project.build.directory}/classes</targetPath>
-        <filtering>true</filtering>
-      </resource>
-      <resource>
-        <directory>${basedir}/src/main/webapp</directory>
-        <targetPath>${project.build.directory}/webapp-classes</targetPath>
-      </resource>
-      <resource>
-        <directory>${basedir}/src/test/resources</directory>
-        <targetPath>${project.build.directory}/test-classes</targetPath>
-      </resource>
-    </resources>
-
-    <defaultGoal>package</defaultGoal>
     <plugins>
       <plugin>
-        <groupId>org.jvnet.jaxb2.maven2</groupId>
-        <artifactId>maven-jaxb2-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <configuration>
+          <updatePomFile>true</updatePomFile>
+        </configuration>
         <executions>
           <execution>
-            <id>xsd-schemas</id>
+            <id>flatten</id>
+            <phase>process-resources</phase>
             <goals>
-              <goal>generate</goal>
+              <goal>flatten</goal>
             </goals>
-            <configuration>
-              <generateDirectory>${project.build.directory}/generated-sources/schemas</generateDirectory>
-              <schemaDirectory>${basedir}/src/main/resources/xsd/</schemaDirectory>
-            </configuration>
+          </execution>
+          <execution>
+            <id>flatten.clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>eu.toop</groupId>
+        <artifactId>dsd-api</artifactId>
+        <version>${revision}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>

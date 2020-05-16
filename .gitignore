@@ -31,3 +31,4 @@ target/
 .factorypath
 request.xml
 response.xml
+.flattened-pom.xml
