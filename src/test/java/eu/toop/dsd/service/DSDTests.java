@@ -1,52 +1,84 @@
 package eu.toop.dsd.service;
 
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.w3c.dom.Document;
-
 import com.helger.pd.searchapi.PDSearchAPIReader;
 import com.helger.pd.searchapi.PDSearchAPIWriter;
 import com.helger.pd.searchapi.v1.MatchType;
 import com.helger.pd.searchapi.v1.ResultListType;
+import com.sun.tools.internal.ws.wsdl.document.soap.SOAPUse;
+import eu.toop.dsd.commons.DsdResponseReader;
+import eu.toop.dsd.commons.DsdResponseWriter;
+import eu.toop.dsd.commons.types.DoctypeParts;
+import eu.toop.dsd.config.DSDConfig;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
 
-public class BRegDcatHelperTest {
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.time.ZonedDateTime;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class DSDTests {
 
   @Test
   public void testConvertMatchTypes() {
-    final ResultListType read = PDSearchAPIReader.resultListV1().read(BRegDcatHelperTest.class.getResourceAsStream("/directory-results.xml"));
+    final ResultListType read = PDSearchAPIReader.resultListV1().read(DSDTests.class.getResourceAsStream("/directory-results.xml"));
     final List<MatchType> match = read.getMatch();
-    final List<Document> documents = BregDCatHelper.convertBusinessCardsToDCat("mydatasettype", match);
-    String resultXml = DSDRegRep.createQueryResponse(UUID.randomUUID().toString(), documents);
+
+    String resultXml = DsdResponseWriter.matchTypesWriter("mydatasettype", match).getAsString();
     System.out.println(resultXml);
   }
 
   @Test
   public void testConvertSingleMatchType() {
-    final ResultListType read = PDSearchAPIReader.resultListV1().read(BRegDcatHelperTest.class.getResourceAsStream("/directory-result-single.xml"));
+    final ResultListType read = PDSearchAPIReader.resultListV1().read(DSDTests.class.getResourceAsStream("/directory-result-single.xml"));
     final List<MatchType> match = read.getMatch();
     final String s_dataSetType = "REGISTERED_ORGANIZATION";
-    DSDQueryService.filterDirectoryResult(s_dataSetType, match);
-    final List<Document> documents = BregDCatHelper.convertBusinessCardsToDCat(s_dataSetType, match);
-    String resultXml = DSDRegRep.createQueryResponse(UUID.randomUUID().toString(), documents);
+
+    String resultXml = DsdResponseWriter.matchTypesWriter(s_dataSetType, match).getAsString();
     System.out.println(resultXml);
+  }
+
+
+  @Test
+  public void writeRead() throws DatatypeConfigurationException {
+    final ResultListType read = PDSearchAPIReader.resultListV1().read(DSDTests.class.getResourceAsStream("/directory-result-single.xml"));
+    final List<MatchType> match = read.getMatch();
+    final String s_dataSetType = "S";
+
+    String resultXml = DsdResponseWriter.matchTypesWriter(s_dataSetType, match).getAsString();
+    System.out.println(resultXml);
+
+    List<MatchType> matchTypeList = DsdResponseReader.matchTypeListReader().fromString(resultXml);
+
+
+    ResultListType rls = new ResultListType();
+    rls.setVersion("1");
+    rls.setQueryTerms("terms");
+    GregorianCalendar c = (GregorianCalendar) GregorianCalendar.getInstance();
+    rls.setCreationDt(DatatypeFactory.newInstance().newXMLGregorianCalendar(c));
+    matchTypeList.forEach(matchType -> {
+      rls.addMatch(matchType);
+    });
+
+
+    System.out.println(PDSearchAPIWriter.resultListV1().setFormattedOutput(true).getAsString(rls));
   }
 
 
   @Ignore
   @Test
   public void saveSearches() throws IOException {
-    final ResultListType resultListType = ToopDirClient.performSearchResultsLists(null, null);
+    final ResultListType resultListType = ToopDirClient.performSearchResultsLists(DSDConfig.getToopDirUrl(), null, null);
     PDSearchAPIWriter<ResultListType> p = PDSearchAPIWriter.resultListV1();
     p.setFormattedOutput(true);
 

@@ -18,18 +18,17 @@ package eu.toop.dsd.service;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
+import eu.toop.dsd.commons.DsdResponseWriter;
+import eu.toop.dsd.config.DSDConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.pd.searchapi.v1.IDType;
 import com.helger.pd.searchapi.v1.MatchType;
 
 
@@ -115,54 +114,12 @@ public class DSDQueryService {
         ", countryCode: " + s_CountryCode + "]");
 
     //query all the matches without a document type id.
-    final List<MatchType> matchTypes = ToopDirClient.performSearch(s_CountryCode, null);
+    final List<MatchType> matchTypes = ToopDirClient.performSearch(DSDConfig.getToopDirUrl(), s_CountryCode, null);
 
-    //now filter the matches that contain a part of the datasettype in their Doctypeids.
-    filterDirectoryResult(s_DataSetType, matchTypes);
+    StringWriter writer = new StringWriter();
+    DsdResponseWriter.matchTypesWriter(s_DataSetType, matchTypes).write(writer);
+    String resultXml = writer.toString();
 
-    List<Document> dcatDocuments = BregDCatHelper.convertBusinessCardsToDCat(s_DataSetType, matchTypes);
-
-    String resultXml = DSDRegRep.createQueryResponse(UUID.randomUUID().toString(), dcatDocuments);
     responseStream.write(resultXml.getBytes(StandardCharsets.UTF_8));
-  }
-
-  /**
-   * This is a tentative approach. We filter out match types as following:<br>
-   * <pre>
-   *   for each matchtype
-   *     for each doctype of that matchtype
-   *       remote the doctype if it does not contain datasetType
-   *     if all doctypes were removed
-   *        then remove the matchtype
-   * </pre>
-   *
-   * @param s_datasetType Dataset type
-   * @param matchTypes Match types
-   */
-  public static void filterDirectoryResult(String s_datasetType, List<MatchType> matchTypes) {
-    //filter
-    final Iterator<MatchType> iterator = matchTypes.iterator();
-
-    while (iterator.hasNext()) {
-      MatchType matchType = iterator.next();
-      final Iterator<IDType> iterator1 = matchType.getDocTypeID().iterator();
-      while (iterator1.hasNext()) {
-        IDType idType = iterator1.next();
-        String concatenated = ToopDirClient.flattenIdType(idType);
-
-        // TODO: This is temporary, for now we are removing _ (underscore) and performing a case insensitive "contains" search
-
-        //  ignore cases and underscores (CRIMINAL_RECORD = criminalRecord)
-        if (!concatenated.replaceAll("_", "").toLowerCase()
-            .contains(s_datasetType.replaceAll("_", "").toLowerCase())) {
-          iterator1.remove();
-        }
-      }
-
-      // if all doctypes have been removed then, eliminate this business card
-      if (matchType.getDocTypeID().size() == 0) {
-        iterator.remove();
-      }
-    }
   }
 }

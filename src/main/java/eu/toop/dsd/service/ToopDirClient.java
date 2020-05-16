@@ -17,6 +17,7 @@ package eu.toop.dsd.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -36,8 +37,6 @@ import com.helger.pd.searchapi.v1.MatchType;
 import com.helger.pd.searchapi.v1.ResultListType;
 import com.helger.peppolid.CIdentifier;
 
-import eu.toop.dsd.config.DSDConfig;
-
 /**
  * This class is the bridge between DSD and TOOP directory.
  * It queries the TOOP directory and returns the responses as a list of <code>MatchType</code> objects
@@ -51,25 +50,26 @@ public class ToopDirClient {
   /**
    * Query TOOP-DIR with country code and doctype. Return the result as a list of <code>MatchType</code> objects
    *
+   *
+   * @param toopDirBaseURL  the base URL of Toop Directory
    * @param sCountryCode    two letter Country Code, @Nullable
    * @param aDocumentTypeID doc type id, @Nullable
    * @return list of <code>MatchType</code> objects
    * @throws IOException if a communication problem occurs
    */
-  public static List<MatchType> performSearch(@Nullable final String sCountryCode,
+  public static List<MatchType> performSearch(String toopDirBaseURL, @Nullable final String sCountryCode,
                                               @Nullable final String aDocumentTypeID) throws IOException {
 
-    return performSearchResultsLists(sCountryCode, aDocumentTypeID).getMatch();
+    return performSearchResultsLists(toopDirBaseURL, sCountryCode, aDocumentTypeID).getMatch();
 
   }
 
-  static ResultListType performSearchResultsLists(@Nullable String sCountryCode, @Nullable String aDocumentTypeID) throws IOException {
-    final String sBaseURL = DSDConfig.getToopDirUrl();
-    if (StringHelper.hasNoText(sBaseURL))
+  static ResultListType performSearchResultsLists(String toopDirBaseURL, @Nullable String sCountryCode, @Nullable String aDocumentTypeID) throws IOException {
+    if (StringHelper.hasNoText(toopDirBaseURL))
       throw new IllegalStateException("The Directory base URL configuration is missing");
 
     // Build base URL and fetch all records per HTTP request
-    final SimpleURL aBaseURL = new SimpleURL(sBaseURL + "/search/1.0/xml");
+    final SimpleURL aBaseURL = new SimpleURL(toopDirBaseURL + "/search/1.0/xml");
     // More than 1000 is not allowed
     aBaseURL.add("rpc", 100);
     // Constant defined in CCTF-103
@@ -99,19 +99,14 @@ public class ToopDirClient {
     try (final ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
       response.getEntity().writeTo(stream);
       final byte[] s_bytes = stream.toByteArray ();
-      
-      // TODO charset is missing
-      final String s_result = new String(s_bytes);
+
+      final String s_result = new String(s_bytes, StandardCharsets.UTF_8);
       LOGGER.debug(s_result);
 
       // Read from bytes to avoid charset error
       final ResultListType read = PDSearchAPIReader.resultListV1().read(s_bytes);
       return read;
     }
-  }
-
-  public static String flattenIdType(com.helger.pd.searchapi.v1.IDType idType) {
-    return CIdentifier.getURIEncoded (idType.getScheme(), idType.getValue());
   }
 
 }

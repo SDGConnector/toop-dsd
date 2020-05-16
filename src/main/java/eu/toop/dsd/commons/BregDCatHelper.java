@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.toop.dsd.service;
+package eu.toop.dsd.commons;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-
+import com.helger.pd.searchapi.v1.EntityType;
 import com.helger.pd.searchapi.v1.MatchType;
 import com.helger.pd.searchapi.v1.NameType;
-
+import com.helger.peppolid.CIdentifier;
+import com.helger.peppolid.factory.IDocumentTypeIdentifierFactory;
+import com.helger.peppolid.factory.SimpleIdentifierFactory;
+import eu.toop.dsd.commons.types.DoctypeParts;
 import eu.toop.edm.jaxb.cv.agent.LocationType;
 import eu.toop.edm.jaxb.cv.agent.PublicOrganizationType;
 import eu.toop.edm.jaxb.cv.cbc.IDType;
@@ -36,6 +33,13 @@ import eu.toop.edm.jaxb.dcterms.DCMediaType;
 import eu.toop.edm.jaxb.dcterms.DCStandardType;
 import eu.toop.edm.jaxb.w3.locn.AddressType;
 import eu.toop.edm.xml.dcatap.DatasetMarshaller;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is responsible for converting the TOOP Directory query result into
@@ -47,16 +51,14 @@ public class BregDCatHelper {
   private static final Logger LOGGER = LoggerFactory.getLogger(BregDCatHelper.class);
 
   /**
-   * Converts the BusinessCards that are obtained from the TOOP Directory
-   * as <code>MatchType</code> instances into <code>org.w3c.dom.Document</code>
-   * objects compatible with the DSD BregDcatAP.
+   * Converts the {@link MatchType} objects that are obtained from the TOOP Directory into <code>org.w3c.dom.Document</code>
+   * objects that are of type {@link DCatAPDatasetType}.
    *
    * @param s_DataSetType Dataset type
    * @param matchTypes    the list of <code>MatchType</code> objects to be converted
    * @return the list if <code>org.w3c.dom.Document</code> objects
    */
-  public static List<Document> convertBusinessCardsToDCat(final String s_DataSetType, List<MatchType> matchTypes) {
-
+  public static List<Document> convertMatchTypesToDCATDocuments(final String s_DataSetType, List<MatchType> matchTypes) {
 
     LOGGER.debug("DatasetType: " + s_DataSetType);
 
@@ -69,7 +71,7 @@ public class BregDCatHelper {
 
           DCatAPDatasetType datasetType = new DCatAPDatasetType();
 
-          final String s_docType = docType.getScheme() + "::" + docType.getValue();
+          final String s_docType = flattenIdType(docType);
 
           DoctypeParts parts = DoctypeParts.parse(s_docType);
 
@@ -89,7 +91,7 @@ public class BregDCatHelper {
           //publisher
           addPublishers(matchType, datasetType);
           //distribution
-          addDistribution(matchType, docType, datasetType, s_DataSetType, parts);
+          addDistribution(docType, datasetType, s_DataSetType, parts);
           final Document document = marshaller.getAsDocument(datasetType);
           dcatDocs.add(document);
         }
@@ -99,7 +101,7 @@ public class BregDCatHelper {
     return dcatDocs;
   }
 
-  private static void addDistribution(MatchType matchType, com.helger.pd.searchapi.v1.IDType docType, DCatAPDatasetType datasetType, String s_dataSetType, DoctypeParts doctypeParts) {
+  private static void addDistribution(com.helger.pd.searchapi.v1.IDType docType, DCatAPDatasetType datasetType, String s_dataSetType, DoctypeParts doctypeParts) {
     /*
     <dcat:distribution>
       <dct:conformsTo>RegRepv4-EDMv2</dct:conformsTo>
@@ -141,7 +143,7 @@ public class BregDCatHelper {
     //   <dct:title>Access Service Title</dct:title>
     // </dcat:accessService>
     DCatAPDataServiceType accessService = new DCatAPDataServiceType();
-    accessService.setIdentifier(ToopDirClient.flattenIdType(docType));
+    accessService.setIdentifier(flattenIdType(docType));
     accessService.setTitle("?Service for " + s_dataSetType + " distribution?");
     accessService.addEndpointURL("");
     distributionType.setAccessService(accessService);
@@ -178,13 +180,13 @@ public class BregDCatHelper {
 
     matchType.getEntity().forEach(entityType -> {
       //<dct:publisher xsi:type="cagv:PublicOrganizationType">
-      PublicOrganizationType publicOrganizationType = new PublicOrganizationType();
+      PublicOrganizationType publisher = new PublicOrganizationType();
 
       //<cbc:id schemeID="VAT">DE730757727</cbc:id>
       final IDType idType = new IDType();
       idType.setSchemeName(matchType.getParticipantID().getScheme());
       idType.setValue(matchType.getParticipantIDValue());
-      publicOrganizationType.addId(idType);
+      publisher.addId(idType);
 
     /*
        <cagv:location>
@@ -201,14 +203,89 @@ public class BregDCatHelper {
 
       final LocationType locationType = new LocationType();
       locationType.setAddress(addressType);
-      publicOrganizationType.addLocation(locationType);
+      publisher.addLocation(locationType);
 
       //<skos:prefLabel>PublisherName</skos:prefLabel> (for each name type)
       final List<NameType> entityNames = entityType.getName();
       entityNames.forEach(nameType -> {
-        publicOrganizationType.getPrefLabel().add(nameType.getValue());
+        publisher.getPrefLabel().add(nameType.getValue());
       });
-      datasetType.addPublisher(publicOrganizationType);
+      datasetType.addPublisher(publisher);
     });
+  }
+
+
+  /**
+   * Convert the given <code>idType</code> to <code>scheme::value</code> format.
+   *
+   * @param idType
+   * @return
+   */
+  public static String flattenIdType(com.helger.pd.searchapi.v1.IDType idType) {
+    return CIdentifier.getURIEncoded(idType.getScheme(), idType.getValue());
+  }
+
+
+  /**
+   * Inverse of {@link BregDCatHelper#convertMatchTypesToDCATDocuments}. Converts the provided
+   * list of {@link Element} objects that are of type {@link DCatAPDatasetType} to a list of {@link MatchType}
+   * objects
+   *
+   * @param dcatElements to be converted
+   * @return the newly created list of {@link MatchType} objects
+   */
+  public static List<MatchType> convertDCatElementsToMatchTypes(List<Element> dcatElements) {
+
+    
+    List<MatchType> matchTypes = new ArrayList<>(dcatElements.size());
+
+    DatasetMarshaller dm = new DatasetMarshaller();
+    dcatElements.forEach(element -> {
+      DCatAPDatasetType dataset = dm.read(element);
+
+      MatchType matchType = new MatchType();
+      matchTypes.add(matchType);
+
+
+      //participant identifiers
+
+      dataset.getPublisher().forEach(publisher -> {
+
+        PublicOrganizationType _publisher = (PublicOrganizationType) publisher;
+
+        com.helger.pd.searchapi.v1.IDType participantId = new com.helger.pd.searchapi.v1.IDType();
+        IDType idType = _publisher.getIdAtIndex(0);
+        participantId.setScheme(idType.getSchemeName());
+        participantId.setValue(idType.getValue());
+        //TODO: this is being done multiple times because of inversion. Find a better way.
+        matchType.setParticipantID(participantId);
+
+        EntityType entityType = new EntityType();
+
+        AddressType addressType = _publisher.getLocationAtIndex(0).getAddress();
+
+        entityType.setCountryCode(addressType.getAdminUnitLevel1());
+        entityType.setGeoInfo(addressType.getFullAddress());
+
+        _publisher.getPrefLabel().forEach(label -> {
+          entityType.addName(new NameType(label));
+        });
+
+        matchType.addEntity(entityType);
+      });
+
+      dataset.getDistribution().forEach(dist -> {
+
+        com.helger.pd.searchapi.v1.IDType docType = new com.helger.pd.searchapi.v1.IDType();
+        String identifier = dist.getAccessService().getIdentifier();
+        int index = identifier.indexOf("::");
+
+        docType.setScheme(identifier.substring(0, index));
+        docType.setValue(identifier.substring(index+2));
+        matchType.addDocTypeID(docType);
+      });
+    });
+
+    return matchTypes;
   }
 }
