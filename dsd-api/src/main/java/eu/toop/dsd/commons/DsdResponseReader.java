@@ -15,9 +15,11 @@
  */
 package eu.toop.dsd.commons;
 
+import java.util.List;
+
 import com.helger.pd.searchapi.v1.MatchType;
 
-import java.util.List;
+import eu.toop.edm.xml.IJAXBVersatileReader;
 
 /**
  * A class to read DSD responses
@@ -30,7 +32,7 @@ public class DsdResponseReader {
    * Create a reader that returns reads a {@link List} of {@link MatchType} objects from sources
    * @return the reader
    */
-  public static IReader<List<MatchType>> matchTypeListReader() {
+  public static IJAXBVersatileReader<List<MatchType>> matchTypeListReader() {
     return new MatchTypeListReader();
   }
 }

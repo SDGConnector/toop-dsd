@@ -1,46 +1,52 @@
 package eu.toop.dsd.commons;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.xml.transform.Source;
+
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
 import com.helger.pd.searchapi.v1.MatchType;
-import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
+
+import eu.toop.edm.xml.IJAXBVersatileReader;
 import eu.toop.edm.xml.cagv.CCAGV;
-import eu.toop.edm.xml.dcatap.DatasetMarshaller;
 import eu.toop.regrep.RegRep4Reader;
 import eu.toop.regrep.query.QueryResponse;
 import eu.toop.regrep.rim.AnyValueType;
-import org.w3c.dom.Element;
-
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * An intermedate class that writes {@link MatchType} objects.
  */
-class MatchTypeListReader implements IReader<List<MatchType>> {
+class MatchTypeListReader implements IJAXBVersatileReader<List<MatchType>> {
 
   /* hide the constructor */
   MatchTypeListReader(){ }
 
-  @Override
-  public List<MatchType> read(Reader reader) {
-    QueryResponse queryResponse = RegRep4Reader.queryResponse(CCAGV.XSDS).read(reader);
+  @Nullable
+  public List<MatchType> read (@Nonnull final Source aSource)
+  {
+    QueryResponse queryResponse = RegRep4Reader.queryResponse(CCAGV.XSDS).read(aSource);
+    if (queryResponse == null)
+      return null;
+
     return convertQueryResponseToMatchTypeList(queryResponse);
   }
 
-  @Override
-  public List<MatchType> read(InputStream inputStream) {
-    QueryResponse queryResponse = RegRep4Reader.queryResponse(CCAGV.XSDS).read(inputStream);
+  @Nullable
+  public List<MatchType> read (@Nonnull final Node aNode)
+  {
+    QueryResponse queryResponse = RegRep4Reader.queryResponse(CCAGV.XSDS).read(aNode);
+    if (queryResponse == null)
+      return null;
+
     return convertQueryResponseToMatchTypeList(queryResponse);
   }
 
-  @Override
-  public List<MatchType> fromString(String contents) {
-    QueryResponse queryResponse = RegRep4Reader.queryResponse(CCAGV.XSDS).read(contents);
-    return convertQueryResponseToMatchTypeList(queryResponse);
-  }
-
-  private List<MatchType> convertQueryResponseToMatchTypeList(QueryResponse queryResponse) {
+  private static List<MatchType> convertQueryResponseToMatchTypeList(QueryResponse queryResponse) {
     List<Element> dcatElements = new ArrayList<>();
 
     queryResponse.getRegistryObjectList().getRegistryObject().forEach(registryObjectType -> {

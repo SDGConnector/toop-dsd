@@ -1,20 +1,23 @@
 package eu.toop.dsd.service;
 
 
+import java.util.GregorianCalendar;
+import java.util.List;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+
+import org.junit.Assert;
+import org.junit.Test;
+
 import com.helger.pd.searchapi.PDSearchAPIReader;
 import com.helger.pd.searchapi.PDSearchAPIWriter;
 import com.helger.pd.searchapi.v1.MatchType;
 import com.helger.pd.searchapi.v1.ResultListType;
+
 import eu.toop.dsd.commons.DsdResponseReader;
 import eu.toop.dsd.commons.DsdResponseWriter;
 import eu.toop.dsd.commons.types.DoctypeParts;
-import org.junit.Assert;
-import org.junit.Test;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import java.util.GregorianCalendar;
-import java.util.List;
 
 public class DSDTests {
 
@@ -47,7 +50,7 @@ public class DSDTests {
     String resultXml = DsdResponseWriter.matchTypesWriter(s_dataSetType, match).getAsString();
     System.out.println(resultXml);
 
-    List<MatchType> matchTypeList = DsdResponseReader.matchTypeListReader().fromString(resultXml);
+    List<MatchType> matchTypeList = DsdResponseReader.matchTypeListReader().read(resultXml);
 
 
     ResultListType rls = new ResultListType();

@@ -1,7 +1,19 @@
 package eu.toop.dsd.commons;
 
+import java.math.BigInteger;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+
+import javax.annotation.Nonnull;
+
+import org.w3c.dom.Document;
+
+import com.helger.jaxb.IJAXBWriter;
 import com.helger.pd.searchapi.v1.IDType;
 import com.helger.pd.searchapi.v1.MatchType;
+
+import eu.toop.edm.xml.IJAXBVersatileWriter;
 import eu.toop.edm.xml.cagv.CCAGV;
 import eu.toop.regrep.ERegRepResponseStatus;
 import eu.toop.regrep.RegRep4Writer;
@@ -10,59 +22,29 @@ import eu.toop.regrep.SlotBuilder;
 import eu.toop.regrep.query.QueryResponse;
 import eu.toop.regrep.rim.RegistryObjectListType;
 import eu.toop.regrep.rim.RegistryObjectType;
-import org.w3c.dom.Document;
-
-import java.io.OutputStream;
-import java.io.Writer;
-import java.math.BigInteger;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
 
 /**
- * An intermedate class that writes {@link MatchType} objects.
+ * An intermediate class that writes {@link MatchType} objects.
  */
-class MatchTypesWriter implements IWriter {
-  private final String s_DataSetType;
-  private final List<MatchType> matchTypes;
+class MatchTypesWriter implements IJAXBVersatileWriter<QueryResponse> {
+  private QueryResponse m_aQR;
 
   MatchTypesWriter(String s_DataSetType, List<MatchType> matchTypes) {
-    this.s_DataSetType = s_DataSetType;
-    this.matchTypes = matchTypes;
+    m_aQR = prepareQueryResponse(s_DataSetType, matchTypes);
+  }
+  @Nonnull
+  public QueryResponse getObjectToWrite ()
+  {
+    return m_aQR;
   }
 
-  /**
-   * Convert the dataset type and match types to DSD Regrep format and write it to the given <code>writer</code>
-   *
-   * @param writer
-   */
-  @Override
-  public void write(Writer writer) {
-    final QueryResponse aQResponse = prepareQueryResponse(s_DataSetType, matchTypes);
-    // Additional XSDs are required for xsi:type
-    RegRep4Writer.queryResponse(CCAGV.XSDS).setFormattedOutput(true).write(aQResponse, writer);
+  @Nonnull
+  public IJAXBWriter <QueryResponse> getWriter ()
+  {
+    return RegRep4Writer.queryResponse(CCAGV.XSDS).setFormattedOutput(true);
   }
 
-  /**
-   * Convert the dataset type and match types to DSD Regrep format and write it to the given <code>outputStream</code>
-   *
-   * @param outputStream
-   */
-  @Override
-  public void write(OutputStream outputStream) {
-    final QueryResponse aQResponse = prepareQueryResponse(s_DataSetType, matchTypes);
-    // Additional XSDs are required for xsi:type
-    RegRep4Writer.queryResponse(CCAGV.XSDS).setFormattedOutput(true).write(aQResponse, outputStream);
-  }
-
-  @Override
-  public String getAsString() {
-    final QueryResponse aQResponse = prepareQueryResponse(s_DataSetType, matchTypes);
-    // Additional XSDs are required for xsi:type
-    return RegRep4Writer.queryResponse(CCAGV.XSDS).setFormattedOutput(true).getAsString(aQResponse);
-  }
-
-
+ 
 
   /**
    * This is a tentative approach. We filter out match types as following:<br>

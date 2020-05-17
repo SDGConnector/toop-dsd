@@ -15,10 +15,12 @@
  */
 package eu.toop.dsd.commons;
 
-import com.helger.pd.searchapi.v1.MatchType;
-import eu.toop.regrep.query.QueryResponse;
-
 import java.util.List;
+
+import com.helger.pd.searchapi.v1.MatchType;
+
+import eu.toop.edm.xml.IJAXBVersatileWriter;
+import eu.toop.regrep.query.QueryResponse;
 
 /**
  * A class to write DSD responses
@@ -34,7 +36,7 @@ public class DsdResponseWriter {
    * @param matchTypes
    * @return
    */
-  public static IWriter matchTypesWriter(String s_DataSetType, List<MatchType> matchTypes) {
+  public static IJAXBVersatileWriter<QueryResponse> matchTypesWriter(String s_DataSetType, List<MatchType> matchTypes) {
     return new MatchTypesWriter(s_DataSetType, matchTypes);
   }
 
