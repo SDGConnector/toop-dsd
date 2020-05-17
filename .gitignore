@@ -24,9 +24,9 @@ hs_err_pid*
 target/
 .idea/
 *.iml
-/.settings/
-/.project
-/.classpath
+.settings/
+.project
+.classpath
 *.orig
 .factorypath
 request.xml
