@@ -48,6 +48,6 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: mv ${TRAVIS_BUILD_DIR}/dsd-service/target/dsd*.war ${TRAVIS_BUILD_DIR}/target/dsd.war && scp -P 3535 ${TRAVIS_BUILD_DIR}/target/dsd.war ${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_DIRECTORY}
+  script: mv ${TRAVIS_BUILD_DIR}/dsd-service/target/dsd*.war ${TRAVIS_BUILD_DIR}/dsd-service/target/dsd.war && scp -P 3535 ${TRAVIS_BUILD_DIR}/dsd-service/target/dsd.war ${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_DIRECTORY}
   on:
     branch: master
