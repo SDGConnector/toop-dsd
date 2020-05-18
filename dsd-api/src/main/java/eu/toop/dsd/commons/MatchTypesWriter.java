@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import javax.annotation.Nonnull;
 
+import eu.toop.regrep.slot.SlotBuilder;
 import org.w3c.dom.Document;
 
 import com.helger.jaxb.IJAXBWriter;
@@ -18,7 +19,6 @@ import eu.toop.edm.xml.cagv.CCAGV;
 import eu.toop.regrep.ERegRepResponseStatus;
 import eu.toop.regrep.RegRep4Writer;
 import eu.toop.regrep.RegRepHelper;
-import eu.toop.regrep.SlotBuilder;
 import eu.toop.regrep.query.QueryResponse;
 import eu.toop.regrep.rim.RegistryObjectListType;
 import eu.toop.regrep.rim.RegistryObjectType;
