@@ -70,31 +70,26 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-commons</artifactId>
-      <version>9.4.2</version>
     </dependency>
 
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-httpclient</artifactId>
-      <version>9.1.12</version>
     </dependency>
 
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-json</artifactId>
-      <version>9.4.2</version>
     </dependency>
 
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-xml</artifactId>
-      <version>9.4.2</version>
     </dependency>
 
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>peppol-id</artifactId>
-      <version>8.0.7</version>
     </dependency>
 
     <dependency>
@@ -112,24 +107,20 @@
     <dependency>
       <groupId>com.sun.activation</groupId>
       <artifactId>jakarta.activation</artifactId>
-      <version>1.2.2</version>
     </dependency>
 
     <!-- Logging -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
-      <version>2.13.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
-      <version>2.13.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-web</artifactId>
-      <version>2.13.2</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
