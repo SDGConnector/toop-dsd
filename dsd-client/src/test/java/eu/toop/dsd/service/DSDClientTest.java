@@ -22,7 +22,7 @@ public final class DSDClientTest {
   @Ignore
   @Test
   public void testQuery() throws DatatypeConfigurationException {
-    final List<MatchType> matchTypes = new DSDClient("http://dsd.dev.exchange.toop.eu").queryDataset("REGISTERED_ORGANIZATION_TYPE",
+    final List<MatchType> matchTypes = new DSDClient("http://dsd.dev.exchange.toop.eu/").queryDataset("REGISTERED_ORGANIZATION_TYPE",
                                                                                                      "SV");
 
     final ResultListType rls = new ResultListType();
@@ -35,7 +35,7 @@ public final class DSDClientTest {
     });
 
     final StringWriter writer = new StringWriter();
-    PDSearchAPIWriter.resultListV1().write(rls, writer);
+    PDSearchAPIWriter.resultListV1().setFormattedOutput(true).write(rls, writer);
     System.out.println(writer);
   }
 }
