@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.toop.dsd.commons;
+package eu.toop.dsd.client;
 
 import java.util.List;
 

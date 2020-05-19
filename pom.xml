@@ -73,6 +73,7 @@
   <modules>
     <module>dsd-api</module>
     <module>dsd-service</module>
+    <module>dsd-client</module>
   </modules>
 
   <build>
@@ -109,6 +110,11 @@
       <dependency>
         <groupId>eu.toop</groupId>
         <artifactId>dsd-api</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>eu.toop</groupId>
+        <artifactId>dsd-client</artifactId>
         <version>${revision}</version>
       </dependency>
       <dependency>

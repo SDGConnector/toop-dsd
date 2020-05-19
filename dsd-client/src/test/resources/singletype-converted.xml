@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<query:QueryResponse xmlns:lcm="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:4.0" xmlns:spi="urn:oasis:names:tc:ebxml-regrep:xsd:spi:4.0"
+                     xmlns:rs="urn:oasis:names:tc:ebxml-regrep:xsd:rs:4.0" xmlns:wsa="http://www.w3.org/2005/08/addressing"
+                     xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:query="urn:oasis:names:tc:ebxml-regrep:xsd:query:4.0"
+                     xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:4.0" startIndex="0" totalResultCount="1"
+                     status="urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success" requestId="bd190dc3-7a3b-4177-9824-c2563f4d6795">
+  <rim:Slot name="Dataset">
+    <rim:SlotValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="rim:AnyValueType">
+      <dcat:Dataset xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+                    xmlns:locn="http://www.w3.org/ns/locn#"  xmlns:dct="http://purl.org/dc/terms/"
+                    xmlns:cccev="https://semic.org/sa/cv/cccev-2.0.0#" xmlns:cbc="https://semic.org/sa/cv/common/cbc-2.0.0#"
+                    xmlns:cagv="https://semic.org/sa/cv/cagv/agent-2.0.0#" xmlns:cac="https://semic.org/sa/cv/common/cac-2.0.0#"
+                    xmlns:adms="http://www.w3.org/ns/adms#" xmlns:dcat="http://data.europa.eu/r5r/">
+        <dct:description>A dataset about the Registered organizations</dct:description>
+        <dct:title>Companies registry</dct:title>
+        <dcat:distribution>
+          <dcat:accessURL/>
+          <dct:conformsTo>CCCEV</dct:conformsTo>
+          <dct:format/>
+        </dcat:distribution>
+        <dct:conformsTo>REGISTERED_ORGANIZATION_ONTOLOGY_URI</dct:conformsTo>
+        <dct:identifier>RE238918378</dct:identifier>
+        <dct:publisher xsi:type="cagv:PublicOrganizationType">
+          <cbc:id schemeName="VAT">DE730757727</cbc:id>
+          <cagv:location>
+            <locn:address>
+              <locn:fullAddress>Prince Street 15</locn:fullAddress>
+              <locn:adminUnitLevel1>GB</locn:adminUnitLevel1>
+            </locn:address>
+          </cagv:location>
+          <skos:prefLabel>Elonia ACC</skos:prefLabel>
+        </dct:publisher>
+        <dct:type>REGISTERED_ORGANIZATION_TYPE</dct:type>
+      </dcat:Dataset>
+    </rim:SlotValue>
+  </rim:Slot>
+</query:QueryResponse>

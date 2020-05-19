@@ -1,4 +1,4 @@
-package eu.toop.dsd.commons;
+package eu.toop.dsd.client;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -15,9 +15,9 @@ import com.helger.pd.searchapi.PDSearchAPIWriter;
 import com.helger.pd.searchapi.v1.MatchType;
 import com.helger.pd.searchapi.v1.ResultListType;
 
-import eu.toop.dsd.commons.DsdResponseReader;
-import eu.toop.dsd.commons.DsdResponseWriter;
-import eu.toop.dsd.commons.types.DoctypeParts;
+import eu.toop.dsd.client.DsdResponseReader;
+import eu.toop.dsd.client.DsdResponseWriter;
+import eu.toop.dsd.client.types.DoctypeParts;
 
 public class DSDTests {
 

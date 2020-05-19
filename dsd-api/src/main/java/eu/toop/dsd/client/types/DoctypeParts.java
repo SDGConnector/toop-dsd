@@ -1,4 +1,4 @@
-package eu.toop.dsd.commons.types;
+package eu.toop.dsd.client.types;
 
 public class DoctypeParts {
   private String scheme;

@@ -1,4 +1,4 @@
-package eu.toop.dsd.commons;
+package eu.toop.dsd.client;
 
 import java.math.BigInteger;
 import java.util.Iterator;
