@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
+import com.helger.commons.annotation.Nonempty;
 import eu.toop.dsd.client.DsdResponseWriter;
 import eu.toop.dsd.config.DSDConfig;
 import org.slf4j.Logger;
@@ -30,6 +31,8 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.pd.searchapi.v1.MatchType;
+
+import javax.annotation.Nonnull;
 
 
 /**
@@ -52,13 +55,18 @@ public class DSDQueryService {
    * Query the underlying database for the provided parameters and
    * respond using the TOOP DSD RegRep response specification.
    *
-   * @param parameterMap   the map that contains the parameters for the queries
-   * @param responseStream the stream to write the results in case of success.
+   * @param parameterMap   the map that contains the parameters for the queries, may not be null
+   * @param responseStream the stream to write the results in case of success, may not be null
    * @throws IllegalArgumentException if the query parameters are invalid
    * @throws IllegalStateException    if a problem occurs
    */
-  public static void processRequest(Map<String, String[]> parameterMap, OutputStream responseStream) {
-    ValueEnforcer.notEmpty(parameterMap, "parameterMap");
+  public static void processRequest(@Nonnull @Nonempty Map<String, String[]> parameterMap, @Nonnull OutputStream responseStream) {
+    ValueEnforcer.notNull(parameterMap, "parameterMap");
+    ValueEnforcer.notNull(responseStream, "responseStream");
+
+    if (parameterMap.isEmpty())
+      throw new IllegalArgumentException("parameterMap cannot be empty");
+
 
     String s_QueryId;
 
@@ -90,7 +98,19 @@ public class DSDQueryService {
     }
   }
 
-  public static void processDataSetRequest(Map<String, String[]> parameterMap, OutputStream responseStream) throws IOException {
+  /**
+   * Processes the incoming parameter map as a dataset request parameter map and performs a dataset request.
+   * @param parameterMap the map that contains the parameters to the query. May not be null
+   * @param responseStream the result will be written into this stream
+   * @throws IOException if an io problem occurs.
+   */
+  public static void processDataSetRequest(@Nonnull @Nonempty Map<String, String[]> parameterMap, @Nonnull  OutputStream responseStream) throws IOException {
+    ValueEnforcer.notNull(parameterMap, "parameterMap");
+    ValueEnforcer.notNull(responseStream, "responseStream");
+
+    if (parameterMap.isEmpty())
+      throw new IllegalArgumentException("parameterMap cannot be empty");
+
     String s_DataSetType;
     String s_CountryCode = null;
 

@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2018-2020 toop.eu
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package eu.toop.dsd.service;
 
 
@@ -19,8 +34,16 @@ import eu.toop.dsd.client.DsdResponseReader;
 import eu.toop.dsd.client.DsdResponseWriter;
 import eu.toop.dsd.client.types.DoctypeParts;
 
+/**
+ * The type Dsd tests.
+ *
+ * @author yerlibilgin
+ */
 public class DSDTests {
 
+  /**
+   * Test convert match types.
+   */
   @Test
   public void testConvertMatchTypes() {
     final ResultListType read = PDSearchAPIReader.resultListV1().read(DSDTests.class.getResourceAsStream("/directory-results.xml"));
@@ -30,6 +53,9 @@ public class DSDTests {
     System.out.println(resultXml);
   }
 
+  /**
+   * Test convert single match type.
+   */
   @Test
   public void testConvertSingleMatchType() {
     final ResultListType read = PDSearchAPIReader.resultListV1().read(DSDTests.class.getResourceAsStream("/directory-result-single.xml"));
@@ -41,6 +67,11 @@ public class DSDTests {
   }
 
 
+  /**
+   * Write read.
+   *
+   * @throws DatatypeConfigurationException the datatype configuration exception
+   */
   @Test
   public void writeRead() throws DatatypeConfigurationException {
     final ResultListType read = PDSearchAPIReader.resultListV1().read(DSDTests.class.getResourceAsStream("/directory-result-single.xml"));
@@ -66,6 +97,9 @@ public class DSDTests {
     System.out.println(PDSearchAPIWriter.resultListV1().setFormattedOutput(true).getAsString(rls));
   }
 
+  /**
+   * Test doctype parts.
+   */
   @Test
   public void testDoctypeParts() {
     DoctypeParts parts = DoctypeParts.parse(
@@ -81,6 +115,9 @@ public class DSDTests {
   }
 
 
+  /**
+   * Test doctype parts no schem.
+   */
   @Test
   public void testDoctypePartsNoSchem() {
     DoctypeParts parts = DoctypeParts.parse(
@@ -96,6 +133,9 @@ public class DSDTests {
   }
 
 
+  /**
+   * Test doctype parts old doc type.
+   */
   @Test
   public void testDoctypePartsOldDocType() {
     DoctypeParts parts = DoctypeParts.parse(

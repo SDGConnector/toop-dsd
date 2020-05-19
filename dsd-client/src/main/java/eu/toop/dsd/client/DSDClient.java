@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2018-2020 toop.eu
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package eu.toop.dsd.client;
 
 import java.nio.charset.StandardCharsets;
@@ -20,13 +35,30 @@ import com.helger.httpclient.HttpClientManager;
 import com.helger.httpclient.HttpClientSettings;
 import com.helger.pd.searchapi.v1.MatchType;
 
+/**
+ * This is a helper class that abstracts the rest call to the DSD service for dataset type queries.
+ *
+ * @author yerlibilgin
+ */
 public class DSDClient {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DSDClient.class);
 
+  /**
+   * The constant QUERY_DATASET_REQUEST.
+   */
   public static final String QUERY_DATASET_REQUEST = "urn:toop:dsd:ebxml-regrep:queries:DataSetRequest";
+  /**
+   * The constant PARAM_NAME_DATA_SET_TYPE.
+   */
   public static final String PARAM_NAME_DATA_SET_TYPE = "dataSetType";
+  /**
+   * The constant PARAM_NAME_QUERY_ID.
+   */
   public static final String PARAM_NAME_QUERY_ID = "queryId";
+  /**
+   * The constant PARAM_NAME_COUNTRY_CODE.
+   */
   public static final String PARAM_NAME_COUNTRY_CODE = "countryCode";
 
   private final String m_sDSDBaseURL;
@@ -35,14 +67,19 @@ public class DSDClient {
   /**
    * Constructor
    *
-   * @param dsdBaseUrl the URL where the DSD service resides, may not be
-   *                   <code>null</code>
+   * @param dsdBaseUrl the URL where the DSD service resides, may not be                   <code>null</code>
    */
   public DSDClient(@Nonnull @Nonempty final String dsdBaseUrl) {
     ValueEnforcer.notEmpty(dsdBaseUrl, "DSD BaseURL");
     m_sDSDBaseURL = dsdBaseUrl;
   }
 
+  /**
+   * Sets http client settings.
+   *
+   * @param aHttpClientSettings the a http client settings
+   * @return the http client settings
+   */
   @Nonnull
   public DSDClient setHttpClientSettings(@Nullable final HttpClientSettings aHttpClientSettings) {
     m_aHttpClientSettings = aHttpClientSettings;

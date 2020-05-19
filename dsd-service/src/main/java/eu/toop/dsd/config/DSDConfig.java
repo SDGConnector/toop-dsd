@@ -60,14 +60,29 @@ public class DSDConfig {
   }
 
 
+  /**
+   * Gets toop dir url.
+   *
+   * @return the toop dir url
+   */
   public static String getToopDirUrl() {
     return toopDirUrl;
   }
 
+  /**
+   * Gets dsd version.
+   *
+   * @return the dsd version
+   */
   public static String getDsdVersion() {
     return dsdVersion;
   }
 
+  /**
+   * Gets build date.
+   *
+   * @return the build date
+   */
   public static String getBuildDate() {
     return buildDate;
   }

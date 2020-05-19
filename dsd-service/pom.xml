@@ -33,7 +33,7 @@
   <!--          -->
   <artifactId>dsd-service</artifactId>
   <packaging>war</packaging>
-
+  <inceptionYear>2020</inceptionYear>
 
   <licenses>
     <license>
@@ -43,15 +43,8 @@
     </license>
   </licenses>
 
-  <scm>
-    <connection>scm:git:git@github.com:toop4eu/data-services-directory.git</connection>
-    <developerConnection>scm:git:git@github.com:toop4eu/data-services-directory.git</developerConnection>
-    <url>http://github.com/toop4eu/data-services-directory</url>
-    <tag>HEAD</tag>
-  </scm>
-
   <organization>
-    <name>toop.eu</name>
+    <name>TOOP</name>
     <url>http://www.toop.eu</url>
   </organization>
 
@@ -62,7 +55,6 @@
       <email>myildiz83(at)gmail.com</email>
     </developer>
   </developers>
-
 
   <dependencies>
 
