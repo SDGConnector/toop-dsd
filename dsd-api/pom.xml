@@ -50,37 +50,26 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>phoss-directory-businesscard</artifactId>
-      <version>0.8.6</version>
     </dependency>
 
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>phoss-directory-searchapi</artifactId>
-      <version>0.8.6</version>
     </dependency>
 
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-commons</artifactId>
-      <version>9.4.2</version>
     </dependency>
 
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-json</artifactId>
-      <version>9.4.2</version>
     </dependency>
 
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-xml</artifactId>
-      <version>9.4.2</version>
-    </dependency>
-
-    <!-- Logging -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jul-to-slf4j</artifactId>
     </dependency>
 
     <!-- JUnit 4 for testing -->

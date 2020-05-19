@@ -108,6 +108,27 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>com.helger</groupId>
+        <artifactId>ph-commons-parent-pom</artifactId>
+        <version>9.4.2</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.helger</groupId>
+        <artifactId>ph-web-parent-pom</artifactId>
+        <version>9.1.12</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.helger</groupId>
+        <artifactId>phoss-directory-parent-pom</artifactId>
+        <version>0.8.6</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
         <groupId>eu.toop</groupId>
         <artifactId>dsd-api</artifactId>
         <version>${revision}</version>
