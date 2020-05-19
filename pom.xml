@@ -36,7 +36,7 @@
 
   <properties>
     <revision>2.0.0-SNAPSHOT</revision>
-    <toop.version>2.0.0-SNAPSHOT</toop.version>
+    <toop.commons.version>2.0.0-beta3</toop.commons.version>
   </properties>
 
   <inceptionYear>2020</inceptionYear>
@@ -120,12 +120,12 @@
       <dependency>
         <groupId>eu.toop</groupId>
         <artifactId>toop-edm</artifactId>
-        <version>${toop.version}</version>
+        <version>${toop.commons.version}</version>
       </dependency>
       <dependency>
         <groupId>eu.toop</groupId>
         <artifactId>toop-regrep</artifactId>
-        <version>${toop.version}</version>
+        <version>${toop.commons.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

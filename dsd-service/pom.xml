@@ -35,13 +35,6 @@
   <artifactId>dsd-service</artifactId>
   <packaging>war</packaging>
 
-  <!--                -->
-  <!--   properties   -->
-  <!--                -->
-  <properties>
-    <toop.version>2.0.0-beta2</toop.version>
-  </properties>
-
 
   <licenses>
     <license>
