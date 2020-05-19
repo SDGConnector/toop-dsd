@@ -24,8 +24,8 @@ import javax.annotation.Nullable;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +35,11 @@ import com.helger.commons.url.SimpleURL;
 import com.helger.pd.searchapi.PDSearchAPIReader;
 import com.helger.pd.searchapi.v1.MatchType;
 import com.helger.pd.searchapi.v1.ResultListType;
-import com.helger.peppolid.CIdentifier;
 
 /**
- * This class is the bridge between DSD and TOOP directory.
- * It queries the TOOP directory and returns the responses as a list of <code>MatchType</code> objects
+ * This class is the bridge between DSD and TOOP directory. It queries the TOOP
+ * directory and returns the responses as a list of <code>MatchType</code>
+ * objects
  *
  * @author yerlibilgin
  */
@@ -48,7 +48,8 @@ public class ToopDirClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(DSDQueryService.class);
 
   /**
-   * Query TOOP-DIR with country code and doctype. Return the result as a list of <code>MatchType</code> objects
+   * Query TOOP-DIR with country code and doctype. Return the result as a list of
+   * <code>MatchType</code> objects
    *
    *
    * @param toopDirBaseURL  the base URL of Toop Directory
@@ -57,14 +58,15 @@ public class ToopDirClient {
    * @return list of <code>MatchType</code> objects
    * @throws IOException if a communication problem occurs
    */
-  public static List<MatchType> performSearch(String toopDirBaseURL, @Nullable final String sCountryCode,
-                                              @Nullable final String aDocumentTypeID) throws IOException {
+  public static List<MatchType> performSearch(final String toopDirBaseURL, @Nullable final String sCountryCode,
+      @Nullable final String aDocumentTypeID) throws IOException {
 
     return performSearchResultsLists(toopDirBaseURL, sCountryCode, aDocumentTypeID).getMatch();
 
   }
 
-  static ResultListType performSearchResultsLists(String toopDirBaseURL, @Nullable String sCountryCode, @Nullable String aDocumentTypeID) throws IOException {
+  static ResultListType performSearchResultsLists(final String toopDirBaseURL, @Nullable final String sCountryCode,
+      @Nullable final String aDocumentTypeID) throws IOException {
     if (StringHelper.hasNoText(toopDirBaseURL))
       throw new IllegalStateException("The Directory base URL configuration is missing");
 
@@ -86,26 +88,26 @@ public class ToopDirClient {
     if (LOGGER.isInfoEnabled())
       LOGGER.info("Querying " + aBaseURL.getAsStringWithEncodedParameters());
 
-    HttpClient httpClient = HttpClients.createDefault();
+    try (final CloseableHttpClient httpClient = HttpClients.createDefault()) {
+      final HttpGet aGet = new HttpGet(aBaseURL.getAsURI());
 
-    final HttpGet aGet = new HttpGet(aBaseURL.getAsURI());
+      final HttpResponse response = httpClient.execute(aGet);
 
-    HttpResponse response = httpClient.execute(aGet);
+      if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+        throw new IllegalStateException("Request failed " + response.getStatusLine().getStatusCode());
+      }
 
-    if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-      throw new IllegalStateException("Request failed " + response.getStatusLine().getStatusCode());
-    }
-    
-    try (final ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-      response.getEntity().writeTo(stream);
-      final byte[] s_bytes = stream.toByteArray ();
+      try (final ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+        response.getEntity().writeTo(stream);
+        final byte[] s_bytes = stream.toByteArray();
 
-      final String s_result = new String(s_bytes, StandardCharsets.UTF_8);
-      LOGGER.debug(s_result);
+        final String s_result = new String(s_bytes, StandardCharsets.UTF_8);
+        LOGGER.debug(s_result);
 
-      // Read from bytes to avoid charset error
-      final ResultListType read = PDSearchAPIReader.resultListV1().read(s_bytes);
-      return read;
+        // Read from bytes to avoid charset error
+        final ResultListType read = PDSearchAPIReader.resultListV1().read(s_bytes);
+        return read;
+      }
     }
   }
 
