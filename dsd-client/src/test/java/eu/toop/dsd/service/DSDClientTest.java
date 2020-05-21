@@ -23,6 +23,8 @@ import java.util.List;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
+import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
+import eu.toop.edm.xml.dcatap.DatasetMarshaller;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -40,15 +42,35 @@ import eu.toop.dsd.client.DSDClient;
 public final class DSDClientTest {
 
   /**
-   * Test query.
+   * Test query
    *
    * @throws DatatypeConfigurationException the datatype configuration exception
    */
   @Ignore
   @Test
   public void testQuery() throws DatatypeConfigurationException {
-    final List<MatchType> matchTypes = new DSDClient("http://dsd.dev.exchange.toop.eu/").queryDataset("REGISTERED_ORGANIZATION_TYPE",
-                                                                                                     "SV");
+    final List<DCatAPDatasetType> matchTypes = new DSDClient("http://dsd.dev.exchange.toop.eu/").queryDataset("REGISTERED_ORGANIZATION_TYPE",
+        "SV");
+
+    final DatasetMarshaller datasetMarshaller = new DatasetMarshaller();
+    datasetMarshaller.setFormattedOutput(true);
+
+    matchTypes.forEach(dataset -> {
+      System.out.println(datasetMarshaller.getAsString(dataset));
+    });
+  }
+
+
+  /**
+   * Test query as match types.
+   *
+   * @throws DatatypeConfigurationException the datatype configuration exception
+   */
+  @Ignore
+  @Test
+  public void testQuerMatchTypes() throws DatatypeConfigurationException {
+    final List<MatchType> matchTypes = new DSDClient("http://dsd.dev.exchange.toop.eu/").queryDatasetAsMatchTypes("REGISTERED_ORGANIZATION_TYPE",
+        "SV");
 
     final ResultListType rls = new ResultListType();
     rls.setVersion("1");

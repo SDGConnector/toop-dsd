@@ -42,11 +42,11 @@ class MatchTypeListReader implements IJAXBVersatileReader<List<MatchType>> {
    * Instantiates a new Match type list reader.
    */
   /* hide the constructor */
-  MatchTypeListReader(){ }
+  MatchTypeListReader() {
+  }
 
   @Nullable
-  public List<MatchType> read (@Nonnull final Source aSource)
-  {
+  public List<MatchType> read(@Nonnull final Source aSource) {
     QueryResponse queryResponse = RegRep4Reader.queryResponse(CCAGV.XSDS).read(aSource);
     if (queryResponse == null)
       return null;
@@ -56,12 +56,12 @@ class MatchTypeListReader implements IJAXBVersatileReader<List<MatchType>> {
 
   /**
    * Read match type list from a {@link Node} object
+   *
    * @param aNode the {@link Node} object
    * @return the list of match types
    */
   @Nullable
-  public List<MatchType> read (@Nonnull final Node aNode)
-  {
+  public List<MatchType> read(@Nonnull final Node aNode) {
     QueryResponse queryResponse = RegRep4Reader.queryResponse(CCAGV.XSDS).read(aNode);
     if (queryResponse == null)
       return null;
@@ -75,15 +75,15 @@ class MatchTypeListReader implements IJAXBVersatileReader<List<MatchType>> {
     queryResponse.getRegistryObjectList().getRegistryObject().forEach(registryObjectType -> {
       registryObjectType.getSlot().forEach(slotType -> {
         //TODO: introduce a constant for "Dataset"
-        if ("Dataset".equals(slotType.getName())){
+        if ("Dataset".equals(slotType.getName())) {
           //this must be a dataset.
-          Element dcatElement = (Element) ((AnyValueType)slotType.getSlotValue()).getAny();
+          Element dcatElement = (Element) ((AnyValueType) slotType.getSlotValue()).getAny();
           dcatElements.add(dcatElement);
 
         }
       });
     });
 
-    return BregDCatHelper.convertDCatElementsToMatchTypes(dcatElements);
+    return BregDCatHelper.convertDCatElementsToMatchTypes(BregDCatHelper.convertElementsToDCatList(dcatElements));
   }
 }

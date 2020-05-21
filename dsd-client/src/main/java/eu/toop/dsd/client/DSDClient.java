@@ -21,6 +21,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -92,10 +93,10 @@ public class DSDClient {
    *
    * @param datasetType the dataset type, may not be <code>null</code>
    * @param countryCode the country code, optional
-   * @return the list of {@link MatchType} objects.
+   * @return the list of {@link DCatAPDatasetType} objects.
    */
   @Nullable
-  public List<MatchType> queryDataset(@Nonnull final String datasetType, @Nullable final String countryCode) {
+  public List<DCatAPDatasetType> queryDataset(@Nonnull final String datasetType, @Nullable final String countryCode) {
 
     ValueEnforcer.notEmpty(datasetType, "datasetType");
 
@@ -113,7 +114,7 @@ public class DSDClient {
       LOGGER.info("Querying " + aBaseURL.getAsStringWithEncodedParameters());
 
     final HttpClientSettings aHttpClientSettings = m_aHttpClientSettings != null ? m_aHttpClientSettings
-                                                                                 : new HttpClientSettings();
+        : new HttpClientSettings();
     try (final HttpClientManager httpClient = HttpClientManager.create(aHttpClientSettings)) {
       final HttpGet aGet = new HttpGet(aBaseURL.getAsURI());
 
@@ -129,7 +130,7 @@ public class DSDClient {
             final String s_result = new String(s_bytes, StandardCharsets.UTF_8);
             LOGGER.debug("DSD result:\n" + s_result);
           }
-          return DsdResponseReader.matchTypeListReader().read(s_bytes);
+          return DsdResponseReader.dcatDatasetTypeReader().read(s_bytes);
         }
       }
     } catch (final RuntimeException ex) {
@@ -138,5 +139,20 @@ public class DSDClient {
       LOGGER.error(ex.getMessage(), ex);
       throw new IllegalStateException(ex);
     }
+  }
+
+  /**
+   * The default DSD query as described here:
+   * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
+   *
+   * @param datasetType the dataset type, may not be <code>null</code>
+   * @param countryCode the country code, optional
+   * @return the list of {@link MatchType} objects.
+   */
+  @Nullable
+  public List<MatchType> queryDatasetAsMatchTypes(@Nonnull final String datasetType, @Nullable final String countryCode) {
+    ValueEnforcer.notEmpty(datasetType, "datasetType");
+    final List<DCatAPDatasetType> dCatAPDatasetTypes = queryDataset(datasetType, countryCode);
+    return BregDCatHelper.convertDCatElementsToMatchTypes(dCatAPDatasetTypes);
   }
 }

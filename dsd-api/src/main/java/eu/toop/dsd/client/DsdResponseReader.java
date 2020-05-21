@@ -15,11 +15,11 @@
  */
 package eu.toop.dsd.client;
 
-import java.util.List;
-
 import com.helger.pd.searchapi.v1.MatchType;
-
+import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
 import eu.toop.edm.xml.IJAXBVersatileReader;
+
+import java.util.List;
 
 /**
  * A class to read DSD responses
@@ -34,5 +34,9 @@ public class DsdResponseReader {
    */
   public static IJAXBVersatileReader<List<MatchType>> matchTypeListReader() {
     return new MatchTypeListReader();
+  }
+
+  public static IJAXBVersatileReader<List<DCatAPDatasetType>> dcatDatasetTypeReader() {
+    return new DcatDatasetTypeReader();
   }
 }

@@ -223,23 +223,36 @@ public class BregDCatHelper {
     return CIdentifier.getURIEncoded(idType.getScheme(), idType.getValue());
   }
 
-
   /**
-   * Inverse of {@link BregDCatHelper#convertMatchTypesToDCATDocuments}. Converts the provided
-   * list of {@link Element} objects that are of type {@link DCatAPDatasetType} to a list of {@link MatchType}
-   * objects
-   *
-   * @param dcatElements to be converted
-   * @return the newly created list of {@link MatchType} objects
+   * Convert the list of {@link Element} objects to a List of {@link DCatAPDatasetType} objects
+   * @param dcatElements the list of {@link Element} objects. Not empty
+   * @return the list of {@link DCatAPDatasetType} objects
    */
-  public static List<MatchType> convertDCatElementsToMatchTypes(List<Element> dcatElements) {
-
-    List<MatchType> matchTypes = new ArrayList<>(dcatElements.size());
+  public static List<DCatAPDatasetType> convertElementsToDCatList(List<Element> dcatElements){
+    List<DCatAPDatasetType> datasetTypes = new ArrayList<>(dcatElements.size());
 
     DatasetMarshaller dm = new DatasetMarshaller();
     dcatElements.forEach(element -> {
       DCatAPDatasetType dataset = dm.read(element);
+      datasetTypes.add(dataset);
+    });
 
+    return datasetTypes;
+  }
+
+  /**
+   * Inverse of {@link BregDCatHelper#convertMatchTypesToDCATDocuments}. Converts the provided
+   * list of {@link DCatAPDatasetType} objects to a list of {@link MatchType}
+   * objects
+   *
+   * @param datasetTypeList to be converted
+   * @return the newly created list of {@link MatchType} objects
+   */
+  public static List<MatchType> convertDCatElementsToMatchTypes(List<DCatAPDatasetType> datasetTypeList) {
+
+    List<MatchType> matchTypes = new ArrayList<>(datasetTypeList.size());
+
+    datasetTypeList.forEach(dataset -> {
       MatchType matchType = new MatchType();
       matchTypes.add(matchType);
 
