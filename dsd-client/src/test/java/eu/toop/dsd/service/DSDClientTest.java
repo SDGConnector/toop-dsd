@@ -46,10 +46,10 @@ public final class DSDClientTest {
    *
    * @throws DatatypeConfigurationException the datatype configuration exception
    */
-  @Ignore
+  //@Ignore
   @Test
   public void testQuery() throws DatatypeConfigurationException {
-    final List<DCatAPDatasetType> matchTypes = new DSDClient("http://dsd.dev.exchange.toop.eu/").queryDataset("REGISTERED_ORGANIZATION_TYPE",
+    final List<DCatAPDatasetType> matchTypes = new DSDClient("http://dsd.dev.exchange.toop.eu").queryDataset("REGISTERED_ORGANIZATION_TYPE",
         "SV");
 
     final DatasetMarshaller datasetMarshaller = new DatasetMarshaller();
@@ -68,8 +68,8 @@ public final class DSDClientTest {
    */
   @Ignore
   @Test
-  public void testQuerMatchTypes() throws DatatypeConfigurationException {
-    final List<MatchType> matchTypes = new DSDClient("http://dsd.dev.exchange.toop.eu/").queryDatasetAsMatchTypes("REGISTERED_ORGANIZATION_TYPE",
+  public void testQueryMatchTypes() throws DatatypeConfigurationException {
+    final List<MatchType> matchTypes = new DSDClient("http://dsd.dev.exchange.toop.eu").queryDatasetAsMatchTypes("REGISTERED_ORGANIZATION_TYPE",
         "SV");
 
     final ResultListType rls = new ResultListType();

@@ -75,7 +75,7 @@ public class BregDCatHelper {
 
 
           //conformsTo
-          setConformsTo(datasetType, parts.getConformsTo());
+          setConformsTo(datasetType, "?" + s_DataSetType + "_ONTOLOGY_URI?");
           //identifier
           datasetType.addIdentifier(parts.getDataSetIdentifier());
 
@@ -144,6 +144,7 @@ public class BregDCatHelper {
     accessService.setIdentifier(flattenIdType(docType));
     accessService.setTitle("?Service for " + s_dataSetType + " distribution?");
     accessService.addEndpointURL("");
+    accessService.addConformsTo(new DCStandardType(doctypeParts.getConformsTo()));
     distributionType.setAccessService(accessService);
 
     //<dcat:mediaType>application/pdf</dcat:mediaType>
