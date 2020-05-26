@@ -34,7 +34,7 @@
   <url>http://github.com/toop4eu/data-services-directory</url>
 
   <properties>
-    <toop.commons.version>2.0.0-beta3</toop.commons.version>
+    <toop.version>2.0.0-SNAPSHOT</toop.version>
   </properties>
 
   <inceptionYear>2020</inceptionYear>
@@ -110,12 +110,12 @@
       <dependency>
         <groupId>eu.toop</groupId>
         <artifactId>toop-edm</artifactId>
-        <version>${toop.commons.version}</version>
+        <version>${toop.version}</version>
       </dependency>
       <dependency>
         <groupId>eu.toop</groupId>
         <artifactId>toop-regrep</artifactId>
-        <version>${toop.commons.version}</version>
+        <version>${toop.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

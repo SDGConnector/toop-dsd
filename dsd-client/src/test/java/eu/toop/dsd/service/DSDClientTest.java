@@ -46,7 +46,7 @@ public final class DSDClientTest {
    *
    * @throws DatatypeConfigurationException the datatype configuration exception
    */
-  //@Ignore
+  @Ignore
   @Test
   public void testQuery() throws DatatypeConfigurationException {
     final List<DCatAPDatasetType> matchTypes = new DSDClient("http://dsd.dev.exchange.toop.eu").queryDataset("REGISTERED_ORGANIZATION_TYPE",
