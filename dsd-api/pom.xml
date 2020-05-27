@@ -70,16 +70,6 @@
     <!-- the business card api -->
     <dependency>
       <groupId>com.helger</groupId>
-      <artifactId>phoss-directory-businesscard</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.helger</groupId>
-      <artifactId>phoss-directory-searchapi</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.helger</groupId>
       <artifactId>ph-commons</artifactId>
     </dependency>
 
@@ -91,6 +81,16 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-xml</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.helger</groupId>
+      <artifactId>phoss-directory-businesscard</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.helger</groupId>
+      <artifactId>phoss-directory-searchapi</artifactId>
     </dependency>
 
     <!-- JUnit 4 for testing -->
