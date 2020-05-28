@@ -50,7 +50,7 @@
   <scm>
     <connection>scm:git:git@github.com:toop4eu/data-services-directory.git</connection>
     <developerConnection>scm:git:git@github.com:toop4eu/data-services-directory.git</developerConnection>
-    <url>http://github.com/toop4eu/data-services-directory</url>
+    <url>http://github.com/TOOP4EU/data-services-directory</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -104,6 +104,13 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>eu.toop</groupId>
+        <artifactId>toop-commons-ng-parent-pom</artifactId>
+        <version>${toop.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       
       <dependency>
         <groupId>eu.toop</groupId>
@@ -114,16 +121,6 @@
         <groupId>eu.toop</groupId>
         <artifactId>dsd-client</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>eu.toop</groupId>
-        <artifactId>toop-edm</artifactId>
-        <version>${toop.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>eu.toop</groupId>
-        <artifactId>toop-regrep</artifactId>
-        <version>${toop.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
