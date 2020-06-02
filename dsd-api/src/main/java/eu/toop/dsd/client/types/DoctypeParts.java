@@ -199,4 +199,16 @@ public class DoctypeParts {
   public void setScheme(String scheme) {
     this.scheme = scheme;
   }
+
+  @Override
+  public String toString() {
+    return "DoctypeParts{" +
+        "scheme='" + scheme + '\'' +
+        ", dataSetIdentifier='" + dataSetIdentifier + '\'' +
+        ", datasetType='" + datasetType + '\'' +
+        ", distributionFormat='" + distributionFormat + '\'' +
+        ", distributionConformsTo='" + distributionConformsTo + '\'' +
+        ", conformsTo='" + conformsTo + '\'' +
+        '}';
+  }
 }
