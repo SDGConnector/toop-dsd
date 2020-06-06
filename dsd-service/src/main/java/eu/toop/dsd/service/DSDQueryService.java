@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.helger.commons.annotation.Nonempty;
+import com.helger.pd.searchapi.v1.ResultListType;
 import eu.toop.dsd.client.DsdResponseWriter;
 import eu.toop.dsd.config.DSDConfig;
 import org.slf4j.Logger;
@@ -132,7 +133,8 @@ public class DSDQueryService {
         ", countryCode: " + s_CountryCode + "]");
 
     //query all the matches without a document type id.
-    final List<MatchType> matchTypes = ToopDirClient.performSearch(DSDConfig.getToopDirUrl(), s_CountryCode, null);
+    final ResultListType resultListType = ToopDirClient.callSearchApi(DSDConfig.getToopDirUrl(), s_CountryCode, null);
+    final List<MatchType> matchTypes = resultListType.getMatch();
 
     StringWriter writer = new StringWriter();
     DsdResponseWriter.matchTypesWriter(s_DataSetType, matchTypes).write(writer);

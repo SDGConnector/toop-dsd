@@ -45,27 +45,18 @@ import com.helger.pd.searchapi.v1.ResultListType;
  */
 public class ToopDirClient {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(DSDQueryService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ToopDirClient.class);
 
   /**
-   * Query TOOP-DIR with country code and doctype. Return the result as a list of
-   * <code>MatchType</code> objects
-   *
+   * Query TOOP-DIR with country code and doctype. Return a {@link ResultListType} object
    *
    * @param toopDirBaseURL  the base URL of Toop Directory
    * @param sCountryCode    two letter Country Code, @Nullable
    * @param aDocumentTypeID doc type id, @Nullable
-   * @return list of <code>MatchType</code> objects
+   * @return a {@link ResultListType} object
    * @throws IOException if a communication problem occurs
    */
-  public static List<MatchType> performSearch(final String toopDirBaseURL, @Nullable final String sCountryCode,
-      @Nullable final String aDocumentTypeID) throws IOException {
-
-    return performSearchResultsLists(toopDirBaseURL, sCountryCode, aDocumentTypeID).getMatch();
-
-  }
-
-  static ResultListType performSearchResultsLists(final String toopDirBaseURL, @Nullable final String sCountryCode,
+  public static ResultListType callSearchApi(final String toopDirBaseURL, @Nullable final String sCountryCode,
       @Nullable final String aDocumentTypeID) throws IOException {
     if (StringHelper.hasNoText(toopDirBaseURL))
       throw new IllegalStateException("The Directory base URL configuration is missing");

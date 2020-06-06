@@ -34,7 +34,7 @@ public class DSDTests {
   @Ignore
   @Test
   public void saveSearches() throws IOException {
-    final ResultListType resultListType = ToopDirClient.performSearchResultsLists(DSDConfig.getToopDirUrl(), null, null);
+    final ResultListType resultListType = ToopDirClient.callSearchApi(DSDConfig.getToopDirUrl(), null, null);
     PDSearchAPIWriter<ResultListType> p = PDSearchAPIWriter.resultListV1();
     p.setFormattedOutput(true);
 
