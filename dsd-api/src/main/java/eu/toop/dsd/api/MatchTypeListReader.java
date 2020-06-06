@@ -38,6 +38,8 @@ import eu.toop.regrep.rim.AnyValueType;
  */
 class MatchTypeListReader implements IJAXBVersatileReader<List<MatchType>> {
 
+  public static final String DATASET_SLOT_NAME = "Dataset";
+
   /**
    * Instantiates a new Match type list reader.
    */
@@ -74,8 +76,7 @@ class MatchTypeListReader implements IJAXBVersatileReader<List<MatchType>> {
 
     queryResponse.getRegistryObjectList().getRegistryObject().forEach(registryObjectType -> {
       registryObjectType.getSlot().forEach(slotType -> {
-        //TODO: introduce a constant for "Dataset"
-        if ("Dataset".equals(slotType.getName())) {
+        if (DATASET_SLOT_NAME.equals(slotType.getName())) {
           //this must be a dataset.
           Element dcatElement = (Element) ((AnyValueType) slotType.getSlotValue()).getAny();
           dcatElements.add(dcatElement);
