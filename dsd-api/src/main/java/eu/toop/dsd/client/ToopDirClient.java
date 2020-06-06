@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.toop.dsd.service;
+package eu.toop.dsd.client;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -33,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.SimpleURL;
 import com.helger.pd.searchapi.PDSearchAPIReader;
-import com.helger.pd.searchapi.v1.MatchType;
 import com.helger.pd.searchapi.v1.ResultListType;
 
 /**
