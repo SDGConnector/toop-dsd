@@ -21,7 +21,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import eu.toop.dsd.api.BregDCatHelper;
+import eu.toop.dsd.api.DSDTypesManipulator;
 import eu.toop.dsd.api.DsdResponseReader;
 import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
 import org.apache.http.HttpStatus;
@@ -155,6 +155,6 @@ public class DSDClient {
   public List<MatchType> queryDatasetAsMatchTypes(@Nonnull final String datasetType, @Nullable final String countryCode) {
     ValueEnforcer.notEmpty(datasetType, "datasetType");
     final List<DCatAPDatasetType> dCatAPDatasetTypes = queryDataset(datasetType, countryCode);
-    return BregDCatHelper.convertDCatElementsToMatchTypes(dCatAPDatasetTypes);
+    return DSDTypesManipulator.convertDCatElementsToMatchTypes(dCatAPDatasetTypes);
   }
 }

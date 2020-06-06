@@ -85,6 +85,6 @@ class MatchTypeListReader implements IJAXBVersatileReader<List<MatchType>> {
       });
     });
 
-    return BregDCatHelper.convertDCatElementsToMatchTypes(BregDCatHelper.convertElementsToDCatList(dcatElements));
+    return DSDTypesManipulator.convertDCatElementsToMatchTypes(DSDTypesManipulator.convertElementsToDCatList(dcatElements));
   }
 }

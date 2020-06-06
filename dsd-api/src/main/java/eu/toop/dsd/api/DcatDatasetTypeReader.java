@@ -84,6 +84,6 @@ public class DcatDatasetTypeReader implements IJAXBVersatileReader<List<DCatAPDa
       });
     });
 
-    return BregDCatHelper.convertElementsToDCatList(dcatElements);
+    return DSDTypesManipulator.convertElementsToDCatList(dcatElements);
   }
 }

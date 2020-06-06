@@ -15,131 +15,25 @@
  */
 package eu.toop.dsd.api.types;
 
+import com.helger.commons.ValueEnforcer;
+import eu.toop.commons.codelist.EPredefinedDocumentTypeIdentifier;
+
 /**
- * This class is a representation of a doctype splitted by the :: <br>
- * <p>
- * A sample doctype:<br>
- * "toop-doctypeid-qns::RegisteredOrganization::REGISTERED_ORGANIZATION_TYPE::CONCEPT##CCCEV::toop-edm:v2.0");
- *
+ * Parses a given flat doctype id String as either a {@link V1DoctypeParts} or a {@link V2DoctypeParts} object.
  * @author yerlibilgin
  */
-public class DoctypeParts {
-  /**
-   * doctype scheme. e.g <code>toop-doctypeid-qns</code>
-   */
-  private String scheme;
+public abstract class DoctypeParts {
 
   /**
-   * dataset identifier  e.g <code>RegisteredOrganization</code>
+   * Returns the version of this identifier.
+   * Either 1.0 or 2.0
    */
-  private String dataSetIdentifier;
-  /**
-   * dataset type: e.g. <code>REGISTERED_ORGANIZATION_TYPE</code>
-   */
-  private String datasetType;
-  /**
-   * distribution format: e.g. <code>CONCEPT</code>
-   */
-  private String distributionFormat;
-  /**
-   * conformance of distribution. e.g. <code>CCCEV</code>
-   */
-  private String distributionConformsTo;
-  /**
-   * doctype confroms to: e.g. <code>toop-edm:v2.0</code>
-   */
-  private String conformsTo;
+  private String version;
 
-
-  /**
-   * returns dataSetIdentifier
-   *
-   * @param dataSetIdentifier the data set identifier
-   */
-  public void setDataSetIdentifier(String dataSetIdentifier) {
-    this.dataSetIdentifier = dataSetIdentifier;
+  public String getVersion() {
+    return version;
   }
 
-  /**
-   * Gets data set identifier.
-   *
-   * @return the data set identifier
-   */
-  public String getDataSetIdentifier() {
-    return dataSetIdentifier;
-  }
-
-  /**
-   * Sets dataset type.
-   *
-   * @param datasetType the dataset type
-   */
-  public void setDatasetType(String datasetType) {
-    this.datasetType = datasetType;
-  }
-
-  /**
-   * Gets dataset type.
-   *
-   * @return the dataset type
-   */
-  public String getDatasetType() {
-    return datasetType;
-  }
-
-  /**
-   * Sets distribution format.
-   *
-   * @param distributionFormat the distribution format
-   */
-  public void setDistributionFormat(String distributionFormat) {
-    this.distributionFormat = distributionFormat;
-  }
-
-  /**
-   * Gets distribution format.
-   *
-   * @return the distribution format
-   */
-  public String getDistributionFormat() {
-    return distributionFormat;
-  }
-
-  /**
-   * Sets distribution conforms to.
-   *
-   * @param distributionConformsTo the distribution conforms to
-   */
-  public void setDistributionConformsTo(String distributionConformsTo) {
-    this.distributionConformsTo = distributionConformsTo;
-  }
-
-  /**
-   * Gets distribution conforms to.
-   *
-   * @return the distribution conforms to
-   */
-  public String getDistributionConformsTo() {
-    return distributionConformsTo;
-  }
-
-  /**
-   * Sets conforms to.
-   *
-   * @param conformsTo the conforms to
-   */
-  public void setConformsTo(String conformsTo) {
-    this.conformsTo = conformsTo;
-  }
-
-  /**
-   * Gets conforms to.
-   *
-   * @return the conforms to
-   */
-  public String getConformsTo() {
-    return conformsTo;
-  }
 
   /**
    * A temporary method tho check whether the doctype is the new version
@@ -148,67 +42,68 @@ public class DoctypeParts {
    * @return The parsed doctype parts
    */
   public static DoctypeParts parse(String s_docType) {
-    //<DatasetIdentifier>::<DatasetType>::<Distribution.Format>[##<Distribution.ConformsTo>]::<Dataservice.ConformsTo>
-    DoctypeParts doctypeParts = new DoctypeParts();
+
+    ValueEnforcer.notEmpty(s_docType, "doctype");
+
+
+    //remove the scheme if it is there
+    final String schemePrefix = EPredefinedDocumentTypeIdentifier.DOC_TYPE_SCHEME + "::";
+    if (s_docType.startsWith(schemePrefix)){
+      s_docType = s_docType.substring(schemePrefix.length());
+    }
+
     final String[] split = s_docType.split("::");
-    String distribution;
-    if (split.length == 4) {
-      //dataset identifier does not contain scheme
-      doctypeParts.setDataSetIdentifier(split[0]);
-      doctypeParts.setDatasetType(split[1]);
-      distribution = split[2];
-      doctypeParts.setConformsTo(split[3]);
-    } else if (split.length == 5) {
-//dataset identifier does not contain scheme
-      doctypeParts.setScheme(split[0]);
-      doctypeParts.setDataSetIdentifier(split[1]);
-      doctypeParts.setDatasetType(split[2]);
-      distribution = split[3];
-      doctypeParts.setConformsTo(split[4]);
+
+    if (split.length == 3) {
+      //Version 1.0
+
+      String namespace = split[0];
+      String middle = split[1];
+
+
+      int indexofDoubleHash = middle.indexOf("##");
+      if (indexofDoubleHash == -1)
+        throw new IllegalArgumentException("Invalid doctype " + s_docType);
+
+      String localElementName = middle.substring(0, indexofDoubleHash);
+      String customizationId = middle.substring(indexofDoubleHash + 2);
+      String v1VersionField = split[2];
+
+      return new V1DoctypeParts(namespace, localElementName, customizationId, v1VersionField);
+    } else if (split.length == 4) {
+      //Version 2.0
+      String datasetIdentifier = split[0];
+      String datasetType = split[1];
+      String conformsTo = split[3];
+      String distribution = split[2];
+      String distConformsTo = null;
+      if (distribution.contains("##")) {
+        final int i = distribution.indexOf("##");
+        distConformsTo = distribution.substring(i + 2);
+        distribution = distribution.substring(0, i);
+      }
+      return new V2DoctypeParts(datasetIdentifier, datasetType, distribution, distConformsTo, conformsTo);
     } else {
       throw new IllegalArgumentException("Invalid doctype " + s_docType);
     }
-
-    if (distribution.contains("##")) {
-      final int i = distribution.indexOf("##");
-      String distConformsTo = distribution.substring(i + 2);
-      distribution = distribution.substring(0, i);
-      doctypeParts.setDistributionFormat(distribution);
-      doctypeParts.setDistributionConformsTo(distConformsTo);
-    } else {
-      doctypeParts.setDistributionFormat(distribution);
-    }
-
-    return doctypeParts;
   }
 
   /**
-   * Gets scheme.
+   * Check this doctype against the given dataset type and return <code>true</code> if
+   * it matches
    *
-   * @return the scheme
+   * @param datasetType
+   * @return true if the datasetType matches this doctype.
    */
-  public String getScheme() {
-    return scheme;
-  }
+  public abstract boolean matches(String datasetType);
 
-  /**
-   * Sets scheme.
-   *
-   * @param scheme the scheme
-   */
-  public void setScheme(String scheme) {
-    this.scheme = scheme;
-  }
+  public abstract String getDistributionConformsTo();
 
-  @Override
-  public String toString() {
-    return "DoctypeParts{" +
-        "scheme='" + scheme + '\'' +
-        ", dataSetIdentifier='" + dataSetIdentifier + '\'' +
-        ", datasetType='" + datasetType + '\'' +
-        ", distributionFormat='" + distributionFormat + '\'' +
-        ", distributionConformsTo='" + distributionConformsTo + '\'' +
-        ", conformsTo='" + conformsTo + '\'' +
-        '}';
-  }
+  public abstract String getDistributionFormat();
+
+  public abstract String getConformsTo();
+
+  public abstract String getDataSetIdentifier();
+
+  public abstract String getDatasetType();
 }

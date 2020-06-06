@@ -37,16 +37,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
- * This class is responsible for converting the TOOP Directory query result into
- * the DSD BregDCAT Profile documents.
+ * This class is responsible for manipulating various types that DSD uses.
  *
  * @author yerlibilgin
  */
-public class BregDCatHelper {
-  private static final Logger LOGGER = LoggerFactory.getLogger(BregDCatHelper.class);
+public class DSDTypesManipulator {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DSDTypesManipulator.class);
 
   /**
    * Converts the {@link MatchType} objects that are obtained from the TOOP Directory into <code>org.w3c.dom.Document</code>
@@ -242,7 +242,7 @@ public class BregDCatHelper {
   }
 
   /**
-   * Inverse of {@link BregDCatHelper#convertMatchTypesToDCATDocuments}. Converts the provided
+   * Inverse of {@link DSDTypesManipulator#convertMatchTypesToDCATDocuments}. Converts the provided
    * list of {@link DCatAPDatasetType} objects to a list of {@link MatchType}
    * objects
    *
@@ -298,5 +298,75 @@ public class BregDCatHelper {
     });
 
     return matchTypes;
+  }
+
+  /**
+   * <p>
+   * TODO: not a good code. Modifies the underlying lists as well.
+   * <p>
+   * This is a tentative approach. We filter out match types as following:<br>
+   * <pre>
+   *   for each matchtype
+   *     for each doctype of that matchtype
+   *       remote the doctype if it does not contain datasetType
+   *     if all doctypes were removed
+   *        then remove the matchtype
+   * </pre>
+   *
+   * @param s_datasetType Dataset type
+   * @param sCountryCode  country code
+   * @param matchTypes    Match types
+   */
+  public static void filterDirectoryResults(String s_datasetType, String sCountryCode, List<MatchType> matchTypes) {
+    //filter
+    final Iterator<MatchType> iterator = matchTypes.iterator();
+
+    while (iterator.hasNext()) {
+      MatchType matchType = iterator.next();
+      final Iterator<com.helger.pd.searchapi.v1.IDType> iterator1 = matchType.getDocTypeID().iterator();
+      while (iterator1.hasNext()) {
+        com.helger.pd.searchapi.v1.IDType idType = iterator1.next();
+
+        DoctypeParts parts = DoctypeParts.parse(DSDTypesManipulator.flattenIdType(idType));
+
+        //toop-doctypeid-qns::
+        //RegisteredOrganization::
+        //REGISTERED_ORGANIZATION_TYPE::
+        //CONCEPT##CCCEV::
+        //toop-edm:v2.0
+        // or the old doctype:
+        //toop-doctypeid-qns::
+        //urn:eu:toop:ns:dataexchange-1p40::
+        //Response##urn:eu.toop.request.registeredorganization-list::
+        //1.40
+        // TODO: This is temporary, for now we are removing _ (underscore) and performing a case insensitive "contains" search
+
+        //first check for the EXACT match
+
+        if(!parts.matches(s_datasetType)){
+          iterator1.remove();
+        }
+      }
+
+      // if all doctypes have been removed then, eliminate this business card
+      if (matchType.getDocTypeID().size() == 0) {
+        iterator.remove();
+        continue;
+      }
+
+      if (sCountryCode != null) {
+        final List<EntityType> entity = matchType.getEntity();
+        final Iterator<EntityType> iterator2 = entity.iterator();
+        while (iterator2.hasNext()) {
+          EntityType entityType = iterator2.next();
+          if (!entityType.getCountryCode().equals(sCountryCode)) {
+            iterator2.remove();
+          }
+        }
+        if (matchType.getEntity().isEmpty()) {
+          iterator.remove();
+        }
+      }
+    }
   }
 }

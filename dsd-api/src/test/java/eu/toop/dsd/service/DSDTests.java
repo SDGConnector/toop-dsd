@@ -106,32 +106,12 @@ public class DSDTests {
         "toop-doctypeid-qns::RegisteredOrganization::REGISTERED_ORGANIZATION_TYPE::CONCEPT##CCCEV::toop-edm:v2.0");
     Assert.assertNotNull(parts);
 
-    Assert.assertEquals("toop-doctypeid-qns", parts.getScheme());
     Assert.assertEquals("RegisteredOrganization", parts.getDataSetIdentifier());
     Assert.assertEquals("REGISTERED_ORGANIZATION_TYPE", parts.getDatasetType());
     Assert.assertEquals("CONCEPT", parts.getDistributionFormat());
     Assert.assertEquals("CCCEV", parts.getDistributionConformsTo());
     Assert.assertEquals("toop-edm:v2.0", parts.getConformsTo());
   }
-
-
-  /**
-   * Test doctype parts no schem.
-   */
-  @Test
-  public void testDoctypePartsNoSchem() {
-    DoctypeParts parts = DoctypeParts.parse(
-        "RegisteredOrganization::REGISTERED_ORGANIZATION_TYPE::CONCEPT##CCCEV::toop-edm:v2.0");
-    Assert.assertNotNull(parts);
-
-    Assert.assertEquals(null, parts.getScheme());
-    Assert.assertEquals("RegisteredOrganization", parts.getDataSetIdentifier());
-    Assert.assertEquals("REGISTERED_ORGANIZATION_TYPE", parts.getDatasetType());
-    Assert.assertEquals("CONCEPT", parts.getDistributionFormat());
-    Assert.assertEquals("CCCEV", parts.getDistributionConformsTo());
-    Assert.assertEquals("toop-edm:v2.0", parts.getConformsTo());
-  }
-
 
   /**
    * Test doctype parts old doc type.
@@ -142,8 +122,6 @@ public class DSDTests {
         "toop-doctypeid-qns::urn:eu:toop:ns:dataexchange-1p40::Request##urn:eu.toop.request.registeredorganization::1.40");
     Assert.assertNotNull(parts);
 
-    Assert.assertEquals(null, parts.getScheme());
-    Assert.assertEquals("toop-doctypeid-qns", parts.getDataSetIdentifier());
     Assert.assertEquals("urn:eu:toop:ns:dataexchange-1p40", parts.getDatasetType());
     Assert.assertEquals("Request", parts.getDistributionFormat());
     Assert.assertEquals("urn:eu.toop.request.registeredorganization", parts.getDistributionConformsTo());
