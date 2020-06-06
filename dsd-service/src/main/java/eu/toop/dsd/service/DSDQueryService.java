@@ -24,8 +24,8 @@ import java.util.Map;
 
 import com.helger.commons.annotation.Nonempty;
 import com.helger.pd.searchapi.v1.ResultListType;
-import eu.toop.dsd.client.DsdResponseWriter;
-import eu.toop.dsd.client.ToopDirClient;
+import eu.toop.dsd.api.DsdResponseWriter;
+import eu.toop.dsd.api.ToopDirClient;
 import eu.toop.dsd.config.DSDConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

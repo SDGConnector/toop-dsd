@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.toop.dsd.client.types;
+package eu.toop.dsd.api.types;
 
 /**
  * This class is a representation of a doctype splitted by the :: <br>

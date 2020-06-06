@@ -21,6 +21,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import eu.toop.dsd.api.BregDCatHelper;
+import eu.toop.dsd.api.DsdResponseReader;
 import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;

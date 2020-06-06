@@ -30,9 +30,9 @@ import com.helger.pd.searchapi.PDSearchAPIWriter;
 import com.helger.pd.searchapi.v1.MatchType;
 import com.helger.pd.searchapi.v1.ResultListType;
 
-import eu.toop.dsd.client.DsdResponseReader;
-import eu.toop.dsd.client.DsdResponseWriter;
-import eu.toop.dsd.client.types.DoctypeParts;
+import eu.toop.dsd.api.DsdResponseReader;
+import eu.toop.dsd.api.DsdResponseWriter;
+import eu.toop.dsd.api.types.DoctypeParts;
 
 /**
  * The type Dsd tests.

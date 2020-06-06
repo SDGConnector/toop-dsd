@@ -1,5 +1,6 @@
 package eu.toop.dsd.client.types;
 
+import eu.toop.dsd.api.types.DoctypeParts;
 import org.junit.Test;
 
 public class DoctypePartsTest {

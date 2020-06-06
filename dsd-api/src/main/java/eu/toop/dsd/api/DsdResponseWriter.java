@@ -13,30 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.toop.dsd.client;
-
-import com.helger.pd.searchapi.v1.MatchType;
-import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
-import eu.toop.edm.xml.IJAXBVersatileReader;
+package eu.toop.dsd.api;
 
 import java.util.List;
 
+import com.helger.pd.searchapi.v1.MatchType;
+
+import eu.toop.edm.xml.IJAXBVersatileWriter;
+import eu.toop.regrep.query.QueryResponse;
+
 /**
- * A class to read DSD responses
+ * A class to write DSD responses
  *
  * @author yerlibilgin
  */
-public class DsdResponseReader {
+public class DsdResponseWriter {
 
   /**
-   * Create a reader that returns reads a {@link List} of {@link MatchType} objects from sources
-   * @return the reader
+   * Create a DSD Response Writer that writes dataset type and MatchTypes (received from TOOP Directory)
+   * as a {@link QueryResponse} XML.
+   * @param s_DataSetType
+   * @param matchTypes
+   * @return
    */
-  public static IJAXBVersatileReader<List<MatchType>> matchTypeListReader() {
-    return new MatchTypeListReader();
+  public static IJAXBVersatileWriter<QueryResponse> matchTypesWriter(String s_DataSetType, List<MatchType> matchTypes) {
+    return new MatchTypesWriter(s_DataSetType, matchTypes);
   }
 
-  public static IJAXBVersatileReader<List<DCatAPDatasetType>> dcatDatasetTypeReader() {
-    return new DcatDatasetTypeReader();
-  }
+
 }

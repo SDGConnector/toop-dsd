@@ -18,7 +18,7 @@ package eu.toop.dsd.service;
 
 import com.helger.pd.searchapi.PDSearchAPIWriter;
 import com.helger.pd.searchapi.v1.ResultListType;
-import eu.toop.dsd.client.ToopDirClient;
+import eu.toop.dsd.api.ToopDirClient;
 import eu.toop.dsd.config.DSDConfig;
 import org.junit.Ignore;
 import org.junit.Test;

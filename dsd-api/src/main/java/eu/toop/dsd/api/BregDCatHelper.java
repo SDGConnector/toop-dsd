@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.toop.dsd.client;
+package eu.toop.dsd.api;
 
 
 import com.helger.pd.searchapi.v1.EntityType;
 import com.helger.pd.searchapi.v1.MatchType;
 import com.helger.pd.searchapi.v1.NameType;
 import com.helger.peppolid.CIdentifier;
-import eu.toop.dsd.client.types.DoctypeParts;
+import eu.toop.dsd.api.types.DoctypeParts;
 import eu.toop.edm.jaxb.cv.agent.LocationType;
 import eu.toop.edm.jaxb.cv.agent.PublicOrganizationType;
 import eu.toop.edm.jaxb.cv.cbc.IDType;
