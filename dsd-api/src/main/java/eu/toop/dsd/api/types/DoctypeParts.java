@@ -84,7 +84,7 @@ public abstract class DoctypeParts {
       }
       return new V2DoctypeParts(datasetIdentifier, datasetType, distribution, distConformsTo, conformsTo);
     } else {
-      throw new IllegalArgumentException("Invalid doctype " + s_docType);
+      throw new DoctypeFormatException("Invalid doctype " + s_docType);
     }
   }
 

@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2018-2020 toop.eu
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,7 @@ import com.helger.pd.searchapi.v1.EntityType;
 import com.helger.pd.searchapi.v1.MatchType;
 import com.helger.pd.searchapi.v1.NameType;
 import com.helger.peppolid.CIdentifier;
+import eu.toop.dsd.api.types.DoctypeFormatException;
 import eu.toop.dsd.api.types.DoctypeParts;
 import eu.toop.edm.jaxb.cv.agent.LocationType;
 import eu.toop.edm.jaxb.cv.agent.PublicOrganizationType;
@@ -229,7 +230,7 @@ public class DSDTypesManipulator {
    * @param dcatElements the list of {@link Element} objects. Not empty
    * @return the list of {@link DCatAPDatasetType} objects
    */
-  public static List<DCatAPDatasetType> convertElementsToDCatList(List<Element> dcatElements){
+  public static List<DCatAPDatasetType> convertElementsToDCatList(List<Element> dcatElements) {
     List<DCatAPDatasetType> datasetTypes = new ArrayList<>(dcatElements.size());
 
     DatasetMarshaller dm = new DatasetMarshaller();
@@ -292,7 +293,7 @@ public class DSDTypesManipulator {
         int index = identifier.indexOf("::");
 
         docType.setScheme(identifier.substring(0, index));
-        docType.setValue(identifier.substring(index+2));
+        docType.setValue(identifier.substring(index + 2));
         matchType.addDocTypeID(docType);
       });
     });
@@ -327,23 +328,28 @@ public class DSDTypesManipulator {
       while (iterator1.hasNext()) {
         com.helger.pd.searchapi.v1.IDType idType = iterator1.next();
 
-        DoctypeParts parts = DoctypeParts.parse(DSDTypesManipulator.flattenIdType(idType));
+        final String s_docType = DSDTypesManipulator.flattenIdType(idType);
+        try {
+          DoctypeParts parts = DoctypeParts.parse(s_docType);
+          //toop-doctypeid-qns::
+          //RegisteredOrganization::
+          //REGISTERED_ORGANIZATION_TYPE::
+          //CONCEPT##CCCEV::
+          //toop-edm:v2.0
+          // or the old doctype:
+          //toop-doctypeid-qns::
+          //urn:eu:toop:ns:dataexchange-1p40::
+          //Response##urn:eu.toop.request.registeredorganization-list::
+          //1.40
+          // TODO: This is temporary, for now we are removing _ (underscore) and performing a case insensitive "contains" search
 
-        //toop-doctypeid-qns::
-        //RegisteredOrganization::
-        //REGISTERED_ORGANIZATION_TYPE::
-        //CONCEPT##CCCEV::
-        //toop-edm:v2.0
-        // or the old doctype:
-        //toop-doctypeid-qns::
-        //urn:eu:toop:ns:dataexchange-1p40::
-        //Response##urn:eu.toop.request.registeredorganization-list::
-        //1.40
-        // TODO: This is temporary, for now we are removing _ (underscore) and performing a case insensitive "contains" search
+          //first check for the EXACT match
 
-        //first check for the EXACT match
-
-        if(!parts.matches(s_datasetType)){
+          if(!parts.matches(s_datasetType)){
+            iterator1.remove();
+          }
+        } catch (DoctypeFormatException ex) {
+          LOGGER.warn("Skipping doctype: " + s_docType);
           iterator1.remove();
         }
       }

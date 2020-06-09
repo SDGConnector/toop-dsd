@@ -64,7 +64,7 @@ public class ToopDirClient {
     // More than 1000 is not allowed
     aBaseURL.add("rpc", 100);
     // Constant defined in CCTF-103
-    aBaseURL.add("identifierScheme", "DataSubjectIdentifierScheme");
+    // aBaseURL.add("identifierScheme", "DataSubjectIdentifierScheme");
     // Parameters to this servlet
     if (sCountryCode != null && !sCountryCode.isEmpty()) {
       aBaseURL.add("country", sCountryCode);

@@ -44,7 +44,7 @@ public class DSDRestQueryServlet extends HttpServlet {
   private static final Logger LOGGER = LoggerFactory.getLogger(DSDRestQueryServlet.class);
 
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     LOGGER.debug("DSD query  with " + req.getQueryString());
 
     try {
