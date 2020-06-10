@@ -120,11 +120,12 @@ public class DSDTypesManipulator {
     final DCatAPDistributionType distributionType = new DCatAPDistributionType();
     distributionType.setAccessURL("");
 
-    final DCStandardType conformsTo = new DCStandardType();
-    //<dct:conformsTo>RegRepv4-EDMv2</dct:conformsTo>
-    conformsTo.setValue(doctypeParts.getDistributionConformsTo());
-
-    distributionType.addConformsTo(conformsTo);
+    if(doctypeParts.getDistributionConformsTo() != null) {
+      final DCStandardType conformsTo = new DCStandardType();
+      //<dct:conformsTo>RegRepv4-EDMv2</dct:conformsTo>
+      conformsTo.setValue(doctypeParts.getDistributionConformsTo());
+      distributionType.addConformsTo(conformsTo);
+    }
 
     //<dct:format>UNSTRUCTURED</dct:format>
     final DCMediaType dcMediaType = new DCMediaType();

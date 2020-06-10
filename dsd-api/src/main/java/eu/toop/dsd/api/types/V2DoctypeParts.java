@@ -101,4 +101,15 @@ public class V2DoctypeParts extends DoctypeParts {
   public boolean matches(String datasetType) {
     return datasetType.equals(this.datasetType);
   }
+
+  @Override
+  public String toString() {
+    return "V2DoctypeParts{" +
+        "dataSetIdentifier='" + dataSetIdentifier + '\'' +
+        ", datasetType='" + datasetType + '\'' +
+        ", distributionFormat='" + distributionFormat + '\'' +
+        ", distributionConformsTo='" + distributionConformsTo + '\'' +
+        ", conformsTo='" + conformsTo + '\'' +
+        '}';
+  }
 }
