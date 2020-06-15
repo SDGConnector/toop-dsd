@@ -19,7 +19,6 @@ package eu.toop.dsd.api.types;
  * Represents the TOOP V2.0.0 doctype id.
  * <p>sample:
  * <code>RegisteredOrganization::REGISTERED_ORGANIZATION_TYPE::CONCEPT##CCCEV::toop-edm:v2.0</code></p>
- *
  */
 public class V2DoctypeParts extends DoctypeParts {
 
@@ -100,5 +99,11 @@ public class V2DoctypeParts extends DoctypeParts {
   @Override
   public boolean matches(String datasetType) {
     return datasetType.equals(this.datasetType);
+  }
+
+  @Override
+  public String toString() {
+    return dataSetIdentifier + "::" + datasetType + "::" + distributionFormat + "::" +
+        (distributionConformsTo != null ? (distributionConformsTo + "::") : "") + conformsTo;
   }
 }
