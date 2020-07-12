@@ -72,6 +72,7 @@
     <module>dsd-api</module>
     <module>dsd-service</module>
     <module>dsd-client</module>
+    <module>roa-service</module>
   </modules>
 
   <dependencyManagement>
