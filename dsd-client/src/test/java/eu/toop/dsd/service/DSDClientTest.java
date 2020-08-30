@@ -16,23 +16,21 @@
 package eu.toop.dsd.service;
 
 import java.io.StringWriter;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 
-import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
-import eu.toop.edm.xml.dcatap.DatasetMarshaller;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.helger.commons.datetime.PDTFactory;
 import com.helger.pd.searchapi.PDSearchAPIWriter;
 import com.helger.pd.searchapi.v1.MatchType;
 import com.helger.pd.searchapi.v1.ResultListType;
 
 import eu.toop.dsd.client.DSDClient;
+import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
+import eu.toop.edm.xml.dcatap.DatasetMarshaller;
 
 /**
  * A test class that tests the DSDClient
@@ -50,7 +48,7 @@ public final class DSDClientTest {
   @Test
   public void testQuery() throws DatatypeConfigurationException {
     final List<DCatAPDatasetType> matchTypes = new DSDClient("http://dsd.dev.exchange.toop.eu").queryDataset("REGISTERED_ORGANIZATION_TYPE",
-        "SV");
+                                                                                                             "SV");
 
     final DatasetMarshaller datasetMarshaller = new DatasetMarshaller();
     datasetMarshaller.setFormattedOutput(true);
@@ -59,7 +57,6 @@ public final class DSDClientTest {
       System.out.println(datasetMarshaller.getAsString(dataset));
     });
   }
-
 
   /**
    * Test query as match types.
@@ -70,13 +67,12 @@ public final class DSDClientTest {
   @Test
   public void testQueryMatchTypes() throws DatatypeConfigurationException {
     final List<MatchType> matchTypes = new DSDClient("http://dsd.dev.exchange.toop.eu").queryDatasetAsMatchTypes("REGISTERED_ORGANIZATION_TYPE",
-        "SV");
+                                                                                                                 "SV");
 
     final ResultListType rls = new ResultListType();
     rls.setVersion("1");
     rls.setQueryTerms("terms");
-    final GregorianCalendar c = (GregorianCalendar) Calendar.getInstance();
-    rls.setCreationDt(DatatypeFactory.newInstance().newXMLGregorianCalendar(c));
+    rls.setCreationDt(PDTFactory.getCurrentLocalDateTime());
     matchTypes.forEach(matchType -> {
       rls.addMatch(matchType);
     });

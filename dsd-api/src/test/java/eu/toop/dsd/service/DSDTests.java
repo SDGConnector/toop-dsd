@@ -16,15 +16,14 @@
 package eu.toop.dsd.service;
 
 
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.helger.commons.datetime.PDTFactory;
 import com.helger.pd.searchapi.PDSearchAPIReader;
 import com.helger.pd.searchapi.PDSearchAPIWriter;
 import com.helger.pd.searchapi.v1.MatchType;
@@ -87,8 +86,7 @@ public class DSDTests {
     ResultListType rls = new ResultListType();
     rls.setVersion("1");
     rls.setQueryTerms("terms");
-    GregorianCalendar c = (GregorianCalendar) GregorianCalendar.getInstance();
-    rls.setCreationDt(DatatypeFactory.newInstance().newXMLGregorianCalendar(c));
+    rls.setCreationDt(PDTFactory.getCurrentLocalDateTime ());
     matchTypeList.forEach(matchType -> {
       rls.addMatch(matchType);
     });
