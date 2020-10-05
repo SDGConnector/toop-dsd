@@ -20,6 +20,7 @@ import com.helger.pd.searchapi.PDSearchAPIWriter;
 import com.helger.pd.searchapi.v1.ResultListType;
 import eu.toop.dsd.api.ToopDirClient;
 import eu.toop.dsd.config.DSDConfig;
+import eu.toop.dsd.service.util.DSDQuery;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -51,8 +52,8 @@ public class DSDTests {
 
     Map<String, String[]> paramMap = new HashMap<>();
 
-    paramMap.put(DSDQueryService.PARAM_NAME_DATA_SET_TYPE, new String[]{"REGISTERED_ORGANIZATION_TYPE"});
-    paramMap.put(DSDQueryService.PARAM_NAME_COUNTRY_CODE, new String[]{"SV"});
+    paramMap.put(DSDQuery.PARAM_NAME_DATA_SET_TYPE, new String[]{"REGISTERED_ORGANIZATION_TYPE"});
+    paramMap.put(DSDQuery.PARAM_NAME_COUNTRY_CODE, new String[]{"SV"});
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     DSDQueryService.processDataSetRequest(paramMap, os);
