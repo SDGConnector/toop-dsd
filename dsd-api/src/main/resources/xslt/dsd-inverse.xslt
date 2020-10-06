@@ -47,7 +47,7 @@
       </xsl:attribute>
 
       <xsl:for-each select="//*:RegistryObject">
-        <xsl:variable name="dataset" select="./*:Slot/*:SlotValue/*:Dataset"/>
+        <xsl:variable name="dataset" select="./*:Slot/*:SlotValue/*:dataset"/>
         <match>
           <!-- dct:publisher/cbc:id schemeID="9999">elonia</cbc:id> -->
           <participantID scheme="iso6523-actorid-upis">

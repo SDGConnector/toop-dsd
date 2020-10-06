@@ -126,7 +126,8 @@ public class DsdDataConverter {
    * @return the resulting list
    */
   public static List<DCatAPDatasetType> parseDataset(String dsdRawResult) {
-    throw new UnsupportedOperationException("parseDataset");
+    final InputStream inputStream = new ByteArrayInputStream(dsdRawResult.getBytes(StandardCharsets.UTF_8));
+    return DcatDatasetTypeReader.parseDataset(new StreamSource(inputStream));
   }
 
   /**
