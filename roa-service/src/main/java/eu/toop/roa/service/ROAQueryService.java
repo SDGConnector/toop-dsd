@@ -15,25 +15,15 @@
  */
 package eu.toop.roa.service;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.pd.searchapi.v1.ResultListType;
-import eu.toop.dsd.api.DsdResponseWriter;
-import eu.toop.dsd.api.ToopDirClient;
-import eu.toop.roa.config.ROAConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.pd.searchapi.v1.MatchType;
-
 import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Map;
 
 
 /**
@@ -134,16 +124,18 @@ public class ROAQueryService {
     LOGGER.debug("Processing data consumer request [data consumer id: " + s_DataConsumerId +
         ", procedureId: " + s_ProcedureId + "]");
 
-    //query all the matches without a document type id.
-    // TODO: change this according to roa
-    //   THE rest is not DSD
-    final ResultListType resultListType = ToopDirClient.callSearchApi(ROAConfig.getToopDirUrl(), s_ProcedureId, null);
-    final List<MatchType> matchTypes = resultListType.getMatch();
+    ////query all the matches without a document type id.
+    //// TODO: change this according to roa
+    ////   THE rest is not DSD
+    //final ResultListType resultListType = ToopDirClient.callSearchApi(ROAConfig.getToopDirUrl(), s_ProcedureId, null);
+    //final List<MatchType> matchTypes = resultListType.getMatch();
+//
+    //StringWriter writer = new StringWriter();
+    //DsdResponseWriter.matchTypesWriter(s_DataConsumerId, matchTypes).write(writer);
+    //String resultXml = writer.toString();
 
-    StringWriter writer = new StringWriter();
-    DsdResponseWriter.matchTypesWriter(s_DataConsumerId, matchTypes).write(writer);
-    String resultXml = writer.toString();
+    //responseStream.write(resultXml.getBytes(StandardCharsets.UTF_8));
 
-    responseStream.write(resultXml.getBytes(StandardCharsets.UTF_8));
+    throw new UnsupportedOperationException("Not yet");
   }
 }

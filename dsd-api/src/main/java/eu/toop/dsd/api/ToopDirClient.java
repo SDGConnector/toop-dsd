@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2018-2020 toop.eu
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +26,8 @@ import java.security.cert.X509Certificate;
 import javax.annotation.Nullable;
 import javax.net.ssl.*;
 
+import com.helger.commons.string.StringHelper;
+import com.helger.commons.url.SimpleURL;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
@@ -33,11 +35,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.url.SimpleURL;
-import com.helger.pd.searchapi.PDSearchAPIReader;
-import com.helger.pd.searchapi.v1.ResultListType;
 
 /**
  * This class is the bridge between DSD and TOOP directory. It queries the TOOP
@@ -48,71 +45,72 @@ import com.helger.pd.searchapi.v1.ResultListType;
  */
 public class ToopDirClient {
 
-  public static void disableSSLVerification () {
+  public static void disableSSLVerification() {
 
-    TrustManager[] trustAllCerts = new TrustManager [] {new X509ExtendedTrustManager() {
+    TrustManager[] trustAllCerts = new TrustManager[]{new X509ExtendedTrustManager() {
       @Override
-      public void checkClientTrusted (X509Certificate [] chain, String authType, Socket socket) {
+      public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket) {
 
       }
 
       @Override
-      public void checkServerTrusted (X509Certificate [] chain, String authType, Socket socket) {
+      public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket) {
 
       }
 
       @Override
-      public void checkClientTrusted (X509Certificate [] chain, String authType, SSLEngine engine) {
+      public void checkClientTrusted(X509Certificate[] chain, String authType, SSLEngine engine) {
 
       }
 
       @Override
-      public void checkServerTrusted (X509Certificate [] chain, String authType, SSLEngine engine) {
+      public void checkServerTrusted(X509Certificate[] chain, String authType, SSLEngine engine) {
 
       }
 
       @Override
-      public java.security.cert.X509Certificate [] getAcceptedIssuers () {
+      public java.security.cert.X509Certificate[] getAcceptedIssuers() {
         return null;
       }
 
       @Override
-      public void checkClientTrusted (X509Certificate [] certs, String authType) {
+      public void checkClientTrusted(X509Certificate[] certs, String authType) {
       }
 
       @Override
-      public void checkServerTrusted (X509Certificate[] certs, String authType) {
+      public void checkServerTrusted(X509Certificate[] certs, String authType) {
       }
 
     }};
 
     SSLContext sc = null;
     try {
-      sc = SSLContext.getInstance ("SSL");
-      sc.init (null, trustAllCerts, new java.security.SecureRandom ());
+      sc = SSLContext.getInstance("SSL");
+      sc.init(null, trustAllCerts, new java.security.SecureRandom());
     } catch (KeyManagementException | NoSuchAlgorithmException e) {
-      e.printStackTrace ();
+      e.printStackTrace();
     }
-    HttpsURLConnection.setDefaultSSLSocketFactory (sc.getSocketFactory ());
+    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
   }
 
 
   static {
     disableSSLVerification();
   }
+
   private static final Logger LOGGER = LoggerFactory.getLogger(ToopDirClient.class);
 
   /**
-   * Query TOOP-DIR with country code and doctype. Return a {@link ResultListType} object
+   * Query TOOP-DIR with country code and doctype. Return a String that contains the result
    *
    * @param toopDirBaseURL  the base URL of Toop Directory
    * @param sCountryCode    two letter Country Code, @Nullable
    * @param aDocumentTypeID doc type id, @Nullable
-   * @return a {@link ResultListType} object
+   * @return a String that contains the result
    * @throws IOException if a communication problem occurs
    */
-  public static ResultListType callSearchApi(final String toopDirBaseURL, @Nullable final String sCountryCode,
-      @Nullable final String aDocumentTypeID) throws IOException {
+  public static String callSearchApi(final String toopDirBaseURL, @Nullable final String sCountryCode,
+                                     @Nullable final String aDocumentTypeID) throws IOException {
     if (StringHelper.hasNoText(toopDirBaseURL))
       throw new IllegalStateException("The Directory base URL configuration is missing");
 
@@ -148,11 +146,7 @@ public class ToopDirClient {
         final byte[] s_bytes = stream.toByteArray();
 
         final String s_result = new String(s_bytes, StandardCharsets.UTF_8);
-        LOGGER.debug(s_result);
-
-        // Read from bytes to avoid charset error
-        final ResultListType read = PDSearchAPIReader.resultListV1().read(s_bytes);
-        return read;
+        return s_result;
       }
     }
   }

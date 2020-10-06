@@ -15,15 +15,8 @@
  */
 package eu.toop.dsd.service;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.pd.searchapi.v1.ResultListType;
 import eu.toop.dsd.api.DsdResponseWriter;
 import eu.toop.dsd.api.ToopDirClient;
 import eu.toop.dsd.config.DSDConfig;
@@ -31,10 +24,11 @@ import eu.toop.dsd.service.util.DSDQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.pd.searchapi.v1.MatchType;
-
 import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 
 /**
@@ -88,7 +82,7 @@ public class DSDQueryService {
    * @param responseStream the result will be written into this stream
    * @throws IOException if an io problem occurs.
    */
-  public static void processDataSetRequestByDPType(DSDQuery dsdQuery, OutputStream responseStream) {
+  public static void processDataSetRequestByDPType(DSDQuery dsdQuery, OutputStream responseStream) throws IOException {
     ValueEnforcer.notNull(dsdQuery, "dsdQuery");
     ValueEnforcer.notNull(responseStream, "responseStream");
 
@@ -100,12 +94,9 @@ public class DSDQueryService {
         ", dpType: " + dpType + "]");
 
     //query all the matches without a document type id.
-    final ResultListType resultListType = ToopDirClient.callSearchApi(DSDConfig.getToopDirUrl(), countryCode, null);
-    final List<MatchType> matchTypes = resultListType.getMatch();
+    final String directoryResult = ToopDirClient.callSearchApi(DSDConfig.getToopDirUrl(), null, null);
 
-    StringWriter writer = new StringWriter();
-    DsdResponseWriter.matchTypesWriter(dataSetType, matchTypes).write(writer);
-    String resultXml = writer.toString();
+    String resultXml = DsdResponseWriter.convertDIRToDSD(directoryResult);
 
     responseStream.write(resultXml.getBytes(StandardCharsets.UTF_8));
   }
@@ -130,12 +121,9 @@ public class DSDQueryService {
         ", countryCode: " + countryCode + "]");
 
     //query all the matches without a document type id.
-    final ResultListType resultListType = ToopDirClient.callSearchApi(DSDConfig.getToopDirUrl(), countryCode, null);
-    final List<MatchType> matchTypes = resultListType.getMatch();
+    final String directoryResult = ToopDirClient.callSearchApi(DSDConfig.getToopDirUrl(), countryCode, null);
 
-    StringWriter writer = new StringWriter();
-    DsdResponseWriter.matchTypesWriter(dataSetType, matchTypes).write(writer);
-    String resultXml = writer.toString();
+    String resultXml = DsdResponseWriter.convertDIRToDSD(directoryResult);
 
     responseStream.write(resultXml.getBytes(StandardCharsets.UTF_8));
   }

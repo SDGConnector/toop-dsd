@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2018-2020 toop.eu
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,10 +16,12 @@
 package eu.toop.dsd.service;
 
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
+import com.helger.commons.io.stream.StreamHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -45,10 +47,9 @@ public class DSDTests {
    */
   @Test
   public void testConvertMatchTypes() {
-    final ResultListType read = PDSearchAPIReader.resultListV1().read(DSDTests.class.getResourceAsStream("/directory-results.xml"));
-    final List<MatchType> match = read.getMatch();
 
-    String resultXml = DsdResponseWriter.matchTypesWriter("mydatasettype", match).getAsString();
+    String xml = StreamHelper.getAllBytesAsString(DSDTests.class.getResourceAsStream("/directory-results.xml"), StandardCharsets.UTF_8);
+    String resultXml = DsdResponseWriter.convertDIRToDSD(xml, null);
     System.out.println(resultXml);
   }
 
@@ -57,11 +58,10 @@ public class DSDTests {
    */
   @Test
   public void testConvertSingleMatchType() {
-    final ResultListType read = PDSearchAPIReader.resultListV1().read(DSDTests.class.getResourceAsStream("/directory-result-single.xml"));
-    final List<MatchType> match = read.getMatch();
-    final String s_dataSetType = "REGISTERED_ORGANIZATION";
+    String xml = StreamHelper.getAllBytesAsString(DSDTests.class.getResourceAsStream("/directory-result-single.xml"), StandardCharsets.UTF_8);
+    final String dataSetType = "REGISTERED_ORGANIZATION";
 
-    String resultXml = DsdResponseWriter.matchTypesWriter(s_dataSetType, match).getAsString();
+    String resultXml = DsdResponseWriter.convertDIRToDSD(xml, dataSetType);
     System.out.println(resultXml);
   }
 
@@ -72,12 +72,11 @@ public class DSDTests {
    * @throws DatatypeConfigurationException the datatype configuration exception
    */
   @Test
-  public void writeRead() throws DatatypeConfigurationException {
-    final ResultListType read = PDSearchAPIReader.resultListV1().read(DSDTests.class.getResourceAsStream("/directory-result-single.xml"));
-    final List<MatchType> match = read.getMatch();
+  public void writeRead() {
+    String xml = StreamHelper.getAllBytesAsString(DSDTests.class.getResourceAsStream("/directory-result-single.xml"), StandardCharsets.UTF_8);
     final String s_dataSetType = "S";
 
-    String resultXml = DsdResponseWriter.matchTypesWriter(s_dataSetType, match).getAsString();
+    String resultXml = DsdResponseWriter.convertDIRToDSD(xml, s_dataSetType);
     System.out.println(resultXml);
 
     List<MatchType> matchTypeList = DsdResponseReader.matchTypeListReader().read(resultXml);
@@ -86,7 +85,7 @@ public class DSDTests {
     ResultListType rls = new ResultListType();
     rls.setVersion("1");
     rls.setQueryTerms("terms");
-    rls.setCreationDt(PDTFactory.getCurrentLocalDateTime ());
+    rls.setCreationDt(PDTFactory.getCurrentLocalDateTime());
     matchTypeList.forEach(matchType -> {
       rls.addMatch(matchType);
     });
