@@ -15,8 +15,16 @@
  */
 package eu.toop.dsd.api;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A class to write DSD responses
@@ -24,15 +32,16 @@ import javax.annotation.Nullable;
  * @author yerlibilgin
  */
 public class DsdResponseWriter {
+  private static final Transformer transformer;
 
-  /**
-   * Converts a DIR result to a DSD result
-   *
-   * @param directoryResult the xml received from the toop directory
-   * @return
-   */
-  public static String convertDIRToDSD(@Nonnull String directoryResult) {
-    return convertDIRToDSD(directoryResult, null);
+  static {
+    InputStream stylesheet = DsdResponseWriter.class.getResourceAsStream("/xslt/dsd.xslt");
+    StreamSource stylesource = new StreamSource(stylesheet);
+    try {
+      transformer = TransformerFactory.newInstance().newTransformer(stylesource);
+    } catch (TransformerConfigurationException e) {
+      throw new IllegalStateException("Cannot instantiate transformer");
+    }
   }
 
   /**
@@ -40,9 +49,40 @@ public class DsdResponseWriter {
    *
    * @param directoryResult the xml received from the toop directory
    * @param datasetType     the optional datasetType parameter, used for filtering the record
+   * @param dpType          the dpType query parameter for filtering and returning only the selected entities
    * @return
    */
-  public static String convertDIRToDSD(@Nonnull String directoryResult, @Nullable String datasetType) {
-    return null;
+  public static String convertDIRToDSDWithDPType(String directoryResult, String datasetType, String dpType) throws TransformerException {
+    return convertDIRToDSD(directoryResult, datasetType, null, dpType);
+  }
+
+  /**
+   * Converts a DIR result to a DSD result
+   *
+   * @param directoryResult the xml received from the toop directory
+   * @param datasetType     the optional datasetType parameter, used for filtering the record
+   * @param countryCode     the country code for filtering and returning only the selected countries
+   * @return
+   */
+  public static String convertDIRToDSDWithCountryCode(String directoryResult, String datasetType, String countryCode) throws TransformerException {
+    return convertDIRToDSD(directoryResult, datasetType, countryCode, null);
+  }
+
+  private static String convertDIRToDSD(String directoryResult, String datasetType, String countryCode, String dpType) throws TransformerException {
+    transformer.clearParameters();
+    if (datasetType != null)
+      transformer.setParameter("datasetType", datasetType);
+
+    if (countryCode != null)
+      transformer.setParameter("countryCode", countryCode);
+
+    if (dpType != null)
+      transformer.setParameter("dpType", dpType);
+
+    StringWriter writer = new StringWriter();
+    StreamSource xmlSource = new StreamSource(new ByteArrayInputStream(directoryResult.getBytes(StandardCharsets.UTF_8)));
+    transformer.transform(xmlSource, new StreamResult(writer));
+
+    return writer.toString();
   }
 }

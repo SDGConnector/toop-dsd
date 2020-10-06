@@ -16,6 +16,7 @@
 package eu.toop.dsd.service;
 
 
+import eu.toop.dsd.api.DsdResponseWriter;
 import eu.toop.dsd.api.ToopDirClient;
 import eu.toop.dsd.config.DSDConfig;
 import eu.toop.dsd.service.util.DSDQuery;
@@ -33,33 +34,24 @@ import java.util.Map;
 
 public class DSDTests {
 
-  @Ignore
   @Test
-  public void saveSearches() throws IOException {
-    final String result = ToopDirClient.callSearchApi(DSDConfig.getToopDirUrl(), null, null);
+  public void basicXsltWithCountryCode() throws Exception {
+    final String result = ToopDirClient.callSearchApiWithCountryCode(DSDConfig.getToopDirUrl(), "SV");
     System.out.println(result);
+    String regRep = DsdResponseWriter.convertDIRToDSDWithCountryCode(result, "FINANCIAL_RECORD_TYPE", "SV");
+    System.out.println(regRep);
   }
 
+
   @Test
-  public void basicXslt() throws Exception {
-
-    final String result = ToopDirClient.callSearchApi(DSDConfig.getToopDirUrl(), "SV", null);
-
+  public void basicXsltWithDPType() throws Exception {
+    final String result = ToopDirClient.callSearchApiWithIdentifierScheme(DSDConfig.getToopDirUrl(), "DataSubjectIdentifierScheme");
     System.out.println(result);
-
-    InputStream stylesheet = this.getClass().getResourceAsStream("/xslt/dsd.xslt");
-    System.out.println(stylesheet);
-
-    StreamSource stylesource = new StreamSource(stylesheet);
-    Transformer transformer = TransformerFactory.newInstance().newTransformer(stylesource);
-    StringWriter writer = new StringWriter();
-    StreamSource xmlSource = new StreamSource(new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8)));
-    transformer.transform(xmlSource, new StreamResult(writer));
-
-    System.out.println(writer.toString());
+    String regRep = DsdResponseWriter.convertDIRToDSDWithDPType(result, "FINANCIAL_RECORD_TYPE", "DataSubjectIdentifierScheme");
+    System.out.println(regRep);
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) throws Exception {
 
     Map<String, String[]> paramMap = new HashMap<>();
 
