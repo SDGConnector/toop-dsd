@@ -23,9 +23,7 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:xalan="http://xml.apache.org/xslt"
     xmlns:xls="http://www.w3.org/1999/XSL/Transform"
-    xmlns:org="http://www.w3.org/ns/org#"
-    exclude-result-prefixes="dsd"
-    xmlns:dsd="http://dsd">
+    xmlns:org="http://www.w3.org/ns/org#">
 
   <!-- PARAMETERS -->
   <xsl:param name="datasetType"/>

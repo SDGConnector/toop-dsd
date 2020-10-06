@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2018-2020 toop.eu
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +20,9 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.xml.transform.TransformerException;
 
+import eu.toop.dsd.api.DSDException;
 import eu.toop.dsd.api.DsdDataConverter;
 import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
 import org.apache.http.HttpStatus;
@@ -88,6 +90,7 @@ public class DSDClient {
     return this;
   }
 
+
   /**
    * The default DSD query as described here:
    * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
@@ -97,7 +100,7 @@ public class DSDClient {
    * @return the list of {@link DCatAPDatasetType} objects.
    */
   @Nullable
-  public List<DCatAPDatasetType> queryDataset(@Nonnull final String datasetType, @Nullable final String countryCode) {
+  public String queryDatasetRaw(@Nonnull final String datasetType, @Nullable final String countryCode) {
 
     ValueEnforcer.notEmpty(datasetType, "datasetType");
 
@@ -126,22 +129,34 @@ public class DSDClient {
 
         try (final NonBlockingByteArrayOutputStream stream = new NonBlockingByteArrayOutputStream()) {
           response.getEntity().writeTo(stream);
-          final byte[] s_bytes = stream.toByteArray();
+          final byte[] bytes = stream.toByteArray();
+          final String result = new String(bytes, StandardCharsets.UTF_8);
           if (LOGGER.isDebugEnabled()) {
-            final String s_result = new String(s_bytes, StandardCharsets.UTF_8);
-            LOGGER.debug("DSD result:\n" + s_result);
+            LOGGER.debug("DSD result:\n" + result);
           }
-
-
-          return DsdDataConverter.dcatDatasetTypeReader().read(s_bytes);
+          return result;
         }
       }
     } catch (final RuntimeException ex) {
       throw ex;
     } catch (final Exception ex) {
       LOGGER.error(ex.getMessage(), ex);
-      throw new IllegalStateException(ex);
+      throw new DSDException(ex.getMessage(), ex);
     }
+  }
+
+  /**
+   * The default DSD query as described here:
+   * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
+   *
+   * @param datasetType the dataset type, may not be <code>null</code>
+   * @param countryCode the country code, optional
+   * @return the list of {@link DCatAPDatasetType} objects.
+   */
+  @Nullable
+  public List<DCatAPDatasetType> queryDataset(@Nonnull final String datasetType, @Nullable final String countryCode) {
+    String result = queryDatasetRaw(datasetType, countryCode);
+    return DsdDataConverter.parseDataset(result);
   }
 
   /**
@@ -155,7 +170,11 @@ public class DSDClient {
   @Nullable
   public List<MatchType> queryDatasetAsMatchTypes(@Nonnull final String datasetType, @Nullable final String countryCode) {
     ValueEnforcer.notEmpty(datasetType, "datasetType");
-    final List<DCatAPDatasetType> dCatAPDatasetTypes = queryDataset(datasetType, countryCode);
-    return DSDTypesManipulator.convertDCatElementsToMatchTypes(dCatAPDatasetTypes);
+    final String rawResult = queryDatasetRaw(datasetType, countryCode);
+    try {
+      return DsdDataConverter.convertDSDToMatchTypes(rawResult);
+    } catch (TransformerException e) {
+      throw new DSDException("Couldn't convert results", e);
+    }
   }
 }

@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2018-2020 toop.eu
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,6 +39,15 @@ import eu.toop.edm.xml.dcatap.DatasetMarshaller;
  */
 public final class DSDClientTest {
 
+  @Test
+  public void testRawQuery() {
+    String rawResult = new DSDClient("http://dsd.dev.exchange.toop.eu").queryDatasetRaw(
+        "REGISTERED_ORGANIZATION_TYPE",
+        "SV");
+
+    System.out.println(rawResult);
+  }
+
   /**
    * Test query
    *
@@ -46,9 +55,9 @@ public final class DSDClientTest {
    */
   @Ignore
   @Test
-  public void testQuery() throws DatatypeConfigurationException {
+  public void testQuery() {
     final List<DCatAPDatasetType> matchTypes = new DSDClient("http://dsd.dev.exchange.toop.eu").queryDataset("REGISTERED_ORGANIZATION_TYPE",
-                                                                                                             "SV");
+        "SV");
 
     final DatasetMarshaller datasetMarshaller = new DatasetMarshaller();
     datasetMarshaller.setFormattedOutput(true);
@@ -63,11 +72,10 @@ public final class DSDClientTest {
    *
    * @throws DatatypeConfigurationException the datatype configuration exception
    */
-  @Ignore
   @Test
-  public void testQueryMatchTypes() throws DatatypeConfigurationException {
+  public void testQueryMatchTypes() {
     final List<MatchType> matchTypes = new DSDClient("http://dsd.dev.exchange.toop.eu").queryDatasetAsMatchTypes("REGISTERED_ORGANIZATION_TYPE",
-                                                                                                                 "SV");
+        "SV");
 
     final ResultListType rls = new ResultListType();
     rls.setVersion("1");
