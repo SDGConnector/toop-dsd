@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class ToopDirClientTest {
 
-  private static final String TOOP_DIR_URL = "http://directory.acc.exchange.toop.eu";
+  public static final String TOOP_DIR_URL = "http://directory.acc.exchange.toop.eu";
 
   @Test
   public void searchCountry() throws IOException {

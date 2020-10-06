@@ -17,7 +17,7 @@ package eu.toop.dsd.service;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
-import eu.toop.dsd.api.DsdResponseWriter;
+import eu.toop.dsd.api.DsdDataConverter;
 import eu.toop.dsd.api.ToopDirClient;
 import eu.toop.dsd.config.DSDConfig;
 import eu.toop.dsd.service.util.DSDQuery;
@@ -97,7 +97,7 @@ public class DSDQueryService {
     //query all the matches without a document type id.
     final String directoryResult = ToopDirClient.callSearchApiWithIdentifierScheme(DSDConfig.getToopDirUrl(), dpType);
 
-    String resultXml = DsdResponseWriter.convertDIRToDSDWithDPType(directoryResult, dataSetType, dpType);
+    String resultXml = DsdDataConverter.convertDIRToDSDWithDPType(directoryResult, dataSetType, dpType);
 
     responseStream.write(resultXml.getBytes(StandardCharsets.UTF_8));
   }
@@ -124,7 +124,7 @@ public class DSDQueryService {
     //query all the matches without a document type id.
     final String directoryResult = ToopDirClient.callSearchApiWithCountryCode(DSDConfig.getToopDirUrl(), countryCode);
 
-    String resultXml = DsdResponseWriter.convertDIRToDSDWithCountryCode(directoryResult, dataSetType, countryCode);
+    String resultXml = DsdDataConverter.convertDIRToDSDWithCountryCode(directoryResult, dataSetType, countryCode);
 
     responseStream.write(resultXml.getBytes(StandardCharsets.UTF_8));
   }

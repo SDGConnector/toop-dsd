@@ -18,6 +18,7 @@
 -->
 <xsl:stylesheet
     version="2.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:xalan="http://xml.apache.org/xslt"
@@ -38,27 +39,16 @@
   <!--PROLOG-->
   <xsl:output indent="yes" method="xml" omit-xml-declaration="no" standalone="yes" xalan:indent-amount="2"/>
 
-
   <!-- ROOT TEMPLATE -->
-  <xsl:template match="/">
-
-    <query:QueryResponse xmlns="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:4.0"
-                         xmlns:lcm="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:4.0"
-                         xmlns:query="urn:oasis:names:tc:ebxml-regrep:xsd:query:4.0"
-                         xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:4.0"
-                         xmlns:rs="urn:oasis:names:tc:ebxml-regrep:xsd:rs:4.0"
-                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                         xsi:schemaLocation="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:4.0"
-                         startIndex="0"
-                         status="urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success">
-      <!-- Total Result Count -->
-      <xsl:attribute name="totalResultCount">
-        <xsl:value-of select="count(resultlist/match)"/>
-      </xsl:attribute>
+  <xsl:template match="/"
+                xmlns:lcm="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:4.0"
+                xmlns:query="urn:oasis:names:tc:ebxml-regrep:xsd:query:4.0"
+                xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:4.0"
+                xmlns:rs="urn:oasis:names:tc:ebxml-regrep:xsd:rs:4.0">
+    <!-- Phase 1, prepare dataset -->
+    <xsl:variable name="registryObjects">
       <rim:RegistryObjectList>
-
         <xsl:for-each select="resultlist/match">
-
           <!-- keep the current match in a variable -->
           <xsl:variable name="match" select="."/>
 
@@ -117,7 +107,7 @@
                           <dct:description>
                             <xsl:value-of select="normalize-space(concat('A dataset about ', $datasetType))"/>
                           </dct:description>
-                          <dct:title>Companies registry</dct:title>
+                          <dct:title>?Companies registry?</dct:title>
 
                           <!-- Distribution Information -->
                           <xsl:comment>Distribution Information</xsl:comment>
@@ -197,12 +187,11 @@
 
                           <dct:publisher xsi:type="cagv:PublicOrganizationType">
 
-                            <!-- if we have a dptype -->
-                            <xsl:if test="$dpType != ''">
-                              <org:classification>
-                                <xsl:value-of select="$dpType"/>
-                              </org:classification>
-                            </xsl:if>
+                            <!-- shouldbe equal to dptype -->
+                            <org:classification>
+                              <xsl:value-of select="$entity/identifier/@scheme"/>
+                            </org:classification>
+
                             <!-- The Data Provider Information -->
                             <cbc:id>
                               <xsl:attribute name="schemeID">
@@ -249,7 +238,27 @@
           </xsl:for-each> <!-- for-each select docTypeId -->
         </xsl:for-each> <!-- for-each select=resultlist/match" -->
       </rim:RegistryObjectList>
-    </query:QueryResponse>
-  </xsl:template>
+    </xsl:variable>
+    <!-- end Phase 1 -->
 
+    <!-- Phase 2 for updating the result count -->
+    <query:QueryResponse xmlns="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:4.0"
+                         xmlns:lcm="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:4.0"
+                         xmlns:query="urn:oasis:names:tc:ebxml-regrep:xsd:query:4.0"
+                         xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:4.0"
+                         xmlns:rs="urn:oasis:names:tc:ebxml-regrep:xsd:rs:4.0"
+                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                         xsi:schemaLocation="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:4.0"
+                         startIndex="0"
+                         status="urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success">
+
+      <xsl:attribute name="totalResultCount">
+        <xsl:value-of select="count($registryObjects/*/*)"/>
+      </xsl:attribute>
+
+      <xsl:copy-of select="$registryObjects"/>
+    </query:QueryResponse>
+    <!-- end Phase 2 -->
+
+  </xsl:template>
 </xsl:stylesheet>

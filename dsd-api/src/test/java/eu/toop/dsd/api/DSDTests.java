@@ -13,26 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.toop.dsd.service;
+package eu.toop.dsd.api;
 
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import com.helger.commons.io.stream.StreamHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.helger.commons.datetime.PDTFactory;
-import com.helger.pd.searchapi.PDSearchAPIReader;
 import com.helger.pd.searchapi.PDSearchAPIWriter;
 import com.helger.pd.searchapi.v1.MatchType;
 import com.helger.pd.searchapi.v1.ResultListType;
 
-import eu.toop.dsd.api.DsdResponseReader;
-import eu.toop.dsd.api.DsdResponseWriter;
 import eu.toop.dsd.api.types.DoctypeParts;
 
 /**
@@ -43,55 +41,20 @@ import eu.toop.dsd.api.types.DoctypeParts;
 public class DSDTests {
 
   /**
-   * Test convert match types.
-   */
-  @Test
-  public void testConvertMatchTypes() {
-
-    String xml = StreamHelper.getAllBytesAsString(DSDTests.class.getResourceAsStream("/directory-results.xml"), StandardCharsets.UTF_8);
-    String resultXml = DsdResponseWriter.convertDIRToDSD(xml, null);
-    System.out.println(resultXml);
-  }
-
-  /**
-   * Test convert single match type.
-   */
-  @Test
-  public void testConvertSingleMatchType() {
-    String xml = StreamHelper.getAllBytesAsString(DSDTests.class.getResourceAsStream("/directory-result-single.xml"), StandardCharsets.UTF_8);
-    final String dataSetType = "REGISTERED_ORGANIZATION";
-
-    String resultXml = DsdResponseWriter.convertDIRToDSD(xml, dataSetType);
-    System.out.println(resultXml);
-  }
-
-
-  /**
    * Write read.
    *
    * @throws DatatypeConfigurationException the datatype configuration exception
    */
   @Test
-  public void writeRead() {
-    String xml = StreamHelper.getAllBytesAsString(DSDTests.class.getResourceAsStream("/directory-result-single.xml"), StandardCharsets.UTF_8);
-    final String s_dataSetType = "S";
+  public void writeRead() throws TransformerException {
+    String xml = StreamHelper.getAllBytesAsString(DSDTests.class.getResourceAsStream("/directory-results.xml"), StandardCharsets.UTF_8);
+    final String s_dataSetType = "registeredorganization";
 
-    String resultXml = DsdResponseWriter.convertDIRToDSD(xml, s_dataSetType);
-    System.out.println(resultXml);
+    String dsdResult = DsdDataConverter.convertDIRToDSDWithDPType(xml, s_dataSetType, "DataSubjectIdentifierScheme");
+    System.out.println(dsdResult);
 
-    List<MatchType> matchTypeList = DsdResponseReader.matchTypeListReader().read(resultXml);
-
-
-    ResultListType rls = new ResultListType();
-    rls.setVersion("1");
-    rls.setQueryTerms("terms");
-    rls.setCreationDt(PDTFactory.getCurrentLocalDateTime());
-    matchTypeList.forEach(matchType -> {
-      rls.addMatch(matchType);
-    });
-
-
-    System.out.println(PDSearchAPIWriter.resultListV1().setFormattedOutput(true).getAsString(rls));
+    String toopDirResult = DsdDataConverter.convertDSDToToopDirResultList(dsdResult);
+    System.out.println(toopDirResult);
   }
 
   /**
@@ -123,6 +86,23 @@ public class DSDTests {
     Assert.assertEquals("Request", parts.getDistributionFormat());
     Assert.assertEquals("urn:eu.toop.request.registeredorganization", parts.getDistributionConformsTo());
     Assert.assertEquals("1.40", parts.getConformsTo());
+  }
+
+  @Test
+  public void basicXsltWithCountryCode() throws Exception {
+    final String result = ToopDirClient.callSearchApiWithCountryCode(ToopDirClientTest.TOOP_DIR_URL, "SV");
+    System.out.println(result);
+    String regRep = DsdDataConverter.convertDIRToDSDWithCountryCode(result, "FINANCIAL_RECORD_TYPE", "SV");
+    System.out.println(regRep);
+  }
+
+
+  @Test
+  public void basicXsltWithDPType() throws Exception {
+    final String result = ToopDirClient.callSearchApiWithIdentifierScheme(ToopDirClientTest.TOOP_DIR_URL, "DataSubjectIdentifierScheme");
+    System.out.println(result);
+    String regRep = DsdDataConverter.convertDIRToDSDWithDPType(result, "FINANCIAL_RECORD_TYPE", "DataSubjectIdentifierScheme");
+    System.out.println(regRep);
   }
 }
 

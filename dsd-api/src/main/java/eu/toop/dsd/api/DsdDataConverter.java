@@ -31,14 +31,23 @@ import java.nio.charset.StandardCharsets;
  *
  * @author yerlibilgin
  */
-public class DsdResponseWriter {
+public class DsdDataConverter {
   private static final Transformer transformer;
+  private static final Transformer inverseTransformer;
 
   static {
-    InputStream stylesheet = DsdResponseWriter.class.getResourceAsStream("/xslt/dsd.xslt");
+    InputStream stylesheet = DsdDataConverter.class.getResourceAsStream("/xslt/dsd.xslt");
     StreamSource stylesource = new StreamSource(stylesheet);
     try {
       transformer = TransformerFactory.newInstance().newTransformer(stylesource);
+    } catch (TransformerConfigurationException e) {
+      throw new IllegalStateException("Cannot instantiate transformer");
+    }
+
+    stylesheet = DsdDataConverter.class.getResourceAsStream("/xslt/dsd-inverse.xslt");
+    stylesource = new StreamSource(stylesheet);
+    try {
+      inverseTransformer = TransformerFactory.newInstance().newTransformer(stylesource);
     } catch (TransformerConfigurationException e) {
       throw new IllegalStateException("Cannot instantiate transformer");
     }
@@ -83,6 +92,20 @@ public class DsdResponseWriter {
     StreamSource xmlSource = new StreamSource(new ByteArrayInputStream(directoryResult.getBytes(StandardCharsets.UTF_8)));
     transformer.transform(xmlSource, new StreamResult(writer));
 
+    return writer.toString();
+  }
+
+  /**
+   * Convert a Regrep/DCAT DSD xml document to a Directory result list
+   *
+   * @param dsdXml
+   * @return the directory resultlist xml
+   * @throws TransformerException
+   */
+  public static String convertDSDToToopDirResultList(String dsdXml) throws TransformerException {
+    StringWriter writer = new StringWriter();
+    StreamSource xmlSource = new StreamSource(new ByteArrayInputStream(dsdXml.getBytes(StandardCharsets.UTF_8)));
+    inverseTransformer.transform(xmlSource, new StreamResult(writer));
     return writer.toString();
   }
 }

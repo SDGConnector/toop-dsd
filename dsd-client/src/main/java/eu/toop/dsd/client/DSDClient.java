@@ -21,8 +21,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import eu.toop.dsd.api.DSDTypesManipulator;
-import eu.toop.dsd.api.DsdResponseReader;
+import eu.toop.dsd.api.DsdDataConverter;
 import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -132,7 +131,9 @@ public class DSDClient {
             final String s_result = new String(s_bytes, StandardCharsets.UTF_8);
             LOGGER.debug("DSD result:\n" + s_result);
           }
-          return DsdResponseReader.dcatDatasetTypeReader().read(s_bytes);
+
+
+          return DsdDataConverter.dcatDatasetTypeReader().read(s_bytes);
         }
       }
     } catch (final RuntimeException ex) {
