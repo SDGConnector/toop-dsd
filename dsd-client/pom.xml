@@ -110,12 +110,5 @@
       <classifier>tests</classifier>
     </dependency>
 
-    <dependency>
-      <groupId>eu.toop</groupId>
-      <artifactId>dsd-service</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 </project>

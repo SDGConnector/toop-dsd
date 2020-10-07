@@ -19,6 +19,9 @@ import com.helger.commons.datetime.PDTFactory;
 import com.helger.pd.searchapi.PDSearchAPIWriter;
 import com.helger.pd.searchapi.v1.MatchType;
 import com.helger.pd.searchapi.v1.ResultListType;
+import eu.toop.dsd.api.DsdDataConverter;
+import eu.toop.dsd.api.ToopDirClient;
+import eu.toop.dsd.api.types.DSDQuery;
 import eu.toop.dsd.client.DSDClient;
 import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
 import eu.toop.edm.xml.dcatap.DatasetMarshaller;
@@ -84,7 +87,7 @@ public final class DSDClientTest {
     final List<DCatAPDatasetType> dcatList = new DSDClient("http://localhost:" + TEST_PORT).queryDataset("REGISTERED_ORGANIZATION_TYPE",
         "SV");
 
-    if (dcatList == null){
+    if (dcatList == null) {
       throw new IllegalStateException("Cannot parse Dataset, please check previous exceptions");
     }
     final DatasetMarshaller datasetMarshaller = new DatasetMarshaller();
@@ -119,6 +122,8 @@ public final class DSDClientTest {
   }
 
   private static class MyLocalTestServer extends LocalServerTestBase {
+    public static final String TOOP_DIR_URL = "http://directory.acc.exchange.toop.eu";
+
     @Override
     public void setUp() throws Exception {
       super.setUp();
@@ -146,18 +151,30 @@ public final class DSDClientTest {
               request.getRequestLine().getUri()), StandardCharsets.UTF_8);
 
 
-          Map<String, String[]> paramMap = new HashMap<>();
+          Map<String, String> paramMap = new HashMap<>();
           for (NameValuePair nameValuePair : parameters) {
             System.out.println(nameValuePair.getName() + ": "
                 + nameValuePair.getValue());
-            paramMap.put(nameValuePair.getName(), new String[]{nameValuePair.getValue()});
+            paramMap.put(nameValuePair.getName(), nameValuePair.getValue());
           }
 
           ByteArrayOutputStream baos = new ByteArrayOutputStream();
-          DSDQueryService.processRequest(paramMap, baos);
-          final String xml = new String(baos.toByteArray(), StandardCharsets.UTF_8);
-          System.out.println(xml);
-          response.setEntity(new StringEntity(xml, ContentType.APPLICATION_XML));
+
+
+          String dataSetType = paramMap.get(DSDQuery.PARAM_NAME_DATA_SET_TYPE);
+          String countryCode = paramMap.get(DSDQuery.PARAM_NAME_COUNTRY_CODE);
+          String dpType = paramMap.get(DSDQuery.PARAM_NAME_DATA_PROVIDER_TYPE);
+
+          final String resultXml;
+          if (countryCode != null) {
+            //query all the matches without a document type id.
+            String directoryResult = ToopDirClient.callSearchApiWithCountryCode(TOOP_DIR_URL, countryCode);
+            resultXml = DsdDataConverter.convertDIRToDSDWithCountryCode(directoryResult, dataSetType, countryCode);
+          } else {
+            String directoryResult = ToopDirClient.callSearchApiWithIdentifierScheme(TOOP_DIR_URL, dpType);
+            resultXml = DsdDataConverter.convertDIRToDSDWithDPType(directoryResult, dataSetType, dpType);
+          }
+          response.setEntity(new StringEntity(resultXml, ContentType.APPLICATION_XML));
           response.setStatusCode(HttpStatus.SC_OK);
         } catch (Exception e) {
           e.printStackTrace();
