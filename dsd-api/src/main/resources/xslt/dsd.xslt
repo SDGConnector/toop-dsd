@@ -98,7 +98,7 @@
                         <dcat:dataset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                       xmlns:cagv="https://semic.org/sa/cv/cagv/agent-2.0.0#"
                                       xmlns:dct="http://purl.org/dc/terms/"
-                                      xmlns:cbc="https://semic.org/sa/cv/common/cbc-2.0.0#"
+                                      xmlns:cbc="https://data.europe.eu/semanticassets/ns/cv/common/cbc_v2.0.0#"
                                       xmlns:skos="http://www.w3.org/2004/02/skos/core#"
                                       xmlns:dcat="http://data.europa.eu/r5r/"
                                       xmlns:locn="http://www.w3.org/ns/locn#">
@@ -184,14 +184,6 @@
                           <xsl:comment>Publisher Information</xsl:comment>
 
                           <dct:publisher xsi:type="cagv:PublicOrganizationType">
-
-                            <!-- shouldbe equal to dptype -->
-                            <org:classification>
-                              <!-- NOTE: there might ne multiple identifiers I am getting only
-                              the first one -->
-                              <xsl:value-of select="$entity/identifier[1]/@scheme"/>
-                            </org:classification>
-
                             <!-- The Data Provider Information -->
                             <cbc:id>
                               <xsl:attribute name="schemeID">
@@ -220,6 +212,12 @@
                             <skos:prefLabel>
                               <xsl:value-of select="$entity/name"/>
                             </skos:prefLabel>
+                            <!-- shouldbe equal to dptype -->
+                            <org:classification>
+                              <!-- NOTE: there might ne multiple identifiers I am getting only
+                              the first one -->
+                              <xsl:value-of select="$entity/identifier[1]/@scheme"/>
+                            </org:classification>
                           </dct:publisher>
                           <dct:type>
                             <xsl:value-of select="$datasetType"/>

@@ -81,7 +81,7 @@ public final class DSDClientTest {
    */
   @Test
   public void testQuery() {
-    final List<DCatAPDatasetType> dcatList = new DSDClient("http://localhost:25434").queryDataset("REGISTERED_ORGANIZATION_TYPE",
+    final List<DCatAPDatasetType> dcatList = new DSDClient("http://localhost:" + TEST_PORT).queryDataset("REGISTERED_ORGANIZATION_TYPE",
         "SV");
 
     if (dcatList == null){
@@ -102,7 +102,7 @@ public final class DSDClientTest {
    */
   @Test
   public void testQueryMatchTypes() {
-    final List<MatchType> matchTypes = new DSDClient("http://dsd.dev.exchange.toop.eu").queryDatasetAsMatchTypes("REGISTERED_ORGANIZATION_TYPE",
+    final List<MatchType> matchTypes = new DSDClient("http://localhost:" + TEST_PORT).queryDatasetAsMatchTypes("REGISTERED_ORGANIZATION_TYPE",
         "SV");
 
     final ResultListType rls = new ResultListType();
