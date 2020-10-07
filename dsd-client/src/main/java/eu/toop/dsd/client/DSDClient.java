@@ -24,6 +24,7 @@ import javax.xml.transform.TransformerException;
 
 import eu.toop.dsd.api.DSDException;
 import eu.toop.dsd.api.DsdDataConverter;
+import eu.toop.dsd.api.types.DSDQuery;
 import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -47,23 +48,6 @@ import com.helger.pd.searchapi.v1.MatchType;
 public class DSDClient {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DSDClient.class);
-
-  /**
-   * The constant QUERY_DATASET_REQUEST.
-   */
-  public static final String QUERY_DATASET_REQUEST = "urn:toop:dsd:ebxml-regrep:queries:DataSetRequest";
-  /**
-   * The constant PARAM_NAME_DATA_SET_TYPE.
-   */
-  public static final String PARAM_NAME_DATA_SET_TYPE = "dataSetType";
-  /**
-   * The constant PARAM_NAME_QUERY_ID.
-   */
-  public static final String PARAM_NAME_QUERY_ID = "queryId";
-  /**
-   * The constant PARAM_NAME_COUNTRY_CODE.
-   */
-  public static final String PARAM_NAME_COUNTRY_CODE = "countryCode";
 
   private final String m_sDSDBaseURL;
   private HttpClientSettings m_aHttpClientSettings;
@@ -106,12 +90,12 @@ public class DSDClient {
 
     final SimpleURL aBaseURL = new SimpleURL(m_sDSDBaseURL + "/rest/search");
 
-    aBaseURL.add(PARAM_NAME_QUERY_ID, QUERY_DATASET_REQUEST);
-    aBaseURL.add(PARAM_NAME_DATA_SET_TYPE, datasetType);
+    aBaseURL.add(DSDQuery.PARAM_NAME_QUERY_ID, DSDQuery.DSDQueryID.QUERY_BY_DATASETTYPE_AND_LOCATION.id);
+    aBaseURL.add(DSDQuery.PARAM_NAME_DATA_SET_TYPE, datasetType);
 
     // Parameters to this servlet
     if (countryCode != null && !countryCode.isEmpty()) {
-      aBaseURL.add(PARAM_NAME_COUNTRY_CODE, countryCode);
+      aBaseURL.add(DSDQuery.PARAM_NAME_COUNTRY_CODE, countryCode);
     }
 
     if (LOGGER.isInfoEnabled())

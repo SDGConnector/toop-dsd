@@ -20,7 +20,7 @@ import com.helger.commons.annotation.Nonempty;
 import eu.toop.dsd.api.DsdDataConverter;
 import eu.toop.dsd.api.ToopDirClient;
 import eu.toop.dsd.config.DSDConfig;
-import eu.toop.dsd.service.util.DSDQuery;
+import eu.toop.dsd.api.types.DSDQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

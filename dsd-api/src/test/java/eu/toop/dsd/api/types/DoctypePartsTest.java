@@ -1,6 +1,5 @@
-package eu.toop.dsd.client.types;
+package eu.toop.dsd.api.types;
 
-import eu.toop.dsd.api.types.DoctypeParts;
 import org.junit.Test;
 
 public class DoctypePartsTest {

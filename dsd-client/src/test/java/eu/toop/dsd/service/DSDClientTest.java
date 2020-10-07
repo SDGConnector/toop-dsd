@@ -15,22 +15,39 @@
  */
 package eu.toop.dsd.service;
 
-import java.io.StringWriter;
-import java.util.List;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
 import com.helger.commons.datetime.PDTFactory;
 import com.helger.pd.searchapi.PDSearchAPIWriter;
 import com.helger.pd.searchapi.v1.MatchType;
 import com.helger.pd.searchapi.v1.ResultListType;
-
 import eu.toop.dsd.client.DSDClient;
 import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
 import eu.toop.edm.xml.dcatap.DatasetMarshaller;
+import org.apache.http.*;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.config.ConnectionConfig;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.DefaultBHttpServerConnectionFactory;
+import org.apache.http.impl.DefaultHttpRequestFactory;
+import org.apache.http.impl.io.DefaultHttpRequestParserFactory;
+import org.apache.http.impl.io.DefaultHttpResponseWriterFactory;
+import org.apache.http.io.HttpMessageParserFactory;
+import org.apache.http.localserver.LocalServerTestBase;
+import org.apache.http.message.BasicLineParser;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.transform.TransformerException;
+import java.io.ByteArrayOutputStream;
+import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A test class that tests the DSDClient
@@ -39,9 +56,18 @@ import eu.toop.edm.xml.dcatap.DatasetMarshaller;
  */
 public final class DSDClientTest {
 
+  private static final int TEST_PORT = 25434;
+
+  @BeforeClass
+  public static void mocServer() throws Exception {
+    MyLocalTestServer mlts = new MyLocalTestServer();
+    mlts.setUp();
+    mlts.start(TEST_PORT);
+  }
+
   @Test
   public void testRawQuery() {
-    String rawResult = new DSDClient("http://dsd.dev.exchange.toop.eu").queryDatasetRaw(
+    String rawResult = new DSDClient("http://localhost:" + TEST_PORT).queryDatasetRaw(
         "REGISTERED_ORGANIZATION_TYPE",
         "SV");
 
@@ -55,7 +81,7 @@ public final class DSDClientTest {
    */
   @Test
   public void testQuery() {
-    final List<DCatAPDatasetType> matchTypes = new DSDClient("http://dsd.dev.exchange.toop.eu").queryDataset("REGISTERED_ORGANIZATION_TYPE",
+    final List<DCatAPDatasetType> matchTypes = new DSDClient("http://localhost:25434").queryDataset("REGISTERED_ORGANIZATION_TYPE",
         "SV");
 
     final DatasetMarshaller datasetMarshaller = new DatasetMarshaller();
@@ -87,5 +113,59 @@ public final class DSDClientTest {
     final StringWriter writer = new StringWriter();
     PDSearchAPIWriter.resultListV1().setFormattedOutput(true).write(rls, writer);
     System.out.println(writer);
+  }
+
+  private static class MyLocalTestServer extends LocalServerTestBase {
+    @Override
+    public void setUp() throws Exception {
+      super.setUp();
+      System.out.println("Calling setup");
+      HttpRequestFactory requestFactory = new DefaultHttpRequestFactory() {
+        @Override
+        public HttpRequest newHttpRequest(final RequestLine requestline) throws MethodNotSupportedException {
+          return super.newHttpRequest(requestline);
+        }
+      };
+      HttpMessageParserFactory<HttpRequest> requestParserFactory = new DefaultHttpRequestParserFactory(
+          BasicLineParser.INSTANCE, requestFactory);
+      DefaultBHttpServerConnectionFactory connectionFactory = new DefaultBHttpServerConnectionFactory(
+          ConnectionConfig.DEFAULT, requestParserFactory, DefaultHttpResponseWriterFactory.INSTANCE);
+      this.serverBootstrap.setConnectionFactory(connectionFactory);
+
+      //register "/rest/search"
+      System.out.println("Register handler");
+      this.serverBootstrap.registerHandler("/rest/search", (request, response, context) -> {
+        List<NameValuePair> parameters = null;
+
+        System.out.println(request.getRequestLine());
+        try {
+          parameters = URLEncodedUtils.parse(new URI(
+              request.getRequestLine().getUri()), StandardCharsets.UTF_8);
+
+
+          Map<String, String[]> paramMap = new HashMap<>();
+          for (NameValuePair nameValuePair : parameters) {
+            System.out.println(nameValuePair.getName() + ": "
+                + nameValuePair.getValue());
+            paramMap.put(nameValuePair.getName(), new String[]{nameValuePair.getValue()});
+          }
+
+          ByteArrayOutputStream baos = new ByteArrayOutputStream();
+          DSDQueryService.processRequest(paramMap, baos);
+          final String xml = new String(baos.toByteArray(), StandardCharsets.UTF_8);
+          System.out.println(xml);
+          response.setEntity(new StringEntity(xml, ContentType.APPLICATION_XML));
+          response.setStatusCode(HttpStatus.SC_OK);
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new IllegalStateException(e.getMessage(), e);
+        }
+      });
+    }
+
+    public void start(int port) throws Exception {
+      this.serverBootstrap.setListenerPort(port);
+      start();
+    }
   }
 }

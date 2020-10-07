@@ -1,5 +1,6 @@
-package eu.toop.dsd.service.util;
+package eu.toop.dsd.api.types;
 
+import eu.toop.dsd.api.types.DSDQuery;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
