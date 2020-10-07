@@ -187,7 +187,9 @@
 
                             <!-- shouldbe equal to dptype -->
                             <org:classification>
-                              <xsl:value-of select="$entity/identifier/@scheme"/>
+                              <!-- NOTE: there might ne multiple identifiers I am getting only
+                              the first one -->
+                              <xsl:value-of select="$entity/identifier[1]/@scheme"/>
                             </org:classification>
 
                             <!-- The Data Provider Information -->

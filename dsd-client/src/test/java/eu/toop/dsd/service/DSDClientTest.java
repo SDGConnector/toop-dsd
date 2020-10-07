@@ -81,13 +81,16 @@ public final class DSDClientTest {
    */
   @Test
   public void testQuery() {
-    final List<DCatAPDatasetType> matchTypes = new DSDClient("http://localhost:25434").queryDataset("REGISTERED_ORGANIZATION_TYPE",
+    final List<DCatAPDatasetType> dcatList = new DSDClient("http://localhost:25434").queryDataset("REGISTERED_ORGANIZATION_TYPE",
         "SV");
 
+    if (dcatList == null){
+      throw new IllegalStateException("Cannot parse Dataset, please check previous exceptions");
+    }
     final DatasetMarshaller datasetMarshaller = new DatasetMarshaller();
     datasetMarshaller.setFormattedOutput(true);
 
-    matchTypes.forEach(dataset -> {
+    dcatList.forEach(dataset -> {
       System.out.println(datasetMarshaller.getAsString(dataset));
     });
   }
