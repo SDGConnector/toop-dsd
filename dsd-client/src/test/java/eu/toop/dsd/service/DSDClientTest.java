@@ -37,16 +37,13 @@ import org.apache.http.impl.io.DefaultHttpResponseWriterFactory;
 import org.apache.http.io.HttpMessageParserFactory;
 import org.apache.http.localserver.LocalServerTestBase;
 import org.apache.http.message.BasicLineParser;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.transform.TransformerException;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;

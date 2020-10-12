@@ -39,7 +39,7 @@ limitations under the License.
                 <div class="form-group">
                     <label for="queryId">QueryId</label>
                     <input type="text" class="form-control" id="queryId" name="queryId" aria-describedby="queryIdHelp"
-                           value="urn:toop:dsd:ebxml-regrep:queries:DataSetRequest" readonly="readonly">
+                           value="urn:toop:dsd:ebxml-regrem:queries:ByDatasetTypeAndLocation" readonly="readonly">
                     <small id="queryIdHelp" class="form-text text-muted">This field is readonly</small>
                 </div>
 
