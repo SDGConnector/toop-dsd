@@ -75,14 +75,14 @@ public abstract class DoctypeParts {
       String datasetIdentifier = split[0];
       String datasetType = split[1];
       String conformsTo = split[3];
-      String distribution = split[2];
+      String distributionFormat = split[2];
       String distConformsTo = null;
-      if (distribution.contains("##")) {
-        final int i = distribution.indexOf("##");
-        distConformsTo = distribution.substring(i + 2);
-        distribution = distribution.substring(0, i);
+      if (distributionFormat.contains("##")) {
+        final int i = distributionFormat.indexOf("##");
+        distConformsTo = distributionFormat.substring(i + 2);
+        distributionFormat = distributionFormat.substring(0, i);
       }
-      return new V2DoctypeParts(datasetIdentifier, datasetType, distribution, distConformsTo, conformsTo);
+      return new V2DoctypeParts(datasetIdentifier, datasetType, distributionFormat, distConformsTo, conformsTo);
     } else {
       throw new DoctypeFormatException("Invalid doctype " + s_docType);
     }

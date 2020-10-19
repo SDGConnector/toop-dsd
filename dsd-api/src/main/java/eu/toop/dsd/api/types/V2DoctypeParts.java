@@ -56,6 +56,7 @@ public class V2DoctypeParts extends DoctypeParts {
    *
    * @return the data set identifier
    */
+  @Override
   public String getDataSetIdentifier() {
     return dataSetIdentifier;
   }
@@ -65,6 +66,7 @@ public class V2DoctypeParts extends DoctypeParts {
    *
    * @return the dataset type
    */
+  @Override
   public String getDatasetType() {
     return datasetType;
   }
@@ -74,6 +76,7 @@ public class V2DoctypeParts extends DoctypeParts {
    *
    * @return the distribution format
    */
+  @Override
   public String getDistributionFormat() {
     return distributionFormat;
   }
@@ -83,6 +86,7 @@ public class V2DoctypeParts extends DoctypeParts {
    *
    * @return the distribution conforms to
    */
+  @Override
   public String getDistributionConformsTo() {
     return distributionConformsTo;
   }
@@ -92,6 +96,7 @@ public class V2DoctypeParts extends DoctypeParts {
    *
    * @return the conforms to
    */
+  @Override
   public String getConformsTo() {
     return conformsTo;
   }

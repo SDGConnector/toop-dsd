@@ -23,7 +23,8 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:xalan="http://xml.apache.org/xslt"
     xmlns:xls="http://www.w3.org/1999/XSL/Transform"
-    xmlns:org="http://www.w3.org/ns/org#">
+    xmlns:org="http://www.w3.org/ns/org#"
+    xmlns:dsd="http://toop4eu/dsd">
 
   <!-- PARAMETERS -->
   <xsl:param name="datasetType"/>
@@ -33,6 +34,123 @@
   <xsl:variable name="fictiveUrl">
     <xsl:value-of select="concat('https://smp.elonia.toop.eu/9999::Elonia/services/', $datasetType)"/>
   </xsl:variable>
+
+
+  <xsl:function name="dsd:docTypeV1">
+    <xsl:param name="tokens"/>
+
+    <xsl:message>Tokens:
+      <xsl:value-of select="$tokens"/>
+    </xsl:message>
+
+    <xsl:variable name="namespaceURI" select="$tokens[1]"/>
+    <xsl:variable name="token2" select="$tokens[2]"/>
+    <xsl:if test="contains($token2, '##')=false()">
+      <xsl:message terminate="yes">
+        Invalid doctype
+      </xsl:message>
+    </xsl:if>
+
+    <xsl:variable name="localElementName" select="substring-before($token2, '##')"/>
+    <xsl:variable name="customizationId" select="substring-after($token2, '##')"/>
+    <xsl:variable name="v1VersionField" select="$tokens[3]"/>
+
+
+    <xsl:message>DocType V2</xsl:message>
+    <xsl:message>namespaceURI:
+      <xsl:value-of select="$namespaceURI"/>
+    </xsl:message>
+    <xsl:message>localElementName:
+      <xsl:value-of select="$localElementName"/>
+    </xsl:message>
+    <xsl:message>customizationId:
+      <xsl:value-of select="$customizationId"/>
+    </xsl:message>
+    <xsl:message>v1VersionField:
+      <xsl:value-of select="$v1VersionField"/>
+    </xsl:message>
+
+    <xsl:sequence>
+      <docTypeParts>
+        <dataSetIdentifier>
+          <xsl:value-of select="concat($namespaceURI, '::', $localElementName)"/>
+        </dataSetIdentifier>
+        <datasetType>
+          <xsl:value-of select="$namespaceURI"/>
+        </datasetType>
+        <distributionFormat>
+          <xsl:value-of select="$localElementName"/>
+        </distributionFormat>
+        <distributionConformsTo>
+          <xsl:value-of select="$customizationId"/>
+        </distributionConformsTo>
+        <conformsTo>
+          <xsl:value-of select="$v1VersionField"/>
+        </conformsTo>
+      </docTypeParts>
+    </xsl:sequence>
+  </xsl:function>
+
+  <xsl:function name="dsd:docTypeV2">
+    <xsl:param name="tokens"/>
+
+    <xsl:variable name="datasetIdentifier" select="$tokens[1]"/>
+    <xsl:variable name="datasetType" select="$tokens[2]"/>
+    <xsl:variable name="token3" select="$tokens[3]"/>
+
+    <xsl:variable name="distributionFormat" select="if(contains($token3, '##')) then substring-before($token3, '##') else $token3"/>
+    <xsl:variable name="distConformsTo" select="if(contains($token3, '##')) then substring-after($token3, '##') else ()"/>
+    <xsl:variable name="conformsTo" select="$tokens[4]"/>
+
+    <xsl:message>DocType V2</xsl:message>
+    <xsl:message>datasetIdentifier:
+      <xsl:value-of select="$datasetIdentifier"/>
+    </xsl:message>
+    <xsl:message>datasetType:
+      <xsl:value-of select="$datasetType"/>
+    </xsl:message>
+    <xsl:message>distributionFormat:
+      <xsl:value-of select="$distributionFormat"/>
+    </xsl:message>
+    <xsl:message>distConformsTo:
+      <xsl:value-of select="$distConformsTo"/>
+    </xsl:message>
+    <xsl:message>conformsTo:
+      <xsl:value-of select="$conformsTo"/>
+    </xsl:message>
+
+    <xsl:sequence>
+      <docTypeParts>
+        <dataSetIdentifier>
+          <xsl:value-of select="$datasetIdentifier"/>
+        </dataSetIdentifier>
+        <datasetType>
+          <xsl:value-of select="$datasetType"/>
+        </datasetType>
+        <distributionFormat>
+          <xsl:value-of select="$distributionFormat"/>
+        </distributionFormat>
+        <distributionConformsTo>
+          <xsl:value-of select="$distConformsTo"/>
+        </distributionConformsTo>
+        <conformsTo>
+          <xsl:value-of select="$conformsTo"/>
+        </conformsTo>
+      </docTypeParts>
+    </xsl:sequence>
+  </xsl:function>
+
+  <xsl:function name="dsd:getDocTypeParts">
+    <xsl:param name="docType"/>
+    <xsl:variable name="stripped"
+                  select="if(starts-with($docType, 'toop-doctypeid-qns::')) then
+                              substring-after($docType, 'toop-doctypeid-qns::')
+                          else
+                              $docType"/>
+    <xsl:variable name="tokens" select="tokenize($stripped, '::')"/>
+    <xsl:variable name="count" select="count($tokens)"/>
+    <xsl:sequence select="if($count = 3) then dsd:docTypeV1($tokens) else dsd:docTypeV2($tokens)"/>
+  </xsl:function>
 
   <!--PROLOG-->
   <xsl:output indent="yes" method="xml" omit-xml-declaration="no" standalone="yes" xalan:indent-amount="2"/>
@@ -58,7 +176,6 @@
                 <xsl:when test="starts-with(normalize-space(.), 'toop-doctypeid-qns::')">
                   <xls:value-of select="substring-after(., 'toop-doctypeid-qns::')"/>
                   <xls:value-of select="position()"/>
-                  Yes
                 </xsl:when>
                 <xsl:otherwise>
                   <xls:value-of select="normalize-space(.)"/>
@@ -71,20 +188,14 @@
               <xsl:for-each select="$match/entity">
                 <xsl:variable name="entity" select="."/>
                 <xsl:if test="contains($entity, $countryCode)">
+
                   <xsl:variable name="nodeId">
                     <xsl:value-of select="generate-id()"/>
                   </xsl:variable>
 
-                  <xsl:variable name="distributionFormat">
-                    <!-- TODO: derive from doctype -->
-                    <xsl:value-of select="concat('distributionFormat', 'distributionFormat')"/>
-                  </xsl:variable>
-
-                  <xsl:variable name="dataSetIdentifier">
-                    <!-- TODO: derive from doctype -->
-                    <xsl:value-of select="concat('dataSetIdentifier', 'dataSetIdentifier')"/>
-                  </xsl:variable>
-
+                  <xsl:variable name="docTypeParts" select="dsd:getDocTypeParts($docTypeID)"/>
+                  <xsl:variable name="distributionFormat" select="$docTypeParts//distributionFormat"/>
+                  <xsl:variable name="dataSetIdentifier" select="$docTypeParts//dataSetIdentifier"/>
 
                   <rim:RegistryObject>
 
