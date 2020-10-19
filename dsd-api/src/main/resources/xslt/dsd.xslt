@@ -267,6 +267,7 @@
                               <dcat:endpointURL>
                                 <xsl:value-of select="$fictiveUrl"/>
                               </dcat:endpointURL>
+                              <dct:conformsTo>SDG Regrep v4 profile</dct:conformsTo>
                             </dcat:accessService>
 
                             <!--
@@ -298,9 +299,9 @@
                             <!-- The Data Provider Information -->
                             <cbc:id>
                               <xsl:attribute name="schemeID">
-                                <xsl:value-of select="substring-before($match/participantID, ':')"/>
+                                <xsl:value-of select="$match/participantID/@scheme"/>
                               </xsl:attribute>
-                              <xsl:value-of select="substring-after($match/participantID, ':')"/>
+                              <xsl:value-of select="$match/participantID"/>
                             </cbc:id>
                             <cagv:location>
                               <cagv:address>
@@ -327,8 +328,7 @@
                             <org:classification>
                               <!-- NOTE: there might ne multiple identifiers I am getting only
                               the first one -->
-                              <xsl:value-of select="$entity/identifier[1]/@scheme"/>
-                            </org:classification>
+                              <xsl:value-of select="$entity/identifier[1]/@scheme"/></org:classification>
                           </dct:publisher>
                           <dct:type>
                             <xsl:value-of select="$datasetType"/>
@@ -357,7 +357,6 @@
                          xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:4.0"
                          xmlns:rs="urn:oasis:names:tc:ebxml-regrep:xsd:rs:4.0"
                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                         xsi:schemaLocation="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:4.0"
                          startIndex="0"
                          status="urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success">
 
