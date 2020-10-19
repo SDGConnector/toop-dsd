@@ -51,9 +51,8 @@
         <match>
           <!-- dct:publisher/cbc:id schemeID="9999">elonia</cbc:id> -->
           <participantID scheme="iso6523-actorid-upis">
-            <xsl:variable name="scheme" select="$dataset/*:publisher/*:id/@schemeID"/>
-            <xsl:variable name="value" select="$dataset/*:publisher/*:id"/>
-            <xsl:value-of select="concat($scheme,':',$value)"/>
+            <xsl:attribute name="scheme" select="$dataset/*:publisher/*:id/@schemeID"/>
+            <xsl:value-of select="$dataset/*:publisher/*:id"/>
           </participantID>
 
           <!-- <dcat:distribution>/<dcat:accessService>/<dct:identifier> -->
