@@ -170,18 +170,8 @@
 
           <!-- One registry object per dataset / perdoctype -->
           <xsl:for-each select="docTypeID">
-            <xsl:variable name="docTypeID">
-              <!-- derive from doctype -->
-              <xsl:choose>
-                <xsl:when test="starts-with(normalize-space(.), 'toop-doctypeid-qns::')">
-                  <xls:value-of select="substring-after(., 'toop-doctypeid-qns::')"/>
-                  <xls:value-of select="position()"/>
-                </xsl:when>
-                <xsl:otherwise>
-                  <xls:value-of select="normalize-space(.)"/>
-                </xsl:otherwise>
-              </xsl:choose>
-            </xsl:variable>
+            <xsl:variable name="docTypeID" select="normalize-space(.)"/>
+            <xsl:variable name="docTypeScheme" select="./@scheme"/>
 
             <!-- Filter doctypes based on dataset type-->
             <xsl:if test="contains($docTypeID, $datasetType)">
@@ -255,7 +245,7 @@
                             <dcat:accessService>
                               <!-- Doctype -->
                               <dct:identifier>
-                                <xsl:value-of select="$docTypeID"/>
+                                <xsl:value-of select="concat($docTypeScheme, '::', $docTypeID)"/>
                               </dct:identifier>
 
                               <dct:title>?Access Service Title?</dct:title>
