@@ -32,10 +32,6 @@ public class ROAConfig {
    */
   private static final Logger LOGGER = LoggerFactory.getLogger(ROAConfig.class);
 
-  /**
-   * The TOOP Directory URL
-   */
-  private static final String toopDirUrl;
   private static final String roaVersion;
   private static final String buildDate;
 
@@ -51,21 +47,10 @@ public class ROAConfig {
         ROAConfig.class.getResource(ROA_CONFIG_RESOURCE_NAME)).
         withFallback(ConfigFactory.systemProperties()).resolve();
 
-    toopDirUrl = config.getString("roa.toop-dir-url");
     roaVersion = config.getString("roa.version");
     buildDate = config.getString("roa.buildDate");
 
     LOGGER.info("--------- RUNNING ROA-" + roaVersion + " ---------");
-    LOGGER.debug("toopDirUrl: " + toopDirUrl);
-  }
-
-  /**
-   * Gets toop dir url.
-   *
-   * @return the toop dir url
-   */
-  public static String getToopDirUrl() {
-    return toopDirUrl;
   }
 
   /**

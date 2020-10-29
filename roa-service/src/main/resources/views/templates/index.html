@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>TOOP ROA</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css"/>
+    <script src="/static/js/jquery-3.5.1.min.js"></script>
+  </head>
+  <body>
+
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <h2 class="bd-title">Toop Registry of Authorities</h2>
+
+          <h3>Sample Query</h3>
+
+          <form method="GET" action="rest/search">
+
+            <div class="form-group">
+              <label for="queryId">QueryId</label>
+              <input type="text" readonly="readonly" class="form-control" id="queryId" name="queryId" aria-describedby="queryIdHelp"
+                     value="urn:toop:roa:ebxml-regrep:queries:HasLegalMandateForProcedureAndRequirement"/>
+              <small id="queryIdHelp" class="form-text text-muted">This field is required</small>
+            </div>
+
+            <div class="form-group">
+              <label for="DataConsumerId">DataConsumerId</label>
+              <input type="text" class="form-control" id="DataConsumerId" name="DataConsumerId" aria-describedby="DataConsumerIdHelp"
+                     value="RE238912378">
+              <small id="DataConsumerIdHelp" class="form-text text-muted">This field is required</small>
+            </div>
+
+            <div class="form-group" id="procedureIdGroup">
+              <label for="procedureId">procedureId</label>
+              <input type="text" class="form-control" id="procedureId" name="procedureId" aria-describedby="procedureIdHelp"
+                     value="GBM_PROCEDURE">
+              <small id="procedureIdHelp" class="form-text text-muted">This field is required</small>
+            </div>
+
+            <div class="form-group" id="requirementIdGroup">
+              <label for="requirementId">requirementId</label>
+              <input type="text" class="form-control" id="requirementId" name="requirementId" aria-describedby="requirementIdHelp"
+                     value="SOME REQUIREMENT">
+              <small id="requirementIdHelp" class="form-text text-muted">This field is required</small>
+            </div>
+
+            <button class="btn btn-primary" type="submit">Query</button>
+          </form>
+
+
+          <br/><br/>
+          <h3>Parameters</h3>
+          <p class="small">
+            <b>Version: </b> <span th:text="${roaVersion}"/></br>
+            <b>Build Date</b> <span th:text="${buildDate}"/></br>
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

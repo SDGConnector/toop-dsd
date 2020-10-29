@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Map;
 
 
@@ -30,17 +29,18 @@ import java.util.Map;
  * This class is the main query processor for the ROA queries. It processes
  * the incoming queries and generates the required results with
  * respect to the TOOP ROA specification <a href="http://wiki.ds.unipi.gr/display/TOOP/.Registry+of+Authorities+v2.1">
- *   http://wiki.ds.unipi.gr/display/TOOP/.Registry+of+Authorities+v2.1</a>.
+ * http://wiki.ds.unipi.gr/display/TOOP/.Registry+of+Authorities+v2.1.1</a>.
  *
  * @author yerlibilgin
  */
 public class ROAQueryService {
   private static final Logger LOGGER = LoggerFactory.getLogger(ROAQueryService.class);
-  public static final String QUERY_DATASET_REQUEST = "urn:toop:roa:ebxml-regrep:queries:DataConsumerByProcedure";
+  public static final String QUERY_ROA_REQUEST = "urn:toop:roa:ebxml-regrep:queries:HasLegalMandateForProcedureAndRequirement";
 
-  public static final String PARAM_NAME_DATA_CONSUMER_ID = "DataConsumerId";
   public static final String PARAM_NAME_QUERY_ID = "queryId";
+  public static final String PARAM_NAME_DATA_CONSUMER_ID = "DataConsumerId";
   public static final String PARAM_NAME_PROCEDURE_ID = "procedureId";
+  public static final String PARAM_NAME_REQUIREMENT_ID = "requirementId";
 
 
   /**
@@ -48,40 +48,30 @@ public class ROAQueryService {
    * respond using the TOOP DSD RegRep response specification.
    *
    * @param parameterMap   the map that contains the parameters for the queries, may not be null
-   * @param responseStream the stream to write the results in case of success, may not be null
+   * @return the result of the request
    * @throws IllegalArgumentException if the query parameters are invalid
    * @throws IllegalStateException    if a problem occurs
    */
-  public static void processRequest(@Nonnull @Nonempty Map<String, String[]> parameterMap, @Nonnull OutputStream responseStream) {
+  public static String processRequest(@Nonnull @Nonempty Map<String, String> parameterMap) {
     ValueEnforcer.notNull(parameterMap, "parameterMap");
-    ValueEnforcer.notNull(responseStream, "responseStream");
 
     if (parameterMap.isEmpty())
       throw new IllegalArgumentException("parameterMap cannot be empty");
 
-
-    String s_QueryId;
-
     //try to get the queryId from the map
-    String[] queryId = parameterMap.get(PARAM_NAME_QUERY_ID);
+    String queryId = parameterMap.get(PARAM_NAME_QUERY_ID);
     ValueEnforcer.notEmpty(queryId, "queryId");
-    if (queryId.length != 1)
-      throw new IllegalStateException("queryId invalid");
 
-    s_QueryId = queryId[0];
-
-    LOGGER.debug("Processing query: [QueryId: " + s_QueryId + "");
+    LOGGER.debug("Processing query: [QueryId: " + queryId + "");
 
     //currently only one type of query is supported
-    switch (s_QueryId) {
-      case QUERY_DATASET_REQUEST: {
+    switch (queryId) {
+      case QUERY_ROA_REQUEST: {
         try {
-          processDataSetRequest(parameterMap, responseStream);
+          return processDataSetRequest(parameterMap);
         } catch (IOException e) {
           throw new IllegalStateException(e.getMessage(), e);
         }
-
-        break;
       }
 
       default: {
@@ -92,50 +82,84 @@ public class ROAQueryService {
 
   /**
    * Processes the incoming parameter map as a dataset request parameter map and performs a data consumer request.
-   * @param parameterMap the map that contains the parameters to the query. May not be null
-   * @param responseStream the result will be written into this stream
+   *
+   * @param parameterMap   the map that contains the parameters to the query. May not be null
+   * @return the result of the request
    * @throws IOException if an io problem occurs.
    */
-  public static void processDataSetRequest(@Nonnull @Nonempty Map<String, String[]> parameterMap, @Nonnull OutputStream responseStream) throws IOException {
+  public static String processDataSetRequest(@Nonnull @Nonempty Map<String, String> parameterMap) throws IOException {
     ValueEnforcer.notNull(parameterMap, "parameterMap");
-    ValueEnforcer.notNull(responseStream, "responseStream");
 
     if (parameterMap.isEmpty())
       throw new IllegalArgumentException("parameterMap cannot be empty");
 
-    String s_DataConsumerId;
-    String s_ProcedureId = null;
-
-    String[] dataConsumerId = parameterMap.get(PARAM_NAME_DATA_CONSUMER_ID);
+    String dataConsumerId = parameterMap.get(PARAM_NAME_DATA_CONSUMER_ID);
     ValueEnforcer.notEmpty(dataConsumerId, "dataConsumerId");
-    if (dataConsumerId.length != 1)
-      throw new IllegalStateException(PARAM_NAME_DATA_CONSUMER_ID + " invalid");
 
-    s_DataConsumerId = dataConsumerId[0];
+    String procedureId = parameterMap.get(PARAM_NAME_PROCEDURE_ID);
+    ValueEnforcer.notEmpty(procedureId, "procedureId");
 
-    String[] procedureId = parameterMap.get(PARAM_NAME_PROCEDURE_ID);
-    if (procedureId != null) {
-      if (procedureId.length != 1) {
-        throw new IllegalStateException("procedureId invalid");
-      }
-      s_ProcedureId = procedureId[0];
-    }
+    String requirementId = parameterMap.get(PARAM_NAME_REQUIREMENT_ID);
+    ValueEnforcer.notEmpty(requirementId, "requirementId");
 
-    LOGGER.debug("Processing data consumer request [data consumer id: " + s_DataConsumerId +
-        ", procedureId: " + s_ProcedureId + "]");
+    LOGGER.debug("Processing data consumer request \n"
+        + "    data consumer id: " + dataConsumerId + "\n"
+        + "    procedureId: " + procedureId + "\n"
+        + "    requirementId: " + requirementId);
 
-    ////query all the matches without a document type id.
-    //// TODO: change this according to roa
-    ////   THE rest is not DSD
-    //final ResultListType resultListType = ToopDirClient.callSearchApi(ROAConfig.getToopDirUrl(), s_ProcedureId, null);
-    //final List<MatchType> matchTypes = resultListType.getMatch();
-//
-    //StringWriter writer = new StringWriter();
-    //DsdResponseWriter.matchTypesWriter(s_DataConsumerId, matchTypes).write(writer);
-    //String resultXml = writer.toString();
 
-    //responseStream.write(resultXml.getBytes(StandardCharsets.UTF_8));
-
-    throw new UnsupportedOperationException("Not yet");
+    return ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        "<query:QueryResponse xmlns=\"urn:oasis:names:tc:ebxml-regrep:xsd:lcm:4.0\"\n" +
+        "                     xmlns:lcm=\"urn:oasis:names:tc:ebxml-regrep:xsd:lcm:4.0\"\n" +
+        "                     xmlns:query=\"urn:oasis:names:tc:ebxml-regrep:xsd:query:4.0\"\n" +
+        "                     xmlns:rim=\"urn:oasis:names:tc:ebxml-regrep:xsd:rim:4.0\"\n" +
+        "                     xmlns:rs=\"urn:oasis:names:tc:ebxml-regrep:xsd:rs:4.0\"\n" +
+        "                     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+        "                     xsi:schemaLocation=\"urn:oasis:names:tc:ebxml-regrep:xsd:lcm:4.0\"\n" +
+        "                     totalResultCount=\"1\"\n" +
+        "                     startIndex=\"0\"\n" +
+        "                     status=\"urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success\">\n" +
+        "  <!-- depending on the count of datasets returned, the totalResultCount attribute should\n" +
+        "  reflect the number of the datasets returned -->\n" +
+        "  <rim:RegistryObjectList>\n" +
+        " \n" +
+        "    <!-- One registry object per dataset -->\n" +
+        "    <rim:RegistryObject id=\"RE238912378\">\n" +
+        "      <rim:Slot name=\"CompetentAuthority\">\n" +
+        "        <rim:SlotValue xsi:type=\"rim:AnyValueType\">\n" +
+        "           <cagv:Agent xmlns:cagv=\"https://semic.org/sa/cv/cagv/agent-2.0.0#\"\n" +
+        "            xmlns:cbc=\"https://semic.org/sa/cv/common/cbc-2.0.0#\"\n" +
+        "            xmlns:locn=\"http://www.w3.org/ns/locn#\">\n" +
+        "            <cbc:id schemeID=\"VAT\">RE238912378</cbc:id>\n" +
+        "            <cbc:name>aCompanyName</cbc:name>\n" +
+        "            <cagv:location>\n" +
+        "                <locn:address>\n" +
+        "                    <locn:fullAddress>Prince Street 15</locn:fullAddress>\n" +
+        "                    <locn:thoroughfare>Prince Street</locn:thoroughfare>\n" +
+        "                    <locn:locatorDesignator>15</locn:locatorDesignator>\n" +
+        "                    <locn:postName>LiverPool</locn:postName>\n" +
+        "                    <locn:adminUnitLevel1>GB</locn:adminUnitLevel1>\n" +
+        "                    <locn:postCode>15115</locn:postCode>\n" +
+        "                </locn:address>\n" +
+        "            </cagv:location>\n" +
+        "        </cagv:Agent>   \n" +
+        "        </rim:SlotValue>\n" +
+        "      </rim:Slot>\n" +
+        " \n" +
+        "      <rim:Slot name=\"Procedure\">\n" +
+        "        <rim:SlotValue xsi:type=\"StringValueType\">\n" +
+        "          <rim:Value>GBM_PROCEDURE</rim:Value>\n" +
+        "        </rim:SlotValue>\n" +
+        "      </rim:Slot>\n" +
+        " \n" +
+        "      <rim:Slot name=\"HasLegalMandate\">\n" +
+        "        <rim:SlotValue xsi:type=\"BooleanValueType\">\n" +
+        "          <rim:Value>true</rim:Value>\n" +
+        "        </rim:SlotValue>\n" +
+        "      </rim:Slot>\n" +
+        " \n" +
+        "    </rim:RegistryObject>\n" +
+        "  </rim:RegistryObjectList>\n" +
+        "</query:QueryResponse>");
   }
 }

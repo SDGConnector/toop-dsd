@@ -14,19 +14,19 @@
 # limitations under the License.
 #
 
-FROM tomcat:9-jre11
+FROM ubuntu
 
+ARG ROA_VERSION="2.0.0-SNAPSHOT"
+ARG JAR_NAME=roa-service-${ROA_VERSION}-bundle.jar
 
-ARG VERSION="2.0.0-SNAPSHOT"
-ARG WAR_NAME=roa-service-${VERSION}.war
+RUN apt-get update && apt-get install openjdk-11-jre -y
+RUN apt-get clean && apt-get autoremove
 
-#create tc webapp folder
-WORKDIR $CATALINA_HOME/webapps
+#create app folder
+WORKDIR /roa
+COPY target/${JAR_NAME} ./
 
-ENV CATALINA_OPTS="$CATALINA_OPTS -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true -Djava.security.egd=file:/dev/urandom"
+RUN echo "java -jar $JAR_NAME" > run.sh && \
+    chmod +x run.sh
 
-COPY target/${WAR_NAME} ./
-
-RUN rm -fr manager host-manager ROOT && \
-    unzip $WAR_NAME -d ROOT  && \
-    rm -fr $WAR_NAME
+CMD ["sh", "-c", "./run.sh"]
