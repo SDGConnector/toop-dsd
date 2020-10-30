@@ -352,7 +352,7 @@
                       </rim:Slot>
                     </rim:RegistryObject>
 
-                  </xsl:if> <!-- if test="contains($entity, $countryCode)"> -->
+                  </xsl:if> <!-- if test="contains(schemes, dpType)"> -->
                 </xsl:if> <!-- if test="contains($entity, $countryCode)"> -->
               </xsl:for-each> <!-- select="$match/entity"> -->
             </xsl:if> <!-- if test="contains($docTypeID, $datasetType)" -->
