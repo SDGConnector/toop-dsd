@@ -56,6 +56,7 @@
     <xsl:variable name="v1VersionField" select="$tokens[3]"/>
 
 
+    <!--
     <xsl:message>DocType V2</xsl:message>
     <xsl:message>namespaceURI:
       <xsl:value-of select="$namespaceURI"/>
@@ -68,7 +69,7 @@
     </xsl:message>
     <xsl:message>v1VersionField:
       <xsl:value-of select="$v1VersionField"/>
-    </xsl:message>
+    </xsl:message>-->
 
     <xsl:sequence>
       <docTypeParts>
@@ -102,6 +103,7 @@
     <xsl:variable name="distConformsTo" select="if(contains($token3, '##')) then substring-after($token3, '##') else ()"/>
     <xsl:variable name="conformsTo" select="$tokens[4]"/>
 
+    <!--
     <xsl:message>DocType V2</xsl:message>
     <xsl:message>datasetIdentifier:
       <xsl:value-of select="$datasetIdentifier"/>
@@ -118,6 +120,7 @@
     <xsl:message>conformsTo:
       <xsl:value-of select="$conformsTo"/>
     </xsl:message>
+    -->
 
     <xsl:sequence>
       <docTypeParts>

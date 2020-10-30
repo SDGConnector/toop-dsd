@@ -84,18 +84,85 @@ public class DSDClient {
    * @return the list of {@link DCatAPDatasetType} objects.
    */
   @Nullable
-  public String queryDatasetRaw(@Nonnull final String datasetType, @Nullable final String countryCode) {
-
+  public String queryDatasetRawByLocation(@Nonnull final String datasetType, @Nullable final String countryCode) {
     ValueEnforcer.notEmpty(datasetType, "datasetType");
+    DSDQuery.DSDQueryID targetQueryId = DSDQuery.DSDQueryID.QUERY_BY_DATASETTYPE_AND_LOCATION;
+    return queryDatasetRaw(datasetType, targetQueryId, DSDQuery.PARAM_NAME_COUNTRY_CODE, countryCode);
+  }
 
+
+  /**
+   * The default DSD query as described here:
+   * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
+   *
+   * @param datasetType the dataset type, may not be <code>null</code>
+   * @param dpType the Data Provider Type, optional
+   * @return the list of {@link DCatAPDatasetType} objects.
+   */
+  @Nullable
+  public String queryDatasetRawByDPType(@Nonnull final String datasetType, @Nullable final String dpType) {
+    ValueEnforcer.notEmpty(datasetType, "datasetType");
+    DSDQuery.DSDQueryID targetQueryId = DSDQuery.DSDQueryID.QUERY_BY_DATASETTYPE_AND_LOCATION;
+    return queryDatasetRaw(datasetType, targetQueryId, DSDQuery.PARAM_NAME_DATA_PROVIDER_TYPE, dpType);
+  }
+
+  /**
+   * The default DSD query as described here:
+   * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
+   *
+   * @param datasetType the dataset type, may not be <code>null</code>
+   * @param countryCode the country code, optional
+   * @return the list of {@link DCatAPDatasetType} objects.
+   */
+  @Nullable
+  public List<DCatAPDatasetType> queryDatasetByLocation(@Nonnull final String datasetType, @Nullable final String countryCode) {
+    String result = queryDatasetRawByLocation(datasetType, countryCode);
+    return DsdDataConverter.parseDataset(result);
+  }
+
+  /**
+   * The default DSD query as described here:
+   * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
+   *
+   * @param datasetType the dataset type, may not be <code>null</code>
+   * @param dpType the Data provider type, optional
+   * @return the list of {@link DCatAPDatasetType} objects.
+   */
+  @Nullable
+  public List<DCatAPDatasetType> queryDatasetByDPType(@Nonnull final String datasetType, @Nullable final String dpType) {
+    String result = queryDatasetRawByDPType(datasetType, dpType);
+    return DsdDataConverter.parseDataset(result);
+  }
+
+  /**
+   * The default DSD query as described here:
+   * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
+   *
+   * @param datasetType the dataset type, may not be <code>null</code>
+   * @param countryCode the country code, optional
+   * @return the list of {@link MatchType} objects.
+   */
+  @Nullable
+  public List<MatchType> queryDatasetAsMatchTypes(@Nonnull final String datasetType, @Nullable final String countryCode) {
+    ValueEnforcer.notEmpty(datasetType, "datasetType");
+    final String rawResult = queryDatasetRawByLocation(datasetType, countryCode);
+    try {
+      return DsdDataConverter.convertDSDToMatchTypes(rawResult);
+    } catch (TransformerException e) {
+      throw new DSDException("Couldn't convert results", e);
+    }
+  }
+
+
+  private String queryDatasetRaw(@Nonnull String datasetType, DSDQuery.DSDQueryID targetQueryId, String secondParamName, String secondParam) {
     final SimpleURL aBaseURL = new SimpleURL(m_sDSDBaseURL + "/rest/search");
 
-    aBaseURL.add(DSDQuery.PARAM_NAME_QUERY_ID, DSDQuery.DSDQueryID.QUERY_BY_DATASETTYPE_AND_LOCATION.id);
+    aBaseURL.add(DSDQuery.PARAM_NAME_QUERY_ID, targetQueryId.id);
     aBaseURL.add(DSDQuery.PARAM_NAME_DATA_SET_TYPE, datasetType);
 
     // Parameters to this servlet
-    if (countryCode != null && !countryCode.isEmpty()) {
-      aBaseURL.add(DSDQuery.PARAM_NAME_COUNTRY_CODE, countryCode);
+    if (secondParam != null && !secondParam.isEmpty()) {
+      aBaseURL.add(secondParamName, secondParam);
     }
 
     if (LOGGER.isInfoEnabled())
@@ -126,39 +193,6 @@ public class DSDClient {
     } catch (final Exception ex) {
       LOGGER.error(ex.getMessage(), ex);
       throw new DSDException(ex.getMessage(), ex);
-    }
-  }
-
-  /**
-   * The default DSD query as described here:
-   * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
-   *
-   * @param datasetType the dataset type, may not be <code>null</code>
-   * @param countryCode the country code, optional
-   * @return the list of {@link DCatAPDatasetType} objects.
-   */
-  @Nullable
-  public List<DCatAPDatasetType> queryDataset(@Nonnull final String datasetType, @Nullable final String countryCode) {
-    String result = queryDatasetRaw(datasetType, countryCode);
-    return DsdDataConverter.parseDataset(result);
-  }
-
-  /**
-   * The default DSD query as described here:
-   * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
-   *
-   * @param datasetType the dataset type, may not be <code>null</code>
-   * @param countryCode the country code, optional
-   * @return the list of {@link MatchType} objects.
-   */
-  @Nullable
-  public List<MatchType> queryDatasetAsMatchTypes(@Nonnull final String datasetType, @Nullable final String countryCode) {
-    ValueEnforcer.notEmpty(datasetType, "datasetType");
-    final String rawResult = queryDatasetRaw(datasetType, countryCode);
-    try {
-      return DsdDataConverter.convertDSDToMatchTypes(rawResult);
-    } catch (TransformerException e) {
-      throw new DSDException("Couldn't convert results", e);
     }
   }
 }

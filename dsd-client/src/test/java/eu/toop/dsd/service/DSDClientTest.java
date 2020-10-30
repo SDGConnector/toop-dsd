@@ -67,7 +67,7 @@ public final class DSDClientTest {
 
   @Test
   public void testRawQuery() {
-    String rawResult = new DSDClient("http://localhost:" + TEST_PORT).queryDatasetRaw(
+    String rawResult = new DSDClient("http://localhost:" + TEST_PORT).queryDatasetRawByLocation(
         "REGISTERED_ORGANIZATION_TYPE",
         "SV");
 
@@ -80,9 +80,26 @@ public final class DSDClientTest {
    * @throws DatatypeConfigurationException the datatype configuration exception
    */
   @Test
-  public void testQuery() {
-    final List<DCatAPDatasetType> dcatList = new DSDClient("http://localhost:" + TEST_PORT).queryDataset("REGISTERED_ORGANIZATION_TYPE",
+  public void testQueryByLocation() {
+    final List<DCatAPDatasetType> dcatList = new DSDClient("http://localhost:" + TEST_PORT).queryDatasetByLocation("REGISTERED_ORGANIZATION_TYPE",
         "SV");
+
+    if (dcatList == null) {
+      throw new IllegalStateException("Cannot parse Dataset, please check previous exceptions");
+    }
+    final DatasetMarshaller datasetMarshaller = new DatasetMarshaller();
+    datasetMarshaller.setFormattedOutput(true);
+
+    dcatList.forEach(dataset -> {
+      System.out.println(datasetMarshaller.getAsString(dataset));
+    });
+  }
+
+
+  @Test
+  public void testQueryByDpType() {
+    final List<DCatAPDatasetType> dcatList = new DSDClient("http://localhost:" + TEST_PORT).queryDatasetByDPType("REGISTERED_ORGANIZATION_TYPE",
+        "DataSubjectIdentifierScheme");
 
     if (dcatList == null) {
       throw new IllegalStateException("Cannot parse Dataset, please check previous exceptions");
