@@ -110,8 +110,8 @@
       <name>Elonia DEV</name>
       <countryCode>GQ</countryCode>
       <geoInfo>Country code GQ for Elonia DEV</geoInfo>
-      <identifier scheme="DataSubjectIdentifierScheme ">GLN</identifier>
-      <identifier scheme="DataSubjectIdentifierScheme ">VAT</identifier>
+      <identifier scheme="DataSubjectIdentifierScheme">GLN</identifier>
+      <identifier scheme="DataSubjectIdentifierScheme">VAT</identifier>
       <additionalInfo>Guild Wars continent/dev</additionalInfo>
       <regDate>2018-10-17</regDate>
     </entity>

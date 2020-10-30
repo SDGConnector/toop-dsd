@@ -172,9 +172,6 @@ public final class DSDClientTest {
             paramMap.put(nameValuePair.getName(), nameValuePair.getValue());
           }
 
-          ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-
           String dataSetType = paramMap.get(DSDQuery.PARAM_NAME_DATA_SET_TYPE);
           String countryCode = paramMap.get(DSDQuery.PARAM_NAME_COUNTRY_CODE);
           String dpType = paramMap.get(DSDQuery.PARAM_NAME_DATA_PROVIDER_TYPE);

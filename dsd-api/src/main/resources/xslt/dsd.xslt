@@ -24,7 +24,7 @@
     xmlns:xalan="http://xml.apache.org/xslt"
     xmlns:xls="http://www.w3.org/1999/XSL/Transform"
     xmlns:org="http://www.w3.org/ns/org#"
-    xmlns:dsd="http://toop4eu/dsd">
+    xmlns:dsd="http://toop4eu/dsd" xmlns:x="http://www.w3.org/1999/XSL/Transform">
 
   <!-- PARAMETERS -->
   <xsl:param name="datasetType"/>
@@ -42,6 +42,7 @@
     <xsl:message>Tokens:
       <xsl:value-of select="$tokens"/>
     </xsl:message>
+
 
     <xsl:variable name="namespaceURI" select="$tokens[1]"/>
     <xsl:variable name="token2" select="$tokens[2]"/>
@@ -164,6 +165,16 @@
                 xmlns:query="urn:oasis:names:tc:ebxml-regrep:xsd:query:4.0"
                 xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:4.0"
                 xmlns:rs="urn:oasis:names:tc:ebxml-regrep:xsd:rs:4.0">
+
+    <x:message>DPTYPE:
+      <xsl:value-of select="$dpType"/>
+    </x:message>
+    <x:message>Country Code:
+      <xsl:value-of select="$countryCode"/>
+    </x:message>
+    <xsl:if test="countryCode = ''">
+      Country code is not empty
+    </xsl:if>
     <!-- Phase 1, prepare dataset -->
     <xsl:variable name="registryObjects">
       <rim:RegistryObjectList>
@@ -180,160 +191,168 @@
             <xsl:if test="contains($docTypeID, $datasetType)">
               <xsl:for-each select="$match/entity">
                 <xsl:variable name="entity" select="."/>
-                <xsl:if test="contains($entity, $countryCode)">
-
-                  <xsl:variable name="nodeId">
-                    <xsl:value-of select="generate-id()"/>
+                <xsl:if test="contains($entity/countryCode, $countryCode)">
+                  <xsl:variable name="schemes">
+                    <xsl:value-of select="$entity/identifier/@scheme"/>
                   </xsl:variable>
+                  <xsl:if test="contains($schemes, $dpType)">
 
-                  <xsl:variable name="docTypeParts" select="dsd:getDocTypeParts($docTypeID)"/>
-                  <xsl:variable name="distributionFormat" select="$docTypeParts//distributionFormat"/>
-                  <xsl:variable name="dataSetIdentifier" select="$docTypeParts//dataSetIdentifier"/>
+                    <xsl:variable name="nodeId">
+                      <xsl:value-of select="generate-id()"/>
+                    </xsl:variable>
 
-                  <rim:RegistryObject>
+                    <xsl:variable name="docTypeParts" select="dsd:getDocTypeParts($docTypeID)"/>
+                    <xsl:variable name="distributionFormat" select="$docTypeParts//distributionFormat"/>
+                    <xsl:variable name="dataSetIdentifier" select="$docTypeParts//dataSetIdentifier"/>
 
-                    <xsl:attribute name="id">
-                      <xsl:value-of select="$nodeId"/>
-                    </xsl:attribute>
+                    <rim:RegistryObject>
+                      <xsl:attribute name="id">
+                        <xsl:value-of select="$nodeId"/>
+                      </xsl:attribute>
 
-                    <rim:Slot name="Dataset">
-                      <rim:SlotValue xsi:type="rim:AnyValueType">
+                      <rim:Slot name="Dataset">
+                        <rim:SlotValue xsi:type="rim:AnyValueType">
 
-                        <dcat:dataset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                                      xmlns:cagv="https://semic.org/sa/cv/cagv/agent-2.0.0#"
-                                      xmlns:dct="http://purl.org/dc/terms/"
-                                      xmlns:cbc="https://data.europe.eu/semanticassets/ns/cv/common/cbc_v2.0.0#"
-                                      xmlns:skos="http://www.w3.org/2004/02/skos/core#"
-                                      xmlns:dcat="http://data.europa.eu/r5r/"
-                                      xmlns:locn="http://www.w3.org/ns/locn#">
-                          <dct:description>
-                            <xsl:value-of select="normalize-space(concat('A dataset about ', $datasetType))"/>
-                          </dct:description>
-                          <dct:title>?Companies registry?</dct:title>
-
-                          <!-- Distribution Information -->
-                          <xsl:comment>Distribution Information</xsl:comment>
-                          <dcat:distribution>
-                            <!--
-                            @Sander:
-                            The dataset/distribution/conformsTo property only needs to be used for STRUCTURED distribution,
-                            i.e. XML document based on a pre-defined schema. I think we don’t use these kind of distributions,
-                            so this element can be left out from the response.
-                            -->
-                            <!-- <dct:conformsTo>RegRepv4-EDMv2</dct:conformsTo> -->
-
-
-                            <!--
-                              @Sander:
-                              I guess you can set a fictive SMP URL here for use in the pilots as the TOOP Connector
-                              will do a BDXL lookup anyway, so there is no need to set the correct SMP URL here.
-                            -->
-                            <dcat:accessURL>
-                              <xsl:value-of select="$fictiveUrl"/>
-                            </dcat:accessURL>
-
+                          <dcat:dataset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                        xmlns:cagv="https://semic.org/sa/cv/cagv/agent-2.0.0#"
+                                        xmlns:dct="http://purl.org/dc/terms/"
+                                        xmlns:cbc="https://data.europe.eu/semanticassets/ns/cv/common/cbc_v2.0.0#"
+                                        xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+                                        xmlns:dcat="http://data.europa.eu/r5r/"
+                                        xmlns:locn="http://www.w3.org/ns/locn#">
                             <dct:description>
-                              <xsl:value-of
-                                  select="normalize-space(concat('?This is a pdf distribution of the ', $datasetType, '?'))"/>
+                              <xsl:value-of select="normalize-space(concat('A dataset about ', $datasetType))"/>
                             </dct:description>
+                            <dct:title>?Companies registry?</dct:title>
+
+                            <!-- Distribution Information -->
+                            <xsl:comment>Distribution Information</xsl:comment>
+                            <dcat:distribution>
+                              <!--
+                              @Sander:
+                              The dataset/distribution/conformsTo property only needs to be used for STRUCTURED distribution,
+                              i.e. XML document based on a pre-defined schema. I think we don’t use these kind of distributions,
+                              so this element can be left out from the response.
+                              -->
+                              <!-- <dct:conformsTo>RegRepv4-EDMv2</dct:conformsTo> -->
 
 
-                            <!--
-                              Deriving the value from doctype
-                            -->
-                            <dct:format>
-                              <xsl:value-of select="$distributionFormat"/>
-                            </dct:format>
-
-                            <dcat:accessService>
-                              <!-- Doctype -->
-                              <dct:identifier>
-                                <xsl:value-of select="concat($docTypeScheme, '::', $docTypeID)"/>
-                              </dct:identifier>
-
-                              <dct:title>?Access Service Title?</dct:title>
                               <!--
                                 @Sander:
                                 I guess you can set a fictive SMP URL here for use in the pilots as the TOOP Connector
                                 will do a BDXL lookup anyway, so there is no need to set the correct SMP URL here.
                               -->
-                              <dcat:endpointURL>
+                              <dcat:accessURL>
                                 <xsl:value-of select="$fictiveUrl"/>
-                              </dcat:endpointURL>
-                              <dct:conformsTo>SDG Regrep v4 profile</dct:conformsTo>
-                            </dcat:accessService>
+                              </dcat:accessURL>
+
+                              <dct:description>
+                                <xsl:value-of
+                                    select="normalize-space(concat('?This is a pdf distribution of the ', $datasetType, '?'))"/>
+                              </dct:description>
+
+
+                              <!--
+                                Deriving the value from doctype
+                              -->
+                              <dct:format>
+                                <xsl:value-of select="$distributionFormat"/>
+                              </dct:format>
+
+                              <dcat:accessService>
+                                <!-- Doctype -->
+                                <dct:identifier>
+                                  <xsl:value-of select="concat($docTypeScheme, '::', $docTypeID)"/>
+                                </dct:identifier>
+
+                                <dct:title>?Access Service Title?</dct:title>
+                                <!--
+                                  @Sander:
+                                  I guess you can set a fictive SMP URL here for use in the pilots as the TOOP Connector
+                                  will do a BDXL lookup anyway, so there is no need to set the correct SMP URL here.
+                                -->
+                                <dcat:endpointURL>
+                                  <xsl:value-of select="$fictiveUrl"/>
+                                </dcat:endpointURL>
+                                <dct:conformsTo>SDG Regrep v4 profile</dct:conformsTo>
+                              </dcat:accessService>
+
+                              <!--
+                              @Sander:
+                              This indeed is probably an information element only available in a full DSD implementation.
+                              I see it is currently mandatory, but I would think this is only needed for non concept based
+                              distributions, what do you think @Jerry, @Dimitrios Zeginis?
+                              -->
+                              <dcat:mediaType>?application/pdf?</dcat:mediaType>
+                            </dcat:distribution>
 
                             <!--
                             @Sander:
-                            This indeed is probably an information element only available in a full DSD implementation.
-                            I see it is currently mandatory, but I would think this is only needed for non concept based
-                            distributions, what do you think @Jerry, @Dimitrios Zeginis?
+                            I don’t think this value is used in the pilots, so you can set it to any URL.
                             -->
-                            <dcat:mediaType>?application/pdf?</dcat:mediaType>
-                          </dcat:distribution>
+                            <dct:conformsTo>
+                              <xsl:value-of select="concat('https://semantic-repository.toop.eu/ontology/', $datasetType)"/>
+                            </dct:conformsTo>
 
-                          <!--
-                          @Sander:
-                          I don’t think this value is used in the pilots, so you can set it to any URL.
-                          -->
-                          <dct:conformsTo>
-                            <xsl:value-of select="concat('https://semantic-repository.toop.eu/ontology/', $datasetType)"/>
-                          </dct:conformsTo>
+                            <!-- same value as the id of the registry object -->
+                            <dct:identifier>
+                              <xsl:value-of select="$dataSetIdentifier"/>
+                            </dct:identifier>
 
-                          <!-- same value as the id of the registry object -->
-                          <dct:identifier>
-                            <xsl:value-of select="$dataSetIdentifier"/>
-                          </dct:identifier>
+                            <!-- Publisher Information -->
+                            <xsl:comment>Publisher Information</xsl:comment>
 
-                          <!-- Publisher Information -->
-                          <xsl:comment>Publisher Information</xsl:comment>
+                            <dct:publisher xsi:type="cagv:PublicOrganizationType">
+                              <!-- The Data Provider Information -->
+                              <cbc:id>
+                                <xsl:attribute name="schemeID">
+                                  <xsl:value-of select="$match/participantID/@scheme"/>
+                                </xsl:attribute>
+                                <xsl:value-of select="$match/participantID"/>
+                              </cbc:id>
+                              <cagv:location>
+                                <cagv:address>
+                                  <!--
+                                    Unfortunately, There is no explicit address information in the directory results.
+                                    So  temporarily including the entire entity as text
+                                    -->
+                                  <locn:fullAddress>
+                                    <xsl:value-of select="normalize-space($entity)"/>
+                                  </locn:fullAddress>
+                                  <!-- country code -->
+                                  <locn:adminUnitLevel1>
+                                    <xsl:value-of select="$entity/countryCode"/>
+                                  </locn:adminUnitLevel1>
 
-                          <dct:publisher xsi:type="cagv:PublicOrganizationType">
-                            <!-- The Data Provider Information -->
-                            <cbc:id>
-                              <xsl:attribute name="schemeID">
-                                <xsl:value-of select="$match/participantID/@scheme"/>
-                              </xsl:attribute>
-                              <xsl:value-of select="$match/participantID"/>
-                            </cbc:id>
-                            <cagv:location>
-                              <cagv:address>
-                                <!--
-                                  Unfortunately, There is no explicit address information in the directory results.
-                                  So  temporarily including the entire entity as text
-                                  -->
-                                <locn:fullAddress>
-                                  <xsl:value-of select="normalize-space($entity)"/>
-                                </locn:fullAddress>
-                                <!-- country code -->
-                                <locn:adminUnitLevel1>
-                                  <xsl:value-of select="$entity/countryCode"/>
-                                </locn:adminUnitLevel1>
+                                </cagv:address>
+                              </cagv:location>
+                              <!-- The Data Provider Information -->
+                              <!-- the label is currently the Entity Name  (i.e. Elonia DEV) -->
+                              <skos:prefLabel>
+                                <xsl:value-of select="$entity/name"/>
+                              </skos:prefLabel>
+                              <xsl:for-each-group select="$entity/identifier/@scheme" group-by=".">
+                                <xsl:if test="contains(., $dpType)">
+                                  <org:classification>
+                                    <xsl:value-of select="normalize-space(.)"/>
+                                  </org:classification>
+                                </xsl:if>
+                              </xsl:for-each-group>
+                            </dct:publisher>
+                            <dct:type>
+                              <xsl:value-of select="$datasetType"/>
+                            </dct:type>
+                            <dcat:qualifiedRelation>
+                              <dct:relation>urn:oasis:names:tc:ebcore:partyid-type:iso6523:XXXX</dct:relation>
+                              <dcat:hadRole>https://toop.eu/dataset/supportedIdScheme</dcat:hadRole>
+                            </dcat:qualifiedRelation>
+                          </dcat:dataset>
 
-                              </cagv:address>
-                            </cagv:location>
-                            <!-- The Data Provider Information -->
-                            <!-- the label is currently the Entity Name  (i.e. Elonia DEV) -->
-                            <skos:prefLabel>
-                              <xsl:value-of select="$entity/name"/>
-                            </skos:prefLabel>
-                            <!-- shouldbe equal to dptype -->
-                            <org:classification>
-                              <!-- NOTE: there might ne multiple identifiers I am getting only
-                              the first one -->
-                              <xsl:value-of select="$entity/identifier[1]/@scheme"/></org:classification>
-                          </dct:publisher>
-                          <dct:type>
-                            <xsl:value-of select="$datasetType"/>
-                          </dct:type>
-                          <dcat:qualifiedRelation>
-                            <dct:relation>urn:oasis:names:tc:ebcore:partyid-type:iso6523:XXXX</dct:relation>
-                            <dcat:hadRole>https://toop.eu/dataset/supportedIdScheme</dcat:hadRole>
-                          </dcat:qualifiedRelation>
-                        </dcat:dataset>
-                      </rim:SlotValue>
-                    </rim:Slot>
-                  </rim:RegistryObject>
+                        </rim:SlotValue>
+                      </rim:Slot>
+                    </rim:RegistryObject>
+
+                  </xsl:if> <!-- if test="contains($entity, $countryCode)"> -->
                 </xsl:if> <!-- if test="contains($entity, $countryCode)"> -->
               </xsl:for-each> <!-- select="$match/entity"> -->
             </xsl:if> <!-- if test="contains($docTypeID, $datasetType)" -->

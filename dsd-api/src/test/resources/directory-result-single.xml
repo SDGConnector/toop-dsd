@@ -31,10 +31,10 @@
       <name>Elonia ACC</name>
       <countryCode>SV</countryCode>
       <geoInfo>Country code SV for Elonia ACC</geoInfo>
-      <identifier scheme="DataSubjectIdentifierScheme ">DUNS</identifier>
-      <identifier scheme="DataSubjectIdentifierScheme ">GLN</identifier>
-      <identifier scheme="DataSubjectIdentifierScheme ">Kennziffer</identifier>
-      <identifier scheme="DataSubjectIdentifierScheme ">VAT</identifier>
+      <identifier scheme="DataSubjectIdentifierScheme">DUNS</identifier>
+      <identifier scheme="DataSubjectIdentifierScheme">GLN</identifier>
+      <identifier scheme="DataSubjectIdentifierScheme">Kennziffer</identifier>
+      <identifier scheme="DataSubjectIdentifierScheme">VAT</identifier>
       <additionalInfo>Guild Wars continent</additionalInfo>
       <regDate>2018-03-12</regDate>
     </entity>
