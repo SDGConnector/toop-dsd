@@ -16,15 +16,18 @@
 package eu.toop.roa.main;
 
 import eu.toop.roa.config.ROAConfig;
+import eu.toop.roa.model.Agent;
 import eu.toop.roa.service.ROAQueryService;
 import io.jooby.Context;
 import io.jooby.Jooby;
 import io.jooby.ModelAndView;
 import io.jooby.StatusCode;
+import io.jooby.json.JacksonModule;
 import io.jooby.thymeleaf.ThymeleafModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,13 +46,16 @@ public class ROAMain extends Jooby {
 
   {
     install(new ThymeleafModule("/views/templates"));
+    install(new JacksonModule());
     assets("/static/*", "/views/static");
 
     Map<String, Object> model = new HashMap<>();
     model.put("roaVersion", ROAConfig.getRoaVersion());
     model.put("buildDate", ROAConfig.getBuildDate());
     get("/", ctx -> new ModelAndView("index.html", model));
+    get("/roaList", ctx -> new ModelAndView("roalist.html", model));
     get("/rest/search", ctx -> doGet(ctx));
+    mvc(new RoaController());
   }
 
   public static void main(String[] args) {

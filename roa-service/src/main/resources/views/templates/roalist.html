@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:v-bind="https://vuejs.org/v2/api/#v-bind"
+      xmlns:v-on="https://vuejs.org/v2/api/#v-on">
+  <head th:replace="/fragments/head.html::head (title='TOOP ROA - Registered Agents\'s')">
+  </head>
+  <body>
+    <div class="container-fluid" id="vueapp">
+      <div class="row">
+        <div class="col">
+          <table class="table table-striped">
+            <thead>
+              <th>ID</th>
+              <th>ID Scheme ID</th>
+              <th>Name</th>
+              <th>Address</th>
+            </thead>
+            <tbody>
+              <tr v-for="el in elements">
+                <td>{{ el.id }}</td>
+                <td>{{ el.idSchemeID }}</td>
+                <td>{{ el.name }}</td>
+                <td><a href="#" v-on:click.stop="displayAddress(el)">Show</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal fade" id="addressBox" v-if="currentAgent != null" tabindex="-1" aria-labelledby="exampleModalLabel"
+           aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">{{ currentAgent.name }} address details</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body container">
+              <div th:replace="/fragments/addressLine.html ::
+                   addressLine (labelId='fullAddress',
+                   labelText='Full Address',
+                   bindValue='currentAgent.address.fullAddress')"></div>
+
+              <div th:replace="/fragments/addressLine.html ::
+                   addressLine (labelId='streetName',
+                   labelText='Street Name',
+                   bindValue='currentAgent.address.streetName')"></div>
+
+              <div th:replace="/fragments/addressLine.html ::
+                   addressLine (labelId='buildingNumber',
+                   labelText='Building Number',
+                   bindValue='currentAgent.address.buildingNumber')"></div>
+
+
+              <div th:replace="/fragments/addressLine.html::
+                   addressLine (labelId='townLabel',
+                   labelText='Town',
+                   bindValue='currentAgent.address.town')"></div>
+
+              <div th:replace="/fragments/addressLine.html::
+                   addressLine (labelId='postalCode',
+                   labelText='Postal Code',
+                   bindValue='currentAgent.address.postalCode')"></div>
+
+              <div th:replace="/fragments/addressLine.html ::
+                   addressLine (labelId='countryCode',
+                   labelText='Country Code',
+                   bindValue='currentAgent.address.countryCode')"></div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+
+  <script>
+    var backendClient;
+    var vueApp;
+    (async () => {
+      backendClient = new BackendClient()
+      vueApp = new Vue({
+        el: '#vueapp',
+        data: {
+          currentAgent: null,
+          message: 'Hello vue, Stardenburdenhardenbart',
+          elements: await getElements()
+        }
+      })
+    })();
+
+    async function getElements() {
+      return backendClient.get("/rest/roaList")
+    }
+
+    function displayAddress(agent) {
+      vueApp.currentAgent = agent
+      $('#addressBox').modal()
+    }
+  </script>
+</html>
