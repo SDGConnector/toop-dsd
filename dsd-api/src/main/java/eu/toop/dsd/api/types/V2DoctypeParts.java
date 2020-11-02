@@ -18,7 +18,7 @@ package eu.toop.dsd.api.types;
 /**
  * Represents the TOOP V2.0.0 doctype id.
  * <p>sample:
- * <code>RegisteredOrganization::REGISTERED_ORGANIZATION_TYPE::CONCEPT##CCCEV::toop-edm:v2.0</code></p>
+ * <code>RegisteredOrganization::REGISTERED_ORGANIZATION_TYPE::CONCEPT##CCCEV::toop-edm:v2.1</code></p>
  */
 public class V2DoctypeParts extends DoctypeParts {
 
@@ -39,7 +39,7 @@ public class V2DoctypeParts extends DoctypeParts {
    */
   private String distributionConformsTo;
   /**
-   * doctype confroms to: e.g. <code>toop-edm:v2.0</code>
+   * doctype conforms to: e.g. <code>toop-edm:v2.1</code>
    */
   private String conformsTo;
 
