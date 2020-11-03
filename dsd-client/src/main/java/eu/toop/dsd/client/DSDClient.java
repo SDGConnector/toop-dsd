@@ -22,10 +22,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.transform.TransformerException;
 
-import eu.toop.dsd.api.DSDException;
-import eu.toop.dsd.api.DsdDataConverter;
-import eu.toop.dsd.api.types.DSDQuery;
-import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -40,8 +36,14 @@ import com.helger.httpclient.HttpClientManager;
 import com.helger.httpclient.HttpClientSettings;
 import com.helger.pd.searchapi.v1.MatchType;
 
+import eu.toop.dsd.api.DSDException;
+import eu.toop.dsd.api.DsdDataConverter;
+import eu.toop.dsd.api.types.DSDQuery;
+import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
+
 /**
- * This is a helper class that abstracts the rest call to the DSD service for dataset type queries.
+ * This is a helper class that abstracts the rest call to the DSD service for
+ * dataset type queries.
  *
  * @author yerlibilgin
  */
@@ -55,7 +57,8 @@ public class DSDClient {
   /**
    * Constructor
    *
-   * @param dsdBaseUrl the URL where the DSD service resides, may not be                   <code>null</code>
+   * @param dsdBaseUrl the URL where the DSD service resides, may not be
+   *                   <code>null</code>
    */
   public DSDClient(@Nonnull @Nonempty final String dsdBaseUrl) {
     ValueEnforcer.notEmpty(dsdBaseUrl, "DSD BaseURL");
@@ -74,7 +77,6 @@ public class DSDClient {
     return this;
   }
 
-
   /**
    * The default DSD query as described here:
    * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
@@ -86,23 +88,22 @@ public class DSDClient {
   @Nullable
   public String queryDatasetRawByLocation(@Nonnull final String datasetType, @Nullable final String countryCode) {
     ValueEnforcer.notEmpty(datasetType, "datasetType");
-    DSDQuery.DSDQueryID targetQueryId = DSDQuery.DSDQueryID.QUERY_BY_DATASETTYPE_AND_LOCATION;
+    final DSDQuery.DSDQueryID targetQueryId = DSDQuery.DSDQueryID.QUERY_BY_DATASETTYPE_AND_LOCATION;
     return queryDatasetRaw(datasetType, targetQueryId, DSDQuery.PARAM_NAME_COUNTRY_CODE, countryCode);
   }
-
 
   /**
    * The default DSD query as described here:
    * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
    *
    * @param datasetType the dataset type, may not be <code>null</code>
-   * @param dpType the Data Provider Type, optional
+   * @param dpType      the Data Provider Type, optional
    * @return the list of {@link DCatAPDatasetType} objects.
    */
   @Nullable
   public String queryDatasetRawByDPType(@Nonnull final String datasetType, @Nullable final String dpType) {
     ValueEnforcer.notEmpty(datasetType, "datasetType");
-    DSDQuery.DSDQueryID targetQueryId = DSDQuery.DSDQueryID.QUERY_BY_DATASETTYPE_AND_LOCATION;
+    final DSDQuery.DSDQueryID targetQueryId = DSDQuery.DSDQueryID.QUERY_BY_DATASETTYPE_AND_DPTYPE;
     return queryDatasetRaw(datasetType, targetQueryId, DSDQuery.PARAM_NAME_DATA_PROVIDER_TYPE, dpType);
   }
 
@@ -115,8 +116,9 @@ public class DSDClient {
    * @return the list of {@link DCatAPDatasetType} objects.
    */
   @Nullable
-  public List<DCatAPDatasetType> queryDatasetByLocation(@Nonnull final String datasetType, @Nullable final String countryCode) {
-    String result = queryDatasetRawByLocation(datasetType, countryCode);
+  public List<DCatAPDatasetType> queryDatasetByLocation(@Nonnull final String datasetType,
+      @Nullable final String countryCode) {
+    final String result = queryDatasetRawByLocation(datasetType, countryCode);
     return DsdDataConverter.parseDataset(result);
   }
 
@@ -125,12 +127,13 @@ public class DSDClient {
    * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
    *
    * @param datasetType the dataset type, may not be <code>null</code>
-   * @param dpType the Data provider type, optional
+   * @param dpType      the Data provider type, optional
    * @return the list of {@link DCatAPDatasetType} objects.
    */
   @Nullable
-  public List<DCatAPDatasetType> queryDatasetByDPType(@Nonnull final String datasetType, @Nullable final String dpType) {
-    String result = queryDatasetRawByDPType(datasetType, dpType);
+  public List<DCatAPDatasetType> queryDatasetByDPType(@Nonnull final String datasetType,
+      @Nullable final String dpType) {
+    final String result = queryDatasetRawByDPType(datasetType, dpType);
     return DsdDataConverter.parseDataset(result);
   }
 
@@ -143,18 +146,19 @@ public class DSDClient {
    * @return the list of {@link MatchType} objects.
    */
   @Nullable
-  public List<MatchType> queryDatasetAsMatchTypes(@Nonnull final String datasetType, @Nullable final String countryCode) {
+  public List<MatchType> queryDatasetAsMatchTypes(@Nonnull final String datasetType,
+      @Nullable final String countryCode) {
     ValueEnforcer.notEmpty(datasetType, "datasetType");
     final String rawResult = queryDatasetRawByLocation(datasetType, countryCode);
     try {
       return DsdDataConverter.convertDSDToMatchTypes(rawResult);
-    } catch (TransformerException e) {
+    } catch (final TransformerException e) {
       throw new DSDException("Couldn't convert results", e);
     }
   }
 
-
-  private String queryDatasetRaw(@Nonnull String datasetType, DSDQuery.DSDQueryID targetQueryId, String secondParamName, String secondParam) {
+  private String queryDatasetRaw(@Nonnull final String datasetType, final DSDQuery.DSDQueryID targetQueryId,
+      final String secondParamName, final String secondParam) {
     final SimpleURL aBaseURL = new SimpleURL(m_sDSDBaseURL + "/rest/search");
 
     aBaseURL.add(DSDQuery.PARAM_NAME_QUERY_ID, targetQueryId.id);
@@ -169,7 +173,7 @@ public class DSDClient {
       LOGGER.info("Querying " + aBaseURL.getAsStringWithEncodedParameters());
 
     final HttpClientSettings aHttpClientSettings = m_aHttpClientSettings != null ? m_aHttpClientSettings
-        : new HttpClientSettings();
+                                                                                 : new HttpClientSettings();
     try (final HttpClientManager httpClient = HttpClientManager.create(aHttpClientSettings)) {
       final HttpGet aGet = new HttpGet(aBaseURL.getAsURI());
 
