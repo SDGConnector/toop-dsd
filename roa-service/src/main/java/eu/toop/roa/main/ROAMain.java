@@ -15,21 +15,16 @@
  */
 package eu.toop.roa.main;
 
-import eu.toop.roa.config.ROAConfig;
-import eu.toop.roa.model.Agent;
-import eu.toop.roa.service.ROAQueryService;
-import io.jooby.Context;
+import com.typesafe.config.ConfigFactory;
+import eu.toop.roa.controller.*;
+import io.jooby.Environment;
 import io.jooby.Jooby;
-import io.jooby.ModelAndView;
-import io.jooby.StatusCode;
+import io.jooby.ebean.EbeanModule;
+import io.jooby.hikari.HikariModule;
 import io.jooby.json.JacksonModule;
 import io.jooby.thymeleaf.ThymeleafModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The HTTP servlet for the REST query. One servlet could be used
@@ -45,43 +40,24 @@ public class ROAMain extends Jooby {
   private static final Logger LOGGER = LoggerFactory.getLogger(ROAMain.class);
 
   {
+    install(new HikariModule());
+
+    install(new EbeanModule());
+
     install(new ThymeleafModule("/views/templates"));
     install(new JacksonModule());
+
     assets("/static/*", "/views/static");
 
-    Map<String, Object> model = new HashMap<>();
-    model.put("roaVersion", ROAConfig.getRoaVersion());
-    model.put("buildDate", ROAConfig.getBuildDate());
-    get("/", ctx -> new ModelAndView("index.html", model));
-    get("/roaList", ctx -> new ModelAndView("roalist.html", model));
-    get("/rest/search", ctx -> doGet(ctx));
-    mvc(new RoaController());
+    AppComponent dagger = DaggerAppComponent.builder()
+        .build();
+
+    LOGGER.info("Running TOOP Registry of Authorities V" + dagger.getRoaConfig().get().getRoaVersion());
+    mvc(RoaController.class, dagger.getRoaController());
+    mvc(UIController.class, dagger.getUIController());
   }
 
   public static void main(String[] args) {
-    LOGGER.info("Running TOOP Registry of Authorities V" + ROAConfig.getRoaVersion());
     runApp(args, ROAMain::new);
-  }
-
-  private String doGet(Context ctx) {
-    LOGGER.debug("ROA query  with " + ctx.queryString());
-
-    try {
-      Map<String, String> parameterMap = ctx.queryMap();
-      ctx.setResponseType("application/xml");
-      return ROAQueryService.processRequest(parameterMap);
-    } catch (Exception ex) {
-      ctx.setResponseType("text/plain");
-      LOGGER.error(ex.getMessage(), ex);
-
-      if (ex instanceof IllegalStateException) {
-        ctx.setResponseCode(StatusCode.BAD_REQUEST);
-      } else {
-        ctx.setResponseCode(StatusCode.SERVER_ERROR);
-      }
-
-      final String message = ex.getMessage();
-      return message;
-    }
   }
 }

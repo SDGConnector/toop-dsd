@@ -7,36 +7,39 @@ import io.ebean.PagedList;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "agent")
 public class Agent extends RootEntity {
 
-  private String id;
+  private String idValue;
   private String idSchemeID;
   private String name;
-
   @OneToOne(fetch = FetchType.LAZY)
   private Address address;
   private Date creationTime;
 
+  @ManyToMany
+  private List<Procedure> procedures;
+
   public Agent() {
   }
 
-  public Agent(String id, String idSchemeID, String name, Address address) {
-    this.id = id;
+  public Agent(String idValue, String idSchemeID, String name, Address address) {
+    this.idValue = idValue;
     this.idSchemeID = idSchemeID;
     this.name = name;
     this.address = address;
     this.creationTime = new Date();
   }
 
-  public String getId() {
-    return id;
+  public String getIdValue() {
+    return idValue;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public void setIdValue(String idValue) {
+    this.idValue = idValue;
   }
 
   public String getIdSchemeID() {
@@ -69,6 +72,30 @@ public class Agent extends RootEntity {
 
   public void setCreationTime(Date creationTime) {
     this.creationTime = creationTime;
+  }
+
+  public List<Procedure> getProcedures() {
+    return procedures;
+  }
+
+  public void setProcedures(List<Procedure> procedures) {
+    this.procedures = procedures;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Agent agent = (Agent) o;
+    return Objects.equals(idValue, agent.idValue) &&
+        Objects.equals(idSchemeID, agent.idSchemeID) &&
+        Objects.equals(name, agent.name) &&
+        Objects.equals(address, agent.address);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(idValue, idSchemeID, name, address);
   }
 
   public static Finder<Long, Agent> find = new Finder(Agent.class);
