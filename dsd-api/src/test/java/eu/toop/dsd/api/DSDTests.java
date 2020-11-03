@@ -63,14 +63,14 @@ public class DSDTests {
   @Test
   public void testDoctypeParts() {
     DoctypeParts parts = DoctypeParts.parse(
-        "toop-doctypeid-qns::RegisteredOrganization::REGISTERED_ORGANIZATION_TYPE::CONCEPT##CCCEV::toop-edm:v2.0");
+        "toop-doctypeid-qns::RegisteredOrganization::REGISTERED_ORGANIZATION_TYPE::CONCEPT##CCCEV::toop-edm:v2.1");
     Assert.assertNotNull(parts);
 
     Assert.assertEquals("RegisteredOrganization", parts.getDataSetIdentifier());
     Assert.assertEquals("REGISTERED_ORGANIZATION_TYPE", parts.getDatasetType());
     Assert.assertEquals("CONCEPT", parts.getDistributionFormat());
     Assert.assertEquals("CCCEV", parts.getDistributionConformsTo());
-    Assert.assertEquals("toop-edm:v2.0", parts.getConformsTo());
+    Assert.assertEquals("toop-edm:v2.1", parts.getConformsTo());
   }
 
   /**
