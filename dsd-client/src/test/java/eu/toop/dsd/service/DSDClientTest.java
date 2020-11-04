@@ -112,29 +112,6 @@ public final class DSDClientTest {
     });
   }
 
-  /**
-   * Test query as match types.
-   *
-   * @throws DatatypeConfigurationException the datatype configuration exception
-   */
-  @Test
-  public void testQueryMatchTypes() {
-    final List<MatchType> matchTypes = new DSDClient("http://localhost:" + TEST_PORT).queryDatasetAsMatchTypes("REGISTERED_ORGANIZATION_TYPE",
-        "SV");
-
-    final ResultListType rls = new ResultListType();
-    rls.setVersion("1");
-    rls.setQueryTerms("terms");
-    rls.setCreationDt(PDTFactory.getCurrentLocalDateTime());
-    matchTypes.forEach(matchType -> {
-      rls.addMatch(matchType);
-    });
-
-    final StringWriter writer = new StringWriter();
-    PDSearchAPIWriter.resultListV1().setFormattedOutput(true).write(rls, writer);
-    System.out.println(writer);
-  }
-
   private static class MyLocalTestServer extends LocalServerTestBase {
     public static final String TOOP_DIR_URL = "http://directory.acc.exchange.toop.eu";
 

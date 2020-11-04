@@ -39,24 +39,6 @@ import eu.toop.dsd.api.types.DoctypeParts;
  * @author yerlibilgin
  */
 public class DSDTests {
-
-  /**
-   * Write read.
-   *
-   * @throws DatatypeConfigurationException the datatype configuration exception
-   */
-  @Test
-  public void writeRead() throws TransformerException {
-    String xml = StreamHelper.getAllBytesAsString(DSDTests.class.getResourceAsStream("/directory-results.xml"), StandardCharsets.UTF_8);
-    final String s_dataSetType = "registeredorganization";
-
-    String dsdResult = DsdDataConverter.convertDIRToDSDWithDPType(xml, s_dataSetType, "DataSubjectIdentifierScheme");
-    System.out.println(dsdResult);
-
-    String toopDirResult = DsdDataConverter.convertDSDToToopDirResultList(dsdResult);
-    System.out.println(toopDirResult);
-  }
-
   /**
    * Test doctype parts.
    */

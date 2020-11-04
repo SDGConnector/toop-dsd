@@ -45,19 +45,13 @@ public class DsdDataConverter {
   private static final Logger LOGGER = LoggerFactory.getLogger(DsdDataConverter.class);
 
   private static final Transformer transformer;
-  private static final Transformer inverseTransformer;
 
   static {
     try {
       InputStream inputStream = DsdDataConverter.class.getResourceAsStream("/xslt/dsd.xslt");
       StreamSource stylesource = new StreamSource(inputStream);
-
       transformer = TransformerFactory.newInstance().newTransformer(stylesource);
 
-      inputStream = DsdDataConverter.class.getResourceAsStream("/xslt/dsd-inverse.xslt");
-      stylesource = new StreamSource(inputStream);
-
-      inverseTransformer = TransformerFactory.newInstance().newTransformer(stylesource);
     } catch (TransformerConfigurationException e) {
       throw new DSDException("Cannot instantiate transformers");
     }
@@ -106,20 +100,6 @@ public class DsdDataConverter {
   }
 
   /**
-   * Convert a Regrep/DCAT DSD xml document to a Directory result list
-   *
-   * @param dsdXml
-   * @return the directory resultlist xml
-   * @throws TransformerException
-   */
-  public static String convertDSDToToopDirResultList(String dsdXml) throws TransformerException {
-    StringWriter writer = new StringWriter();
-    StreamSource xmlSource = new StreamSource(new ByteArrayInputStream(dsdXml.getBytes(StandardCharsets.UTF_8)));
-    inverseTransformer.transform(xmlSource, new StreamResult(writer));
-    return writer.toString();
-  }
-
-  /**
    * Read the dsdRawResult as a List of {@link DCatAPDatasetType} objects
    *
    * @param dsdRawResult the raw DSD query result
@@ -128,24 +108,5 @@ public class DsdDataConverter {
   public static List<DCatAPDatasetType> parseDataset(String dsdRawResult) {
     final InputStream inputStream = new ByteArrayInputStream(dsdRawResult.getBytes(StandardCharsets.UTF_8));
     return DcatDatasetTypeReader.parseDataset(new StreamSource(inputStream));
-  }
-
-  /**
-   * Convert the given DSD result xml to a list of {@link MatchType} elements
-   *
-   * @param dsdRawResult the raw DSD query result
-   * @return the resulting list
-   */
-  public static List<MatchType> convertDSDToMatchTypes(String dsdRawResult) throws TransformerException {
-    String dirXml = DsdDataConverter.convertDSDToToopDirResultList(dsdRawResult);
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Converted DirXML:");
-      LOGGER.debug(dirXml);
-    }
-    final ResultListType read = PDSearchAPIReader.resultListV1().read(dirXml);
-    if (read == null)
-      throw new DSDException("Cannot parse result list");
-
-    return read.getMatch();
   }
 }

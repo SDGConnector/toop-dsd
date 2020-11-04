@@ -138,26 +138,6 @@ public class DSDClient {
     return DsdDataConverter.parseDataset(result);
   }
 
-  /**
-   * The default DSD query as described here:
-   * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
-   *
-   * @param datasetType the dataset type, may not be <code>null</code>
-   * @param countryCode the country code, optional
-   * @return the list of {@link MatchType} objects.
-   */
-  @Nullable
-  public List<MatchType> queryDatasetAsMatchTypes(@Nonnull final String datasetType,
-                                                  @Nullable final String countryCode) {
-    ValueEnforcer.notEmpty(datasetType, "datasetType");
-    final String rawResult = queryDatasetRawByLocation(datasetType, countryCode);
-    try {
-      return DsdDataConverter.convertDSDToMatchTypes(rawResult);
-    } catch (final TransformerException e) {
-      throw new DSDException("Couldn't convert results", e);
-    }
-  }
-
   private String queryDatasetRaw(@Nonnull final String datasetType, final DSDQuery.DSDQueryID targetQueryId,
                                  final String secondParamName, final String secondParam) {
     final SimpleURL aBaseURL = new SimpleURL(m_sDSDBaseURL + "/rest/search");

@@ -39,11 +39,6 @@
   <xsl:function name="dsd:docTypeV1">
     <xsl:param name="tokens"/>
 
-    <xsl:message>Tokens:
-      <xsl:value-of select="$tokens"/>
-    </xsl:message>
-
-
     <xsl:variable name="namespaceURI" select="$tokens[1]"/>
     <xsl:variable name="token2" select="$tokens[2]"/>
     <xsl:if test="contains($token2, '##')=false()">
@@ -55,22 +50,6 @@
     <xsl:variable name="localElementName" select="substring-before($token2, '##')"/>
     <xsl:variable name="customizationId" select="substring-after($token2, '##')"/>
     <xsl:variable name="v1VersionField" select="$tokens[3]"/>
-
-
-    <!--
-    <xsl:message>DocType V2</xsl:message>
-    <xsl:message>namespaceURI:
-      <xsl:value-of select="$namespaceURI"/>
-    </xsl:message>
-    <xsl:message>localElementName:
-      <xsl:value-of select="$localElementName"/>
-    </xsl:message>
-    <xsl:message>customizationId:
-      <xsl:value-of select="$customizationId"/>
-    </xsl:message>
-    <xsl:message>v1VersionField:
-      <xsl:value-of select="$v1VersionField"/>
-    </xsl:message>-->
 
     <xsl:sequence>
       <docTypeParts>
@@ -103,25 +82,6 @@
     <xsl:variable name="distributionFormat" select="if(contains($token3, '##')) then substring-before($token3, '##') else $token3"/>
     <xsl:variable name="distConformsTo" select="if(contains($token3, '##')) then substring-after($token3, '##') else ()"/>
     <xsl:variable name="conformsTo" select="$tokens[4]"/>
-
-    <!--
-    <xsl:message>DocType V2</xsl:message>
-    <xsl:message>datasetIdentifier:
-      <xsl:value-of select="$datasetIdentifier"/>
-    </xsl:message>
-    <xsl:message>datasetType:
-      <xsl:value-of select="$datasetType"/>
-    </xsl:message>
-    <xsl:message>distributionFormat:
-      <xsl:value-of select="$distributionFormat"/>
-    </xsl:message>
-    <xsl:message>distConformsTo:
-      <xsl:value-of select="$distConformsTo"/>
-    </xsl:message>
-    <xsl:message>conformsTo:
-      <xsl:value-of select="$conformsTo"/>
-    </xsl:message>
-    -->
 
     <xsl:sequence>
       <docTypeParts>
@@ -166,10 +126,10 @@
                 xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:4.0"
                 xmlns:rs="urn:oasis:names:tc:ebxml-regrep:xsd:rs:4.0">
 
-    <x:message>DPTYPE:
+    <x:message>Param DpType:
       <xsl:value-of select="$dpType"/>
     </x:message>
-    <x:message>Country Code:
+    <x:message>Param Country Code:
       <xsl:value-of select="$countryCode"/>
     </x:message>
     <xsl:if test="countryCode = ''">
@@ -192,11 +152,8 @@
               <xsl:for-each select="$match/entity">
                 <xsl:variable name="entity" select="."/>
                 <xsl:if test="contains($entity/countryCode, $countryCode)">
-                  <xsl:variable name="schemes">
-                    <xsl:value-of select="$entity/identifier/@scheme"/>
-                  </xsl:variable>
-                  <xsl:if test="contains($schemes, $dpType)">
-
+                  <xsl:variable name="currentDataProviderType" select="$entity/identifier[normalize-space(@scheme)='DataProviderType']"/>
+                  <xsl:if test="contains($currentDataProviderType/text(), $dpType)">
                     <xsl:variable name="nodeId">
                       <xsl:value-of select="generate-id()"/>
                     </xsl:variable>
@@ -331,21 +288,26 @@
                               <skos:prefLabel>
                                 <xsl:value-of select="$entity/name"/>
                               </skos:prefLabel>
-                              <xsl:for-each-group select="$entity/identifier/@scheme" group-by=".">
+                              <xsl:for-each select="$currentDataProviderType">
                                 <xsl:if test="contains(., $dpType)">
                                   <org:classification>
                                     <xsl:value-of select="normalize-space(.)"/>
                                   </org:classification>
                                 </xsl:if>
-                              </xsl:for-each-group>
+                              </xsl:for-each>
                             </dct:publisher>
                             <dct:type>
                               <xsl:value-of select="$datasetType"/>
                             </dct:type>
-                            <dcat:qualifiedRelation>
-                              <dct:relation>urn:oasis:names:tc:ebcore:partyid-type:iso6523:XXXX</dct:relation>
-                              <dcat:hadRole>https://toop.eu/dataset/supportedIdScheme</dcat:hadRole>
-                            </dcat:qualifiedRelation>
+                            <xsl:for-each select="$entity/identifier[normalize-space(@scheme)='DataSubjectIdentifierScheme']">
+                              <dcat:qualifiedRelation>
+                                <dct:relation>
+                                  <xsl:value-of select="normalize-space(.)"/>
+                                </dct:relation>
+                                <dcat:hadRole>https://toop.eu/dataset/supportedIdScheme</dcat:hadRole>
+                              </dcat:qualifiedRelation>
+                            </xsl:for-each>
+
                           </dcat:dataset>
 
                         </rim:SlotValue>
