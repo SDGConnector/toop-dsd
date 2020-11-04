@@ -15,9 +15,10 @@
  */
 package eu.toop.roa.main;
 
-import com.typesafe.config.ConfigFactory;
-import eu.toop.roa.controller.*;
-import io.jooby.Environment;
+import eu.toop.roa.controller.AppComponent;
+import eu.toop.roa.controller.DaggerAppComponent;
+import eu.toop.roa.controller.RoaController;
+import eu.toop.roa.controller.UIController;
 import io.jooby.Jooby;
 import io.jooby.ebean.EbeanModule;
 import io.jooby.hikari.HikariModule;

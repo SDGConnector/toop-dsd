@@ -81,8 +81,8 @@ public class DSDClient {
    * The default DSD query as described here:
    * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
    *
-   * @param datasetType the dataset type, may not be <code>null</code>
-   * @param countryCode the country code, optional
+   * @param datasetType the dataset type, <code>mandatory</code>
+   * @param countryCode the country code, <code>optional</code>
    * @return the list of {@link DCatAPDatasetType} objects.
    */
   @Nullable
@@ -96,13 +96,14 @@ public class DSDClient {
    * The default DSD query as described here:
    * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
    *
-   * @param datasetType the dataset type, may not be <code>null</code>
-   * @param dpType      the Data Provider Type, optional
+   * @param datasetType the dataset type, <code>mandatory</code>
+   * @param dpType      the Data Provider Type, <code>mandatory</code>
    * @return the list of {@link DCatAPDatasetType} objects.
    */
   @Nullable
-  public String queryDatasetRawByDPType(@Nonnull final String datasetType, @Nullable final String dpType) {
+  public String queryDatasetRawByDPType(@Nonnull final String datasetType, @Nonnull final String dpType) {
     ValueEnforcer.notEmpty(datasetType, "datasetType");
+    ValueEnforcer.notEmpty(dpType, "dpType");
     final DSDQuery.DSDQueryID targetQueryId = DSDQuery.DSDQueryID.QUERY_BY_DATASETTYPE_AND_DPTYPE;
     return queryDatasetRaw(datasetType, targetQueryId, DSDQuery.PARAM_NAME_DATA_PROVIDER_TYPE, dpType);
   }
@@ -111,13 +112,13 @@ public class DSDClient {
    * The default DSD query as described here:
    * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
    *
-   * @param datasetType the dataset type, may not be <code>null</code>
+   * @param datasetType the dataset type, <code>mandatory</code>
    * @param countryCode the country code, optional
    * @return the list of {@link DCatAPDatasetType} objects.
    */
   @Nullable
   public List<DCatAPDatasetType> queryDatasetByLocation(@Nonnull final String datasetType,
-      @Nullable final String countryCode) {
+                                                        @Nullable final String countryCode) {
     final String result = queryDatasetRawByLocation(datasetType, countryCode);
     return DsdDataConverter.parseDataset(result);
   }
@@ -126,13 +127,13 @@ public class DSDClient {
    * The default DSD query as described here:
    * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
    *
-   * @param datasetType the dataset type, may not be <code>null</code>
-   * @param dpType      the Data provider type, optional
+   * @param datasetType the dataset type, <code>mandatory</code>
+   * @param dpType      the Data provider type, <code>mandatory</code>
    * @return the list of {@link DCatAPDatasetType} objects.
    */
   @Nullable
   public List<DCatAPDatasetType> queryDatasetByDPType(@Nonnull final String datasetType,
-      @Nullable final String dpType) {
+                                                      @Nonnull final String dpType) {
     final String result = queryDatasetRawByDPType(datasetType, dpType);
     return DsdDataConverter.parseDataset(result);
   }
@@ -147,7 +148,7 @@ public class DSDClient {
    */
   @Nullable
   public List<MatchType> queryDatasetAsMatchTypes(@Nonnull final String datasetType,
-      @Nullable final String countryCode) {
+                                                  @Nullable final String countryCode) {
     ValueEnforcer.notEmpty(datasetType, "datasetType");
     final String rawResult = queryDatasetRawByLocation(datasetType, countryCode);
     try {
@@ -158,7 +159,7 @@ public class DSDClient {
   }
 
   private String queryDatasetRaw(@Nonnull final String datasetType, final DSDQuery.DSDQueryID targetQueryId,
-      final String secondParamName, final String secondParam) {
+                                 final String secondParamName, final String secondParam) {
     final SimpleURL aBaseURL = new SimpleURL(m_sDSDBaseURL + "/rest/search");
 
     aBaseURL.add(DSDQuery.PARAM_NAME_QUERY_ID, targetQueryId.id);
@@ -173,7 +174,7 @@ public class DSDClient {
       LOGGER.info("Querying " + aBaseURL.getAsStringWithEncodedParameters());
 
     final HttpClientSettings aHttpClientSettings = m_aHttpClientSettings != null ? m_aHttpClientSettings
-                                                                                 : new HttpClientSettings();
+        : new HttpClientSettings();
     try (final HttpClientManager httpClient = HttpClientManager.create(aHttpClientSettings)) {
       final HttpGet aGet = new HttpGet(aBaseURL.getAsURI());
 

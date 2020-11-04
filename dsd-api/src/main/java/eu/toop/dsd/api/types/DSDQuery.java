@@ -128,8 +128,8 @@ public class DSDQuery {
       break;
       case QUERY_BY_DATASETTYPE_AND_LOCATION: {
         valid = parameterMap.containsKey(PARAM_NAME_QUERY_ID) &&
-            parameterMap.containsKey(PARAM_NAME_DATA_SET_TYPE) &&
-            parameterMap.containsKey(PARAM_NAME_COUNTRY_CODE);
+            parameterMap.containsKey(PARAM_NAME_DATA_SET_TYPE);
+            // that one is optional && parameterMap.containsKey(PARAM_NAME_COUNTRY_CODE);
       }
     }
 
