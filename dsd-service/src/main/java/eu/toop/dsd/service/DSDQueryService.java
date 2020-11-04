@@ -91,8 +91,7 @@ public class DSDQueryService {
     String dataSetType = dsdQuery.safeGetParameterValue(DSDQuery.PARAM_NAME_DATA_SET_TYPE);
     String dpType = dsdQuery.safeGetParameterValue(DSDQuery.PARAM_NAME_DATA_PROVIDER_TYPE);
 
-    LOGGER.debug("Processing data set request [dataSetType: " + dataSetType +
-        ", dpType: " + dpType + "]");
+    LOGGER.debug("Processing data set request [dataSetType: " + dataSetType + ", dpType: " + dpType + "]");
 
     //query all the matches without a document type id.
     final String directoryResult = ToopDirClient.callSearchApiWithIdentifierScheme(DSDConfig.getToopDirUrl(), dpType);
@@ -116,8 +115,7 @@ public class DSDQueryService {
 
 
     String dataSetType = dsdQuery.safeGetParameterValue(DSDQuery.PARAM_NAME_DATA_SET_TYPE);
-    //non-safe, might be null
-    String countryCode = dsdQuery.getParameterValue(DSDQuery.PARAM_NAME_COUNTRY_CODE);
+    String countryCode = dsdQuery.safeGetParameterValue(DSDQuery.PARAM_NAME_COUNTRY_CODE);
 
     LOGGER.debug("Processing data set request [dataSetType: " + dataSetType +
         ", countryCode: " + countryCode + "]");

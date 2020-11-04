@@ -42,8 +42,6 @@ import java.util.List;
  * @author yerlibilgin
  */
 public class DsdDataConverter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DsdDataConverter.class);
-
   private static final Transformer transformer;
 
   static {

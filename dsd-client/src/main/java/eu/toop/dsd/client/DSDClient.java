@@ -82,12 +82,13 @@ public class DSDClient {
    * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
    *
    * @param datasetType the dataset type, <code>mandatory</code>
-   * @param countryCode the country code, <code>optional</code>
+   * @param countryCode the country code, <code>mandatory</code>
    * @return the list of {@link DCatAPDatasetType} objects.
    */
   @Nullable
-  public String queryDatasetRawByLocation(@Nonnull final String datasetType, @Nullable final String countryCode) {
+  public String queryDatasetRawByLocation(@Nonnull final String datasetType, @Nonnull final String countryCode) {
     ValueEnforcer.notEmpty(datasetType, "datasetType");
+    ValueEnforcer.notEmpty(countryCode, "countryCode");
     final DSDQuery.DSDQueryID targetQueryId = DSDQuery.DSDQueryID.QUERY_BY_DATASETTYPE_AND_LOCATION;
     return queryDatasetRaw(datasetType, targetQueryId, DSDQuery.PARAM_NAME_COUNTRY_CODE, countryCode);
   }
@@ -113,12 +114,12 @@ public class DSDClient {
    * http://wiki.ds.unipi.gr/display/TOOPSA20/Data+Services+Directory
    *
    * @param datasetType the dataset type, <code>mandatory</code>
-   * @param countryCode the country code, optional
+   * @param countryCode the country code,  <code>mandatory</code>
    * @return the list of {@link DCatAPDatasetType} objects.
    */
   @Nullable
   public List<DCatAPDatasetType> queryDatasetByLocation(@Nonnull final String datasetType,
-                                                        @Nullable final String countryCode) {
+                                                        @Nonnull final String countryCode) {
     final String result = queryDatasetRawByLocation(datasetType, countryCode);
     return DsdDataConverter.parseDataset(result);
   }
@@ -140,16 +141,13 @@ public class DSDClient {
 
   private String queryDatasetRaw(@Nonnull final String datasetType, final DSDQuery.DSDQueryID targetQueryId,
                                  final String secondParamName, final String secondParam) {
+
     final SimpleURL aBaseURL = new SimpleURL(m_sDSDBaseURL + "/rest/search");
 
     aBaseURL.add(DSDQuery.PARAM_NAME_QUERY_ID, targetQueryId.id);
     aBaseURL.add(DSDQuery.PARAM_NAME_DATA_SET_TYPE, datasetType);
 
-    // Parameters to this servlet
-    if (secondParam != null && !secondParam.isEmpty()) {
-      aBaseURL.add(secondParamName, secondParam);
-    }
-
+    aBaseURL.add(secondParamName, secondParam);
     if (LOGGER.isInfoEnabled())
       LOGGER.info("Querying " + aBaseURL.getAsStringWithEncodedParameters());
 

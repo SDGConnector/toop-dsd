@@ -56,21 +56,6 @@ public class DcatDatasetTypeReader {
     return convertQueryResponseToDCatAPDatasetTypeList(queryResponse);
   }
 
-  /**
-   * Read match type list from a {@link Node} object
-   *
-   * @param aNode the {@link Node} object
-   * @return the list of {@link DCatAPDatasetType} objects
-   */
-  @Nullable
-  public List<DCatAPDatasetType> read(@Nonnull final Node aNode) {
-    QueryResponse queryResponse = RegRep4Reader.queryResponse(CCAGV.XSDS).read(aNode);
-    if (queryResponse == null)
-      return null;
-
-    return convertQueryResponseToDCatAPDatasetTypeList(queryResponse);
-  }
-
   private static List<DCatAPDatasetType> convertQueryResponseToDCatAPDatasetTypeList(QueryResponse queryResponse) {
     List<Element> dcatElements = new ArrayList<>();
 
