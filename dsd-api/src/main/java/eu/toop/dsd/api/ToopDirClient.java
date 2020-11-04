@@ -147,6 +147,7 @@ public class ToopDirClient {
     final SimpleURL aBaseURL = new SimpleURL(toopDirBaseURL + "/search/1.0/xml");
     // More than 1000 is not allowed
     aBaseURL.add("rpc", 100);
+    aBaseURL.add("identifierScheme", "DataProviderType");
 
     if (dpType != null && !dpType.isEmpty()) {
       aBaseURL.add("identifierValue", dpType);
