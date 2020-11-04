@@ -16,20 +16,8 @@
 package eu.toop.dsd.api;
 
 
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import com.helger.commons.io.stream.StreamHelper;
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.helger.commons.datetime.PDTFactory;
-import com.helger.pd.searchapi.PDSearchAPIWriter;
-import com.helger.pd.searchapi.v1.MatchType;
-import com.helger.pd.searchapi.v1.ResultListType;
 
 import eu.toop.dsd.api.types.DoctypeParts;
 
@@ -81,9 +69,9 @@ public class DSDTests {
 
   @Test
   public void basicXsltWithDPType() throws Exception {
-    final String result = ToopDirClient.callSearchApiWithIdentifierScheme(ToopDirClientTest.TOOP_DIR_URL, "DataSubjectIdentifierScheme");
+    final String result = ToopDirClient.callSearchApiForDpType(ToopDirClientTest.TOOP_DIR_URL, "abc");
     System.out.println(result);
-    String regRep = DsdDataConverter.convertDIRToDSDWithDPType(result, "FINANCIAL_RECORD_TYPE", "DataSubjectIdentifierScheme");
+    String regRep = DsdDataConverter.convertDIRToDSDWithDPType(result, "REGISTERED_ORGANIZATION_TYPE", "abc");
     System.out.println(regRep);
   }
 }

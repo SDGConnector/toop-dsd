@@ -94,7 +94,7 @@ public class DSDQueryService {
     LOGGER.debug("Processing data set request [dataSetType: " + dataSetType + ", dpType: " + dpType + "]");
 
     //query all the matches without a document type id.
-    final String directoryResult = ToopDirClient.callSearchApiWithIdentifierScheme(DSDConfig.getToopDirUrl(), dpType);
+    final String directoryResult = ToopDirClient.callSearchApiForDpType(DSDConfig.getToopDirUrl(), dpType);
 
     String resultXml = DsdDataConverter.convertDIRToDSDWithDPType(directoryResult, dataSetType, dpType);
 

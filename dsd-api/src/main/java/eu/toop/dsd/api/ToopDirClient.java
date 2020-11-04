@@ -23,9 +23,11 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.net.ssl.*;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.SimpleURL;
 import org.apache.http.HttpResponse;
@@ -103,14 +105,14 @@ public class ToopDirClient {
   /**
    * Query TOOP-DIR with country code and doctype. Return a String that contains the result
    *
-   * @param toopDirBaseURL  the base URL of Toop Directory
-   * @param sCountryCode    two letter Country Code, @Nullable
+   * @param toopDirBaseURL the base URL of Toop Directory, <code>mandatory</code>
+   * @param sCountryCode   two letter Country Code, <code>mandatory</code>
    * @return a String that contains the result
    * @throws IOException if a communication problem occurs
    */
   public static String callSearchApiWithCountryCode(final String toopDirBaseURL, @Nullable final String sCountryCode) throws IOException {
-    if (StringHelper.hasNoText(toopDirBaseURL))
-      throw new IllegalStateException("The Directory base URL configuration is missing");
+    ValueEnforcer.notEmpty(toopDirBaseURL, "toopDirBaseURL");
+    ValueEnforcer.notEmpty(sCountryCode, "sCountryCode");
 
     // Build base URL and fetch all records per HTTP request
     final SimpleURL aBaseURL = new SimpleURL(toopDirBaseURL + "/search/1.0/xml");
@@ -126,15 +128,18 @@ public class ToopDirClient {
   }
 
   /**
-   * Query TOOP-DIR with identifierScheme. Return a String that contains the result
+   * Query TOOP-DIR with dpType. Return a String that contains the result
    *
-   * @param toopDirBaseURL  the base URL of Toop Directory
-   * @param identifierScheme    two letter Country Code, @Nullable
+   * @param toopDirBaseURL the base URL of Toop Directory, <code>mandatory</code>
+   * @param dpType         data provider type, <code>mandatory</code>
    * @return a String that contains the result
    * @throws IOException if a communication problem occurs
    */
-  public static String callSearchApiWithIdentifierScheme(final String toopDirBaseURL,
-  @Nullable final String identifierScheme) throws IOException {
+  public static String callSearchApiForDpType(@Nonnull final String toopDirBaseURL,
+                                              @Nonnull final String dpType) throws IOException {
+    ValueEnforcer.notEmpty(toopDirBaseURL, toopDirBaseURL);
+    ValueEnforcer.notEmpty(dpType, dpType);
+
     if (StringHelper.hasNoText(toopDirBaseURL))
       throw new IllegalStateException("The Directory base URL configuration is missing");
 
@@ -143,8 +148,8 @@ public class ToopDirClient {
     // More than 1000 is not allowed
     aBaseURL.add("rpc", 100);
 
-    if (identifierScheme != null && !identifierScheme.isEmpty()) {
-      aBaseURL.add("identifierScheme", identifierScheme);
+    if (dpType != null && !dpType.isEmpty()) {
+      aBaseURL.add("identifierValue", dpType);
     }
 
 

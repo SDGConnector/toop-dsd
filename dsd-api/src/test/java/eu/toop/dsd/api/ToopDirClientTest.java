@@ -15,8 +15,8 @@ public class ToopDirClientTest {
   }
 
   @Test
-  public void searchIdentifierScheme() throws IOException {
-    final String result = ToopDirClient.callSearchApiWithIdentifierScheme(TOOP_DIR_URL, "DataSubectIdentifierScheme");
+  public void searchDpType() throws IOException {
+    final String result = ToopDirClient.callSearchApiForDpType(TOOP_DIR_URL, "abc");
     System.out.println(result);
   }
 }

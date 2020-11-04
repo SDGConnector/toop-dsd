@@ -15,10 +15,6 @@
  */
 package eu.toop.dsd.service;
 
-import com.helger.commons.datetime.PDTFactory;
-import com.helger.pd.searchapi.PDSearchAPIWriter;
-import com.helger.pd.searchapi.v1.MatchType;
-import com.helger.pd.searchapi.v1.ResultListType;
 import eu.toop.dsd.api.DsdDataConverter;
 import eu.toop.dsd.api.ToopDirClient;
 import eu.toop.dsd.api.types.DSDQuery;
@@ -41,8 +37,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.xml.datatype.DatatypeConfigurationException;
-import java.io.ByteArrayOutputStream;
-import java.io.StringWriter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -159,7 +153,7 @@ public final class DSDClientTest {
             String directoryResult = ToopDirClient.callSearchApiWithCountryCode(TOOP_DIR_URL, countryCode);
             resultXml = DsdDataConverter.convertDIRToDSDWithCountryCode(directoryResult, dataSetType, countryCode);
           } else {
-            String directoryResult = ToopDirClient.callSearchApiWithIdentifierScheme(TOOP_DIR_URL, dpType);
+            String directoryResult = ToopDirClient.callSearchApiForDpType(TOOP_DIR_URL, dpType);
             resultXml = DsdDataConverter.convertDIRToDSDWithDPType(directoryResult, dataSetType, dpType);
           }
           response.setEntity(new StringEntity(resultXml, ContentType.APPLICATION_XML));
