@@ -15,13 +15,20 @@
  */
 package eu.toop.dsd.service;
 
-import eu.toop.dsd.api.DsdDataConverter;
-import eu.toop.dsd.api.ToopDirClient;
-import eu.toop.dsd.api.types.DSDQuery;
-import eu.toop.dsd.client.DSDClient;
-import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
-import eu.toop.edm.xml.dcatap.DatasetMarshaller;
-import org.apache.http.*;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestFactory;
+import org.apache.http.HttpStatus;
+import org.apache.http.MethodNotSupportedException;
+import org.apache.http.NameValuePair;
+import org.apache.http.RequestLine;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.config.ConnectionConfig;
 import org.apache.http.entity.ContentType;
@@ -36,12 +43,12 @@ import org.apache.http.message.BasicLineParser;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import eu.toop.dsd.api.DsdDataConverter;
+import eu.toop.dsd.api.ToopDirClient;
+import eu.toop.dsd.api.types.DSDQuery;
+import eu.toop.dsd.client.DSDClient;
+import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
+import eu.toop.edm.xml.dcatap.DatasetMarshaller;
 
 /**
  * A test class that tests the DSDClient
@@ -93,7 +100,7 @@ public final class DSDClientTest {
   @Test
   public void testQueryByDpType() {
     final List<DCatAPDatasetType> dcatList = new DSDClient("http://localhost:" + TEST_PORT).queryDatasetByDPType("REGISTERED_ORGANIZATION_TYPE",
-        "DataSubjectIdentifierScheme");
+        "abc");
 
     if (dcatList == null) {
       throw new IllegalStateException("Cannot parse Dataset, please check previous exceptions");
