@@ -132,9 +132,6 @@
     <x:message>Param Country Code:
       <xsl:value-of select="$countryCode"/>
     </x:message>
-    <xsl:if test="countryCode = ''">
-      Country code is not empty
-    </xsl:if>
     <!-- Phase 1, prepare dataset -->
     <xsl:variable name="registryObjects">
       <rim:RegistryObjectList>
@@ -153,7 +150,7 @@
                 <xsl:variable name="entity" select="."/>
                 <xsl:if test="contains($entity/countryCode, $countryCode)">
                   <xsl:variable name="currentDataProviderType" select="$entity/identifier[normalize-space(@scheme)='DataProviderType']"/>
-                  <xsl:if test="contains($currentDataProviderType/text(), $dpType)">
+                  <xsl:if test="contains(string-join($currentDataProviderType/text(), ' '), $dpType)">
                     <xsl:variable name="nodeId">
                       <xsl:value-of select="generate-id()"/>
                     </xsl:variable>
@@ -289,11 +286,9 @@
                                 <xsl:value-of select="$entity/name"/>
                               </skos:prefLabel>
                               <xsl:for-each select="$currentDataProviderType">
-                                <xsl:if test="contains(., $dpType)">
-                                  <org:classification>
-                                    <xsl:value-of select="normalize-space(.)"/>
-                                  </org:classification>
-                                </xsl:if>
+                                <org:classification>
+                                  <xsl:value-of select="normalize-space(.)"/>
+                                </org:classification>
                               </xsl:for-each>
                             </dct:publisher>
                             <dct:type>
