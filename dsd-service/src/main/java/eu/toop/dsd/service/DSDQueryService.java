@@ -88,8 +88,8 @@ public class DSDQueryService {
     ValueEnforcer.notNull(responseStream, "responseStream");
 
 
-    String dataSetType = dsdQuery.getParameterValue(DSDQuery.PARAM_NAME_DATA_SET_TYPE);
-    String dpType = dsdQuery.getParameterValue(DSDQuery.PARAM_NAME_DATA_PROVIDER_TYPE);
+    String dataSetType = dsdQuery.safeGetParameterValue(DSDQuery.PARAM_NAME_DATA_SET_TYPE);
+    String dpType = dsdQuery.safeGetParameterValue(DSDQuery.PARAM_NAME_DATA_PROVIDER_TYPE);
 
     LOGGER.debug("Processing data set request [dataSetType: " + dataSetType +
         ", dpType: " + dpType + "]");
@@ -115,7 +115,8 @@ public class DSDQueryService {
     ValueEnforcer.notNull(responseStream, "responseStream");
 
 
-    String dataSetType = dsdQuery.getParameterValue(DSDQuery.PARAM_NAME_DATA_SET_TYPE);
+    String dataSetType = dsdQuery.safeGetParameterValue(DSDQuery.PARAM_NAME_DATA_SET_TYPE);
+    //non-safe, might be null
     String countryCode = dsdQuery.getParameterValue(DSDQuery.PARAM_NAME_COUNTRY_CODE);
 
     LOGGER.debug("Processing data set request [dataSetType: " + dataSetType +

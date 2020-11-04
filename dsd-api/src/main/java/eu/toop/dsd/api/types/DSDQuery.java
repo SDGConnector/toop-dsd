@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2018-2020 toop.eu
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,7 @@ package eu.toop.dsd.api.types;
 import com.helger.commons.ValueEnforcer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -129,7 +130,7 @@ public class DSDQuery {
       case QUERY_BY_DATASETTYPE_AND_LOCATION: {
         valid = parameterMap.containsKey(PARAM_NAME_QUERY_ID) &&
             parameterMap.containsKey(PARAM_NAME_DATA_SET_TYPE);
-            // that one is optional && parameterMap.containsKey(PARAM_NAME_COUNTRY_CODE);
+        // that one is optional && parameterMap.containsKey(PARAM_NAME_COUNTRY_CODE);
       }
     }
 
@@ -151,12 +152,26 @@ public class DSDQuery {
    * Get the value of the given parameter
    *
    * @param parameterName the parameter
+   * @return parameter value (null if doesn't exist)
+   */
+  public @Nullable
+  String getParameterValue(@Nonnull String parameterName) {
+    ValueEnforcer.notEmpty(parameterName, "parameterName");
+    return parameters.get(parameterName);
+
+  }
+
+
+  /**
+   * Get the value of the given parameter
+   *
+   * @param parameterName the parameter
    * @return parameter value
    */
   public @Nonnull
-  String getParameterValue(String parameterName) {
+  String safeGetParameterValue(@Nonnull String parameterName) {
     ValueEnforcer.notEmpty(parameterName, "parameterName");
-
+    
     if (parameters.containsKey(parameterName))
       return parameters.get(parameterName);
 
