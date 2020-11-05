@@ -15,11 +15,8 @@
  */
 package eu.toop.dsd.api;
 
-import com.helger.pd.searchapi.PDSearchAPIReader;
-import com.helger.pd.searchapi.v1.MatchType;
-import com.helger.pd.searchapi.v1.ResultListType;
+import com.helger.commons.io.stream.StreamHelper;
 import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
-import eu.toop.regrep.rim.RegistryObjectType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +30,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,6 +38,8 @@ import java.util.List;
  * @author yerlibilgin
  */
 public class DsdDataConverter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DsdDataConverter.class);
+
   private static final Transformer transformer;
 
   static {
@@ -106,5 +104,22 @@ public class DsdDataConverter {
   public static List<DCatAPDatasetType> parseDataset(String dsdRawResult) {
     final InputStream inputStream = new ByteArrayInputStream(dsdRawResult.getBytes(StandardCharsets.UTF_8));
     return DcatDatasetTypeReader.parseDataset(new StreamSource(inputStream));
+  }
+
+  /**
+   * Try a dummy transformation on the XSLT to make it ready for
+   * future calls
+   */
+  public static void prepare() {
+    new Thread(() -> {
+      try {
+        final byte[] allBytes = StreamHelper.getAllBytes(DsdDataConverter.class.getResourceAsStream("/dummybusinesscard.xml"));
+        String directoryResult = new String(allBytes, StandardCharsets.UTF_8);
+        final String dcat = DsdDataConverter.convertDIRToDSDWithCountryCode(directoryResult, "FINANCIAL_RECORD_TYPE", "SV");
+        LOGGER.debug(dcat);
+      } catch (Exception ex) {
+        LOGGER.warn("Couldn't execute transformation at startup" + ex.getMessage());
+      }
+    }).start();
   }
 }
