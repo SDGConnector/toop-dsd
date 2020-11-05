@@ -112,6 +112,7 @@ public class DsdDataConverter {
    */
   public static void prepare() {
     new Thread(() -> {
+      LOGGER.info("Starting Dummy prepare");
       try {
         final byte[] allBytes = StreamHelper.getAllBytes(DsdDataConverter.class.getResourceAsStream("/dummybusinesscard.xml"));
         String directoryResult = new String(allBytes, StandardCharsets.UTF_8);
@@ -119,6 +120,8 @@ public class DsdDataConverter {
         LOGGER.debug(dcat);
       } catch (Exception ex) {
         LOGGER.warn("Couldn't execute transformation at startup" + ex.getMessage());
+      } finally {
+        LOGGER.info("Finished dummy prepare");
       }
     }).start();
   }

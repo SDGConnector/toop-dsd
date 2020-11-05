@@ -146,27 +146,16 @@
     <defaultGoal>package</defaultGoal>
     <plugins>
       <plugin>
-        <groupId>org.jvnet.jaxb2.maven2</groupId>
-        <artifactId>maven-jaxb2-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>xsd-schemas</id>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <generateDirectory>${project.build.directory}/generated-sources/schemas</generateDirectory>
-              <schemaDirectory>${basedir}/src/main/resources/xsd/</schemaDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <attachClasses>true</attachClasses>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>9.4.34.v20201102</version>
       </plugin>
 
     </plugins>
