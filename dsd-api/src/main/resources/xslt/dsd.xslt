@@ -287,7 +287,9 @@
                               </skos:prefLabel>
                               <xsl:for-each select="$currentDataProviderType">
                                 <org:classification>
-                                  <xsl:value-of select="normalize-space(.)"/>
+                                  <skos:name>
+                                    <xsl:value-of select="normalize-space(.)"/>
+                                  </skos:name>
                                 </org:classification>
                               </xsl:for-each>
                             </dct:publisher>

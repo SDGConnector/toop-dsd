@@ -93,7 +93,7 @@ public final class DSDClientTest {
   @Test
   public void testQueryByDpType() {
     final List<DCatAPDatasetType> dcatList = new DSDClient("http://localhost:" + TEST_PORT).queryDatasetByDPType("REGISTERED_ORGANIZATION_TYPE",
-        "DataSubjectIdentifierScheme");
+        "abc");
 
     if (dcatList == null) {
       throw new IllegalStateException("Cannot parse Dataset, please check previous exceptions");
