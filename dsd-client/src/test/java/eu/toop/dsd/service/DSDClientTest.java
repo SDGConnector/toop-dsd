@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2018-2020 toop.eu
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,13 +15,20 @@
  */
 package eu.toop.dsd.service;
 
-import eu.toop.dsd.api.DsdDataConverter;
-import eu.toop.dsd.api.ToopDirClient;
-import eu.toop.dsd.api.types.DSDQuery;
-import eu.toop.dsd.client.DSDClient;
-import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
-import eu.toop.edm.xml.dcatap.DatasetMarshaller;
-import org.apache.http.*;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestFactory;
+import org.apache.http.HttpStatus;
+import org.apache.http.MethodNotSupportedException;
+import org.apache.http.NameValuePair;
+import org.apache.http.RequestLine;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.config.ConnectionConfig;
 import org.apache.http.entity.ContentType;
@@ -36,12 +43,12 @@ import org.apache.http.message.BasicLineParser;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import eu.toop.dsd.api.DsdDataConverter;
+import eu.toop.dsd.api.ToopDirClient;
+import eu.toop.dsd.api.types.DSDQuery;
+import eu.toop.dsd.client.DSDClient;
+import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
+import eu.toop.edm.xml.dcatap.DatasetMarshaller;
 
 /**
  * A test class that tests the DSDClient
