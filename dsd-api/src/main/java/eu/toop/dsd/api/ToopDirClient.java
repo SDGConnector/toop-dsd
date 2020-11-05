@@ -25,11 +25,12 @@ import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.net.ssl.*;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509ExtendedTrustManager;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.url.SimpleURL;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
@@ -37,6 +38,10 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.string.StringHelper;
+import com.helger.commons.url.SimpleURL;
 
 /**
  * This class is the bridge between DSD and TOOP directory. It queries the TOOP
@@ -87,8 +92,8 @@ public class ToopDirClient {
 
     SSLContext sc = null;
     try {
-      sc = SSLContext.getInstance("SSL");
-      sc.init(null, trustAllCerts, new java.security.SecureRandom());
+      sc = SSLContext.getInstance("TLS");
+      sc.init(null, trustAllCerts, null);
     } catch (KeyManagementException | NoSuchAlgorithmException e) {
       e.printStackTrace();
     }
