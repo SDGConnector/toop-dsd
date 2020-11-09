@@ -156,6 +156,7 @@
                     </xsl:variable>
 
                     <xsl:variable name="docTypeParts" select="dsd:getDocTypeParts($docTypeID)"/>
+                    <xsl:variable name="accessServiceConformsTo" select="$docTypeParts//conformsTo"/>
                     <xsl:variable name="distributionFormat" select="$docTypeParts//distributionFormat"/>
                     <xsl:variable name="dataSetIdentifier" select="$docTypeParts//dataSetIdentifier"/>
 
@@ -228,7 +229,9 @@
                                 <dcat:endpointURL>
                                   <xsl:value-of select="$fictiveUrl"/>
                                 </dcat:endpointURL>
-                                <dct:conformsTo>SDG Regrep v4 profile</dct:conformsTo>
+                                <dct:conformsTo>
+                                  <xsl:value-of select="$accessServiceConformsTo"/>
+                                </dct:conformsTo>
                               </dcat:accessService>
 
                               <!--
