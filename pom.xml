@@ -34,7 +34,7 @@
   <url>http://github.com/toop4eu/data-services-directory</url>
 
   <properties>
-    <toop.version>2.1.0-1</toop.version>
+    <toop.version>2.1.1-SNAPSHOT</toop.version>
   </properties>
 
   <inceptionYear>2020</inceptionYear>
