@@ -32,10 +32,10 @@
 #         https://joinup.ec.europa.eu/software/page/eupl
 #
 
-FROM tomcat:9-jre11
+FROM tomcat:9-jdk11
 
 
-ARG VERSION="2.1.0-SNAPSHOT"
+ARG VERSION="2.1.1"
 ARG WAR_NAME=dsd-service-${VERSION}.war
 
 #create tc webapp folder
