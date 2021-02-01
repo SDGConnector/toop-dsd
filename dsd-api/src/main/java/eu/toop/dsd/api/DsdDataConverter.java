@@ -33,10 +33,11 @@
  */
 package eu.toop.dsd.api;
 
-import com.helger.commons.io.stream.StreamHelper;
-import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -44,11 +45,13 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.io.stream.StreamHelper;
+
+import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
 
 /**
  * A class to write DSD responses
@@ -62,9 +65,11 @@ public class DsdDataConverter {
 
   static {
     try {
+      LOGGER.info ("Starting to precompile DSD XSLT script");
       InputStream inputStream = DsdDataConverter.class.getResourceAsStream("/xslt/dsd.xslt");
       StreamSource stylesource = new StreamSource(inputStream);
       transformer = TransformerFactory.newInstance().newTransformer(stylesource);
+      LOGGER.info ("Finsihed precompiling DSD XSLT script");
 
     } catch (TransformerConfigurationException e) {
       throw new DSDException("Cannot instantiate transformers");
