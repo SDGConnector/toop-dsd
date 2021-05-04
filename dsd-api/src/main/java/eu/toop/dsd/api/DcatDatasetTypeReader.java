@@ -33,20 +33,22 @@
  */
 package eu.toop.dsd.api;
 
-import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
-import eu.toop.edm.xml.cagv.CCAGV;
-import eu.toop.edm.xml.dcatap.DatasetMarshaller;
-import eu.toop.regrep.RegRep4Reader;
-import eu.toop.regrep.query.QueryResponse;
-import eu.toop.regrep.rim.AnyValueType;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.transform.Source;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.w3c.dom.Element;
+
+import com.helger.regrep.RegRep4Reader;
+import com.helger.regrep.query.QueryResponse;
+import com.helger.regrep.rim.AnyValueType;
+
+import eu.toop.edm.jaxb.dcatap.DCatAPDatasetType;
+import eu.toop.edm.xml.cagv.CCAGV;
+import eu.toop.edm.xml.dcatap.DatasetMarshaller;
 
 public class DcatDatasetTypeReader {
 
